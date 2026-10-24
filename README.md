@@ -46,7 +46,7 @@ Swift lässt sich nur auf macOS kompilieren. Der Workflow `.github/workflows/ios
 1. GitHub-Konto anlegen, privates Repo erstellen, dieses Projekt pushen.
 2. Unter *Actions* läuft **Build & test** automatisch (Proxy-Tests, iOS-Unit-Tests im Simulator, Release-Build).
 3. Das Artefakt **Fixify-unsigned-ipa** herunterladen.
-4. Mit [Sideloadly](https://sideloadly.io) (Windows) und deiner Apple-ID aufs iPhone installieren. Mit kostenloser Apple-ID läuft die App 7 Tage und muss dann neu signiert werden. Auf dem iPhone: *Einstellungen → Allgemein → VPN & Geräteverwaltung* → Entwickler vertrauen, außerdem *Entwicklermodus* aktivieren.
+4. Mit [Sideloadly](https://sideloadly.io) (Windows) installieren – Schritt-für-Schritt: [docs/iPhone-Installation.md](docs/iPhone-Installation.md). Kurzfassung: und deiner Apple-ID aufs iPhone installieren. Mit kostenloser Apple-ID läuft die App 7 Tage und muss dann neu signiert werden. Auf dem iPhone: *Einstellungen → Allgemein → VPN & Geräteverwaltung* → Entwickler vertrauen, außerdem *Entwicklermodus* aktivieren.
 
 Mit Apple Developer Account (99 $/Jahr) geht es stattdessen per TestFlight; dafür muss `DEVELOPMENT_TEAM` in `project.yml` gesetzt und Signing im Workflow ergänzt werden.
 
