@@ -1,0 +1,36 @@
+{
+  "identifier" : "F1X1F7A0",
+  "nonRenewingSubscriptions" : [],
+  "products" : [],
+  "settings" : { "_failTransactionsEnabled" : false, "_locale" : "de_DE", "_storefront" : "DEU" },
+  "subscriptionGroups" : [
+    {
+      "id" : "21500001",
+      "localizations" : [],
+      "name" : "Fixify Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [], "codeOffers" : [], "displayPrice" : "4.99", "familyShareable" : false,
+          "groupNumber" : 1, "internalID" : "6740000001", "introductoryOffer" : null,
+          "localizations" : [
+            { "description" : "More analyses and longer troubleshooting", "displayName" : "Fixify Pro monthly", "locale" : "en_US" },
+            { "description" : "Mehr Analysen und längere Fehlersuche", "displayName" : "Fixify Pro monatlich", "locale" : "de_DE" }
+          ],
+          "productID" : "app.fixify.pro.monthly", "recurringSubscriptionPeriod" : "P1M", "referenceName" : "Pro Monthly",
+          "subscriptionGroupID" : "21500001", "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [], "codeOffers" : [], "displayPrice" : "39.99", "familyShareable" : false,
+          "groupNumber" : 1, "internalID" : "6740000002", "introductoryOffer" : null,
+          "localizations" : [
+            { "description" : "More analyses and longer troubleshooting", "displayName" : "Fixify Pro yearly", "locale" : "en_US" },
+            { "description" : "Mehr Analysen und längere Fehlersuche", "displayName" : "Fixify Pro jährlich", "locale" : "de_DE" }
+          ],
+          "productID" : "app.fixify.pro.yearly", "recurringSubscriptionPeriod" : "P1Y", "referenceName" : "Pro Yearly",
+          "subscriptionGroupID" : "21500001", "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : { "major" : 4, "minor" : 0 }
+}

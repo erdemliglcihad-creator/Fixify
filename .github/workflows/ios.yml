@@ -1,0 +1,84 @@
+name: Build & test
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  server:
+    name: Proxy tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - run: npm test
+
+  ios:
+    name: iOS tests & unsigned IPA
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Check translations
+        run: python3 tools/build_strings.py
+
+      - name: Generate Xcode project
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Pick an iOS 26 iPhone simulator
+        id: sim
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c "
+          import json, sys
+          devices = json.load(sys.stdin)['devices']
+          runtimes = sorted((k for k in devices if 'iOS-26' in k), reverse=True)
+          print(next(d['udid'] for k in runtimes for d in devices[k] if d['name'].startswith('iPhone')))
+          ")
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+
+      - name: Run unit tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project Fixify.xcodeproj -scheme Fixify \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            CODE_SIGNING_ALLOWED=NO | tee test.log | grep -E "error:|warning: unre|Test |passed|failed" || true
+          grep -q "TEST SUCCEEDED\|Test run with .* passed" test.log
+
+      - name: Build unsigned IPA
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project Fixify.xcodeproj -scheme Fixify -configuration Release \
+            -sdk iphoneos -destination "generic/platform=iOS" -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" | tail -20
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/Fixify.app Payload/
+          zip -qry Fixify-unsigned.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Fixify-unsigned-ipa
+          path: Fixify-unsigned.ipa
+          retention-days: 14
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-log
+          path: test.log

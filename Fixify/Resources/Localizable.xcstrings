@@ -1,0 +1,4230 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%@ %llds": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ %2$lld s"
+          }
+        }
+      }
+    },
+    "%lld min": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld Min."
+          }
+        }
+      }
+    },
+    "%lld of %lld checks confirmed": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld von %2$lld Prüfungen bestätigt"
+          }
+        }
+      }
+    },
+    "%lld of %lld photos": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld von %2$lld Fotos"
+          }
+        }
+      }
+    },
+    "%lld s": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld s"
+          }
+        }
+      }
+    },
+    "%lld text lines recognized on device": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld Textzeilen auf dem Gerät erkannt"
+          }
+        }
+      }
+    },
+    "+ %lld more steps": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+ %lld weitere Schritte"
+          }
+        }
+      }
+    },
+    "1. Show the problem": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1. Problem zeigen"
+          }
+        }
+      }
+    },
+    "2. Understand it": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2. Verstehen"
+          }
+        }
+      }
+    },
+    "3. Look where it matters": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3. Hinschauen, wo es wichtig ist"
+          }
+        }
+      }
+    },
+    "4. Fix it step by step": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4. Schritt für Schritt lösen"
+          }
+        }
+      }
+    },
+    "5. Verify": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5. Überprüfen"
+          }
+        }
+      }
+    },
+    "A different error appeared": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein anderer Fehler ist aufgetreten"
+          }
+        }
+      }
+    },
+    "AI analyses per month": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KI-Analysen pro Monat"
+          }
+        }
+      }
+    },
+    "AI analysis": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KI-Analyse"
+          }
+        }
+      }
+    },
+    "AI analysis is not available, so the plan can't be adjusted automatically. Your note is saved in the session history.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KI-Analyse ist nicht verfügbar, daher kann der Plan nicht automatisch angepasst werden. Deine Notiz wird im Verlauf der Session gespeichert."
+          }
+        }
+      }
+    },
+    "AI analysis is not set up": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KI-Analyse ist nicht eingerichtet"
+          }
+        }
+      }
+    },
+    "AI analysis is off": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KI-Analyse ist aus"
+          }
+        }
+      }
+    },
+    "AI analysis is off or not set up. You can analyze the session later from Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KI-Analyse ist aus oder nicht eingerichtet. Du kannst die Session später analysieren, sobald sie in den Einstellungen eingerichtet ist."
+          }
+        }
+      }
+    },
+    "Active": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktiv"
+          }
+        }
+      }
+    },
+    "Add a photo": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto hinzufügen"
+          }
+        }
+      }
+    },
+    "Add a photo of what you see now": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto vom aktuellen Zustand hinzufügen"
+          }
+        }
+      }
+    },
+    "Add observation": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beobachtung hinzufügen"
+          }
+        }
+      }
+    },
+    "After 30 days": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach 30 Tagen"
+          }
+        }
+      }
+    },
+    "After 7 days": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach 7 Tagen"
+          }
+        }
+      }
+    },
+    "After 90 days": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach 90 Tagen"
+          }
+        }
+      }
+    },
+    "All sessions, photos, analyses and history are removed from this iPhone. Your settings stay.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Sessions, Fotos, Analysen und Verläufe werden von diesem iPhone entfernt. Deine Einstellungen bleiben erhalten."
+          }
+        }
+      }
+    },
+    "All topics": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Themen"
+          }
+        }
+      }
+    },
+    "Allow and analyze": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erlauben und analysieren"
+          }
+        }
+      }
+    },
+    "Allow sending to my Fixify server": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Senden an meinen Fixify-Server erlauben"
+          }
+        }
+      }
+    },
+    "Always on this iPhone": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Immer auf diesem iPhone"
+          }
+        }
+      }
+    },
+    "Analyses left this month": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbleibende Analysen diesen Monat"
+          }
+        }
+      }
+    },
+    "Analysis": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyse"
+          }
+        }
+      }
+    },
+    "Analysis cancelled": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyse abgebrochen"
+          }
+        }
+      }
+    },
+    "Analysis didn't work": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyse hat nicht funktioniert"
+          }
+        }
+      }
+    },
+    "Analysis: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyse: %@"
+          }
+        }
+      }
+    },
+    "Analyze": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analysieren"
+          }
+        }
+      }
+    },
+    "Analyze again": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneut analysieren"
+          }
+        }
+      }
+    },
+    "Analyze on this iPhone": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf diesem iPhone analysieren"
+          }
+        }
+      }
+    },
+    "Analyzing on this iPhone": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyse auf diesem iPhone"
+          }
+        }
+      }
+    },
+    "App token": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App-Token"
+          }
+        }
+      }
+    },
+    "Appearance": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erscheinungsbild"
+          }
+        }
+      }
+    },
+    "Apple Vision reads text in your photos and in the live camera on the device.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Vision liest Text in deinen Fotos und im Live-Kamerabild direkt auf dem Gerät."
+          }
+        }
+      }
+    },
+    "Apple's on-device model reads the recognized text and your description. It cannot see photos, so markers appear only on recognized text.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apples On-Device-Modell liest den erkannten Text und deine Beschreibung. Es sieht keine Fotos, daher erscheinen Markierungen nur auf erkanntem Text."
+          }
+        }
+      }
+    },
+    "Appliances": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haushaltsgeräte"
+          }
+        }
+      }
+    },
+    "Approximate (AI estimate)": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ungefähr (KI-Schätzung)"
+          }
+        }
+      }
+    },
+    "Approximate – estimated by the AI from the photo. Check it yourself.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ungefähr – von der KI anhand des Fotos geschätzt. Prüfe es selbst."
+          }
+        }
+      }
+    },
+    "Apps & settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apps & Einstellungen"
+          }
+        }
+      }
+    },
+    "Available on this iPhone": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf diesem iPhone verfügbar"
+          }
+        }
+      }
+    },
+    "Back": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zurück"
+          }
+        }
+      }
+    },
+    "Be careful": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorsicht"
+          }
+        }
+      }
+    },
+    "Boxes show text this iPhone recognizes. The AI analysis starts after you take the photo.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rahmen zeigen Text, den dieses iPhone erkennt. Die KI-Analyse startet erst nach der Aufnahme."
+          }
+        }
+      }
+    },
+    "Camera": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamera"
+          }
+        }
+      }
+    },
+    "Camera access is off": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamerazugriff ist aus"
+          }
+        }
+      }
+    },
+    "Camera unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamera nicht verfügbar"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abbrechen"
+          }
+        }
+      }
+    },
+    "Capturing": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufnahme läuft"
+          }
+        }
+      }
+    },
+    "Check it yourself": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selbst überprüfen"
+          }
+        }
+      }
+    },
+    "Check the result": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ergebnis prüfen"
+          }
+        }
+      }
+    },
+    "Check this first": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zuerst prüfen"
+          }
+        }
+      }
+    },
+    "Checking the result": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ergebnis wird geprüft"
+          }
+        }
+      }
+    },
+    "Choose from photos": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus Fotos wählen"
+          }
+        }
+      }
+    },
+    "Close": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schließen"
+          }
+        }
+      }
+    },
+    "Close camera": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamera schließen"
+          }
+        }
+      }
+    },
+    "Completed": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abgeschlossen"
+          }
+        }
+      }
+    },
+    "Computer": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Computer"
+          }
+        }
+      }
+    },
+    "Connected": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbunden"
+          }
+        }
+      }
+    },
+    "Continue your fix": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mach mit deiner Reparatur weiter"
+          }
+        }
+      }
+    },
+    "Copy or share text": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text kopieren oder teilen"
+          }
+        }
+      }
+    },
+    "Could not save": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speichern nicht möglich"
+          }
+        }
+      }
+    },
+    "Dark": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dunkel"
+          }
+        }
+      }
+    },
+    "Delete": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Löschen"
+          }
+        }
+      }
+    },
+    "Delete all Fixify data": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Fixify-Daten löschen"
+          }
+        }
+      }
+    },
+    "Delete all Fixify data?": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Fixify-Daten löschen?"
+          }
+        }
+      }
+    },
+    "Delete everything": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles löschen"
+          }
+        }
+      }
+    },
+    "Delete photos of completed sessions now": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotos abgeschlossener Sessions jetzt löschen"
+          }
+        }
+      }
+    },
+    "Delete photos of solved sessions": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotos gelöster Sessions löschen"
+          }
+        }
+      }
+    },
+    "Delete photos only": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur Fotos löschen"
+          }
+        }
+      }
+    },
+    "Delete session": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session löschen"
+          }
+        }
+      }
+    },
+    "Delete session and photos": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session und Fotos löschen"
+          }
+        }
+      }
+    },
+    "Delete this session?": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Session löschen?"
+          }
+        }
+      }
+    },
+    "Describe the problem instead": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Problem stattdessen beschreiben"
+          }
+        }
+      }
+    },
+    "Description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beschreibung"
+          }
+        }
+      }
+    },
+    "Details (optional)": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Details (optional)"
+          }
+        }
+      }
+    },
+    "Devices & accessories": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geräte & Zubehör"
+          }
+        }
+      }
+    },
+    "Didn't work": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hat nicht funktioniert"
+          }
+        }
+      }
+    },
+    "Do this": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mach das"
+          }
+        }
+      }
+    },
+    "Document": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dokument"
+          }
+        }
+      }
+    },
+    "Documents & forms": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dokumente & Formulare"
+          }
+        }
+      }
+    },
+    "Done": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erledigt"
+          }
+        }
+      }
+    },
+    "Each problem you scan becomes a session with its analysis, steps and result.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jedes gescannte Problem wird zu einer Session mit Analyse, Schritten und Ergebnis."
+          }
+        }
+      }
+    },
+    "Easy": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einfach"
+          }
+        }
+      }
+    },
+    "Enter both in Settings → AI analysis and tap Test connection.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trage beides unter Einstellungen → KI-Analyse ein und tippe auf „Verbindung testen“."
+          }
+        }
+      }
+    },
+    "Everyday objects": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alltagsgegenstände"
+          }
+        }
+      }
+    },
+    "Everything stays on this iPhone.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles bleibt auf diesem iPhone."
+          }
+        }
+      }
+    },
+    "Exact (recognized text)": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exakt (erkannter Text)"
+          }
+        }
+      }
+    },
+    "Exact – taken from text recognized on this iPhone.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exakt – aus Text, den dieses iPhone erkannt hat."
+          }
+        }
+      }
+    },
+    "Fill the frame with the error message or the setting you are stuck on.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fülle das Bild mit der Fehlermeldung oder der Einstellung, bei der du nicht weiterkommst."
+          }
+        }
+      }
+    },
+    "Filter": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filter"
+          }
+        }
+      }
+    },
+    "Find the next thing to try": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächsten Lösungsversuch finden"
+          }
+        }
+      }
+    },
+    "Finding %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Befund %lld"
+          }
+        }
+      }
+    },
+    "Fix Sessions": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fix-Sessions"
+          }
+        }
+      }
+    },
+    "Fix plan": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lösungsplan"
+          }
+        }
+      }
+    },
+    "Fixify Pro": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify Pro"
+          }
+        }
+      }
+    },
+    "Fixify Pro is active": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify Pro ist aktiv"
+          }
+        }
+      }
+    },
+    "Fixify Pro is not available in this build yet.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify Pro ist in dieser Version noch nicht verfügbar."
+          }
+        }
+      }
+    },
+    "Fixify Pro restored.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify Pro wiederhergestellt."
+          }
+        }
+      }
+    },
+    "Fixify can be wrong. It cannot read things a photo doesn't show, like whether Bluetooth is on or a wire is live. When it needs that, it asks you.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify kann sich irren. Es kann nichts ablesen, was ein Foto nicht zeigt – etwa ob Bluetooth an ist oder ein Kabel Spannung führt. Wenn es das braucht, fragt es dich."
+          }
+        }
+      }
+    },
+    "Fixify can't solve this reliably": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify kann das nicht zuverlässig lösen"
+          }
+        }
+      }
+    },
+    "Fixify feedback (version %@, iOS %@)\n\nWhat happened:\n\nWhat I expected:\n": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify-Feedback (Version %1$@, iOS %2$@)\n\nWas ist passiert:\n\nWas ich erwartet habe:\n"
+          }
+        }
+      }
+    },
+    "Fixify gives guidance, not guarantees. It does not give medical, legal or electrical diagnoses as fact. For mains electricity, gas, vehicles or anything unsafe, ask a professional.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify gibt Hilfestellung, keine Garantien. Medizinische, rechtliche oder elektrische Diagnosen stellt es nicht als Tatsachen dar. Bei Netzstrom, Gas, Fahrzeugen oder allem, was gefährlich ist, frag eine Fachkraft."
+          }
+        }
+      }
+    },
+    "Fixify has no access to the camera.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify hat keinen Zugriff auf die Kamera."
+          }
+        }
+      }
+    },
+    "Fixify has no telemetry, ads or third-party SDKs.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify hat keine Telemetrie, keine Werbung und keine Drittanbieter-SDKs."
+          }
+        }
+      }
+    },
+    "Fixify needs to know": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify muss wissen"
+          }
+        }
+      }
+    },
+    "Fixify only recognizes text on this iPhone. No diagnosis or plan is created.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify erkennt nur Text auf diesem iPhone. Es wird keine Diagnose und kein Plan erstellt."
+          }
+        }
+      }
+    },
+    "Fixify server (Claude)": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify-Server (Claude)"
+          }
+        }
+      }
+    },
+    "Fixify uses this to adjust the plan instead of repeating the same step.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify passt damit den Plan an, statt denselben Schritt zu wiederholen."
+          }
+        }
+      }
+    },
+    "Fixify will remind you tomorrow at about this time.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify erinnert dich morgen etwa um diese Zeit."
+          }
+        }
+      }
+    },
+    "For experts": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für Profis"
+          }
+        }
+      }
+    },
+    "For longer troubleshooting and a complete repair history.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für längere Fehlersuchen und eine vollständige Reparaturhistorie."
+          }
+        }
+      }
+    },
+    "For the analysis, the photos (reduced in size), the recognized text and your description are sent to your Fixify server, which passes them to Claude. Nothing is sent before you tap Analyze.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für die Analyse werden die Fotos (verkleinert), der erkannte Text und deine Beschreibung an deinen Fixify-Server gesendet, der sie an Claude weitergibt. Vor „Analysieren“ wird nichts gesendet."
+          }
+        }
+      }
+    },
+    "From recognized text": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus erkanntem Text"
+          }
+        }
+      }
+    },
+    "From your description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus deiner Beschreibung"
+          }
+        }
+      }
+    },
+    "Good afternoon": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guten Tag"
+          }
+        }
+      }
+    },
+    "Good evening": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guten Abend"
+          }
+        }
+      }
+    },
+    "Good morning": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guten Morgen"
+          }
+        }
+      }
+    },
+    "Guides": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anleitungen"
+          }
+        }
+      }
+    },
+    "Hard": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schwer"
+          }
+        }
+      }
+    },
+    "Help & feedback": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hilfe & Feedback"
+          }
+        }
+      }
+    },
+    "Hide tip": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tipp ausblenden"
+          }
+        }
+      }
+    },
+    "History": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlauf"
+          }
+        }
+      }
+    },
+    "Home": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start"
+          }
+        }
+      }
+    },
+    "How Fixify works": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "So funktioniert Fixify"
+          }
+        }
+      }
+    },
+    "I couldn't do this step": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ich konnte den Schritt nicht ausführen"
+          }
+        }
+      }
+    },
+    "I don't see what the step describes": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ich sehe nicht, was der Schritt beschreibt"
+          }
+        }
+      }
+    },
+    "I'm done – check the result": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fertig – Ergebnis prüfen"
+          }
+        }
+      }
+    },
+    "If chosen, Apple's on-device model runs locally. Nothing is sent.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wenn ausgewählt, läuft Apples On-Device-Modell lokal. Es wird nichts gesendet."
+          }
+        }
+      }
+    },
+    "If it worked": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wenn es geklappt hat"
+          }
+        }
+      }
+    },
+    "In progress": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Arbeit"
+          }
+        }
+      }
+    },
+    "In the project's server folder, run npm install.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Führe im Ordner „server“ des Projekts npm install aus."
+          }
+        }
+      }
+    },
+    "Install Node.js 22 or newer on your computer.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installiere Node.js 22 oder neuer auf deinem Computer."
+          }
+        }
+      }
+    },
+    "It may have been deleted.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sie wurde möglicherweise gelöscht."
+          }
+        }
+      }
+    },
+    "Let Fixify decide": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify entscheiden lassen"
+          }
+        }
+      }
+    },
+    "Library": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bibliothek"
+          }
+        }
+      }
+    },
+    "Light": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hell"
+          }
+        }
+      }
+    },
+    "Likely": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wahrscheinlich"
+          }
+        }
+      }
+    },
+    "Limits": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grenzen"
+          }
+        }
+      }
+    },
+    "Live Fix": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live Fix"
+          }
+        }
+      }
+    },
+    "Look at": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schau auf"
+          }
+        }
+      }
+    },
+    "Manage subscription": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abo verwalten"
+          }
+        }
+      }
+    },
+    "Mark as not done": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als nicht erledigt markieren"
+          }
+        }
+      }
+    },
+    "Mark each step as done or tell Fixify it didn't work. The plan is adjusted with what you report.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markiere jeden Schritt als erledigt oder sag Fixify, dass er nicht funktioniert hat. Der Plan wird mit deinen Angaben angepasst."
+          }
+        }
+      }
+    },
+    "Marker %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markierung %lld"
+          }
+        }
+      }
+    },
+    "Marker %lld: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markierung %1$lld: %2$@"
+          }
+        }
+      }
+    },
+    "Maximum number of photos reached": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximale Anzahl Fotos erreicht"
+          }
+        }
+      }
+    },
+    "Moderate": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mittel"
+          }
+        }
+      }
+    },
+    "Monthly analyses used up": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monatliche Analysen aufgebraucht"
+          }
+        }
+      }
+    },
+    "More": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mehr"
+          }
+        }
+      }
+    },
+    "More options for this step": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weitere Optionen für diesen Schritt"
+          }
+        }
+      }
+    },
+    "Needs AI analysis. Set it up in Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benötigt KI-Analyse. Richte sie in den Einstellungen ein."
+          }
+        }
+      }
+    },
+    "Never": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie"
+          }
+        }
+      }
+    },
+    "New observation": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Beobachtung"
+          }
+        }
+      }
+    },
+    "New observation added": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Beobachtung hinzugefügt"
+          }
+        }
+      }
+    },
+    "New problem": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neues Problem"
+          }
+        }
+      }
+    },
+    "New scan": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neuer Scan"
+          }
+        }
+      }
+    },
+    "Next": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weiter"
+          }
+        }
+      }
+    },
+    "Next: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als Nächstes: %@"
+          }
+        }
+      }
+    },
+    "No API key in the app": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein API-Schlüssel in der App"
+          }
+        }
+      }
+    },
+    "No active Fixify Pro purchase was found.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein aktiver Fixify-Pro-Kauf gefunden."
+          }
+        }
+      }
+    },
+    "No analysis server is set up. Add its address and app token in Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es ist kein Analyse-Server eingerichtet. Trage Adresse und App-Token in den Einstellungen ein."
+          }
+        }
+      }
+    },
+    "No analytics or tracking": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Analyse-Tools, kein Tracking"
+          }
+        }
+      }
+    },
+    "No camera access": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Kamerazugriff"
+          }
+        }
+      }
+    },
+    "No camera available": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Kamera verfügbar"
+          }
+        }
+      }
+    },
+    "No camera is available on this device.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf diesem Gerät ist keine Kamera verfügbar."
+          }
+        }
+      }
+    },
+    "No details given": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Details angegeben"
+          }
+        }
+      }
+    },
+    "No fix sessions yet": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch keine Fix-Sessions"
+          }
+        }
+      }
+    },
+    "No steps were recorded.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es wurden keine Schritte erfasst."
+          }
+        }
+      }
+    },
+    "No text found on the image": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Text im Bild gefunden"
+          }
+        }
+      }
+    },
+    "Not analyzed": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht analysiert"
+          }
+        }
+      }
+    },
+    "Not known yet": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch unbekannt"
+          }
+        }
+      }
+    },
+    "Not marked – the location could not be determined reliably.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht markiert – die Position ließ sich nicht zuverlässig bestimmen."
+          }
+        }
+      }
+    },
+    "Not now": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht jetzt"
+          }
+        }
+      }
+    },
+    "Not reachable": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht erreichbar"
+          }
+        }
+      }
+    },
+    "Not solved": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht gelöst"
+          }
+        }
+      }
+    },
+    "Not sure yet": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch unklar"
+          }
+        }
+      }
+    },
+    "Note (optional)": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notiz (optional)"
+          }
+        }
+      }
+    },
+    "Nothing changed": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nichts hat sich geändert"
+          }
+        }
+      }
+    },
+    "Notifications": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitteilungen"
+          }
+        }
+      }
+    },
+    "Notifications are turned off for Fixify. You can allow them in the iOS Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitteilungen sind für Fixify deaktiviert. Du kannst sie in den iOS-Einstellungen erlauben."
+          }
+        }
+      }
+    },
+    "Numbered markers point to findings. Solid boxes come from recognized text and are exact; dashed boxes are AI estimates.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nummerierte Markierungen zeigen auf Befunde. Durchgezogene Rahmen stammen aus erkanntem Text und sind exakt, gestrichelte sind KI-Schätzungen."
+          }
+        }
+      }
+    },
+    "OK": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    },
+    "Off – text recognition only": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus – nur Texterkennung"
+          }
+        }
+      }
+    },
+    "On device": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf dem Gerät"
+          }
+        }
+      }
+    },
+    "On this iPhone (text only)": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf diesem iPhone (nur Text)"
+          }
+        }
+      }
+    },
+    "On-device analysis": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyse auf dem Gerät"
+          }
+        }
+      }
+    },
+    "On-device analysis is not available right now.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Analyse auf dem Gerät ist gerade nicht verfügbar."
+          }
+        }
+      }
+    },
+    "On-device analysis unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyse auf dem Gerät nicht verfügbar"
+          }
+        }
+      }
+    },
+    "On-device · text only": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf dem Gerät · nur Text"
+          }
+        }
+      }
+    },
+    "Only on-device text recognition.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur Texterkennung auf dem Gerät."
+          }
+        }
+      }
+    },
+    "Only save on this iPhone": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur auf diesem iPhone speichern"
+          }
+        }
+      }
+    },
+    "Only when you ask for a reminder in a session. Fixify sends no other notifications.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur wenn du in einer Session um eine Erinnerung bittest. Fixify sendet keine anderen Mitteilungen."
+          }
+        }
+      }
+    },
+    "Only when you tap Analyze": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur wenn du auf „Analysieren“ tippst"
+          }
+        }
+      }
+    },
+    "Open": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offen"
+          }
+        }
+      }
+    },
+    "Open Settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen öffnen"
+          }
+        }
+      }
+    },
+    "Open camera": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamera öffnen"
+          }
+        }
+      }
+    },
+    "Open iOS Settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS-Einstellungen öffnen"
+          }
+        }
+      }
+    },
+    "Or type an answer": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oder Antwort eingeben"
+          }
+        }
+      }
+    },
+    "Partly solved": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teilweise gelöst"
+          }
+        }
+      }
+    },
+    "Passed on to Anthropic": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weitergegeben an Anthropic"
+          }
+        }
+      }
+    },
+    "Photo": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto"
+          }
+        }
+      }
+    },
+    "Photograph the connection screen or the device's status lights.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotografiere den Verbindungsbildschirm oder die Statusleuchten des Geräts."
+          }
+        }
+      }
+    },
+    "Photograph the error message, device or part. Boxes in the camera show text the iPhone recognizes. Video records up to 10 seconds and uses three frames.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotografiere die Fehlermeldung, das Gerät oder das Teil. Rahmen in der Kamera zeigen Text, den das iPhone erkennt. Video nimmt bis zu 10 Sekunden auf und nutzt drei Einzelbilder."
+          }
+        }
+      }
+    },
+    "Photos": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotos"
+          }
+        }
+      }
+    },
+    "Photos are stored once even if used in several sessions, and are protected while your iPhone is locked.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotos werden nur einmal gespeichert, auch wenn sie in mehreren Sessions vorkommen, und sind geschützt, solange dein iPhone gesperrt ist."
+          }
+        }
+      }
+    },
+    "Photos deleted to save space": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotos gelöscht, um Speicher freizugeben"
+          }
+        }
+      }
+    },
+    "Photos per analysis": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotos pro Analyse"
+          }
+        }
+      }
+    },
+    "Photos, analyses and guides from your sessions are collected here.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotos, Analysen und Anleitungen aus deinen Sessions werden hier gesammelt."
+          }
+        }
+      }
+    },
+    "Photos, analyses and history are stored only in Fixify on this iPhone, protected while it is locked.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotos, Analysen und Verlauf werden nur in Fixify auf diesem iPhone gespeichert und sind im gesperrten Zustand geschützt."
+          }
+        }
+      }
+    },
+    "Photos, reduced to about 1600 pixels": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotos, verkleinert auf etwa 1600 Pixel"
+          }
+        }
+      }
+    },
+    "Pick a photo or screenshot of the problem": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle ein Foto oder einen Screenshot des Problems"
+          }
+        }
+      }
+    },
+    "Plan updated with %lld steps": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan mit %lld Schritten aktualisiert"
+          }
+        }
+      }
+    },
+    "Plan updates per session": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan-Aktualisierungen pro Session"
+          }
+        }
+      }
+    },
+    "Plan v%lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan v%lld"
+          }
+        }
+      }
+    },
+    "Position": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position"
+          }
+        }
+      }
+    },
+    "Possible": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Möglich"
+          }
+        }
+      }
+    },
+    "Possible causes": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mögliche Ursachen"
+          }
+        }
+      }
+    },
+    "Preparing photos and recognized text": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotos und erkannter Text werden vorbereitet"
+          }
+        }
+      }
+    },
+    "Privacy": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datenschutz"
+          }
+        }
+      }
+    },
+    "Problem described without a photo": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Problem ohne Foto beschrieben"
+          }
+        }
+      }
+    },
+    "Problem solved": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Problem gelöst"
+          }
+        }
+      }
+    },
+    "Problem still there": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Problem besteht weiter"
+          }
+        }
+      }
+    },
+    "Progress": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fortschritt"
+          }
+        }
+      }
+    },
+    "Purchases": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Käufe"
+          }
+        }
+      }
+    },
+    "Ready": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereit"
+          }
+        }
+      }
+    },
+    "Ready to analyze": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereit zur Analyse"
+          }
+        }
+      }
+    },
+    "Ready · up to 10 s": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereit · bis zu 10 s"
+          }
+        }
+      }
+    },
+    "Recently solved": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zuletzt gelöst"
+          }
+        }
+      }
+    },
+    "Recognized text": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erkannter Text"
+          }
+        }
+      }
+    },
+    "Recognizing text on device": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text wird auf dem Gerät erkannt"
+          }
+        }
+      }
+    },
+    "Record video": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video aufnehmen"
+          }
+        }
+      }
+    },
+    "Recording": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufnahme"
+          }
+        }
+      }
+    },
+    "Remind me tomorrow": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morgen erinnern"
+          }
+        }
+      }
+    },
+    "Reminder": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnerung"
+          }
+        }
+      }
+    },
+    "Reminders for open sessions": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnerungen für offene Sessions"
+          }
+        }
+      }
+    },
+    "Remove photo": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto entfernen"
+          }
+        }
+      }
+    },
+    "Reopen session": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session wieder öffnen"
+          }
+        }
+      }
+    },
+    "Restore purchases": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Käufe wiederherstellen"
+          }
+        }
+      }
+    },
+    "Result": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ergebnis"
+          }
+        }
+      }
+    },
+    "Result unclear": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ergebnis unklar"
+          }
+        }
+      }
+    },
+    "Running on this iPhone. Uses recognized text and your description.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Läuft auf diesem iPhone. Nutzt erkannten Text und deine Beschreibung."
+          }
+        }
+      }
+    },
+    "Safety risk": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sicherheitsrisiko"
+          }
+        }
+      }
+    },
+    "Save": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sichern"
+          }
+        }
+      }
+    },
+    "Save and recognize text": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speichern und Text erkennen"
+          }
+        }
+      }
+    },
+    "Save answers": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Antworten speichern"
+          }
+        }
+      }
+    },
+    "Saved sessions": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gespeicherte Sessions"
+          }
+        }
+      }
+    },
+    "Scan": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan"
+          }
+        }
+      }
+    },
+    "Search problems, steps and recognized text": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probleme, Schritte und erkannten Text durchsuchen"
+          }
+        }
+      }
+    },
+    "See Fixify Pro": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify Pro ansehen"
+          }
+        }
+      }
+    },
+    "Seen in the image": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Im Bild zu sehen"
+          }
+        }
+      }
+    },
+    "Send answers and update the plan": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Antworten senden und Plan aktualisieren"
+          }
+        }
+      }
+    },
+    "Send feedback": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Feedback senden"
+          }
+        }
+      }
+    },
+    "Send this problem for analysis?": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Problem zur Analyse senden?"
+          }
+        }
+      }
+    },
+    "Sent to your Fixify server": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An deinen Fixify-Server gesendet"
+          }
+        }
+      }
+    },
+    "Server address, e.g. 192.168.1.20:8787": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server-Adresse, z. B. 192.168.1.20:8787"
+          }
+        }
+      }
+    },
+    "Server has no API key": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server hat keinen API-Schlüssel"
+          }
+        }
+      }
+    },
+    "Server setup": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server einrichten"
+          }
+        }
+      }
+    },
+    "Session not found": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session nicht gefunden"
+          }
+        }
+      }
+    },
+    "Session reopened": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session wieder geöffnet"
+          }
+        }
+      }
+    },
+    "Sessions": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sessions"
+          }
+        }
+      }
+    },
+    "Set up the Fixify server": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify-Server einrichten"
+          }
+        }
+      }
+    },
+    "Settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen"
+          }
+        }
+      }
+    },
+    "Share summary": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zusammenfassung teilen"
+          }
+        }
+      }
+    },
+    "Show": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anzeigen"
+          }
+        }
+      }
+    },
+    "Show image full screen": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bild im Vollbild zeigen"
+          }
+        }
+      }
+    },
+    "Show marker %lld on the image": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markierung %lld im Bild zeigen"
+          }
+        }
+      }
+    },
+    "Show the device and its cable or status lights.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeige das Gerät und sein Kabel oder seine Statusleuchten."
+          }
+        }
+      }
+    },
+    "Show the display, error code or the area that is not working. Unplug before touching anything inside.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeige das Display, den Fehlercode oder den Bereich, der nicht funktioniert. Zieh den Stecker, bevor du etwas im Inneren berührst."
+          }
+        }
+      }
+    },
+    "Show the part that is broken, with something for scale if you can.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeige das kaputte Teil, wenn möglich mit etwas zum Größenvergleich."
+          }
+        }
+      }
+    },
+    "Show the problem. Fixify marks what matters and guides you step by step until you have checked that it works.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeig das Problem. Fixify markiert, worauf es ankommt, und führt dich Schritt für Schritt, bis du geprüft hast, dass es funktioniert."
+          }
+        }
+      }
+    },
+    "Show what is wrong. You can add a description afterwards.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeig, was nicht stimmt. Eine Beschreibung kannst du danach ergänzen."
+          }
+        }
+      }
+    },
+    "Shows this step": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeigt diesen Schritt"
+          }
+        }
+      }
+    },
+    "Shows what Fixify found here": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeigt, was Fixify hier gefunden hat"
+          }
+        }
+      }
+    },
+    "Skip this step": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schritt überspringen"
+          }
+        }
+      }
+    },
+    "Skipped": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Übersprungen"
+          }
+        }
+      }
+    },
+    "Solved": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gelöst"
+          }
+        }
+      }
+    },
+    "Something else": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etwas anderes"
+          }
+        }
+      }
+    },
+    "Start Live Fix": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live Fix starten"
+          }
+        }
+      }
+    },
+    "Start it with npm start.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starte ihn mit npm start."
+          }
+        }
+      }
+    },
+    "Start with a topic": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit einem Thema starten"
+          }
+        }
+      }
+    },
+    "Starting camera": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamera startet"
+          }
+        }
+      }
+    },
+    "Step %lld of %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schritt %1$lld von %2$lld"
+          }
+        }
+      }
+    },
+    "Step reopened: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schritt wieder geöffnet: %@"
+          }
+        }
+      }
+    },
+    "Stop recording": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufnahme beenden"
+          }
+        }
+      }
+    },
+    "Storage": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speicher"
+          }
+        }
+      }
+    },
+    "Subscriptions renew automatically until cancelled in your Apple account settings. Cancel anytime; you keep Pro until the end of the period.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abos verlängern sich automatisch, bis du sie in deinen Apple-Account-Einstellungen kündigst. Jederzeit kündbar; Pro bleibt bis zum Ende des Zeitraums aktiv."
+          }
+        }
+      }
+    },
+    "Suggest a test to find out": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test zur Klärung vorschlagen"
+          }
+        }
+      }
+    },
+    "Summary": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zusammenfassung"
+          }
+        }
+      }
+    },
+    "System": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System"
+          }
+        }
+      }
+    },
+    "Take photo": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto aufnehmen"
+          }
+        }
+      }
+    },
+    "Taking frames from the video": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einzelbilder werden aus dem Video entnommen"
+          }
+        }
+      }
+    },
+    "Test connection": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbindung testen"
+          }
+        }
+      }
+    },
+    "Text detected on device": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text auf dem Gerät erkannt"
+          }
+        }
+      }
+    },
+    "Text is recognized on this iPhone first.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text wird zuerst auf diesem iPhone erkannt."
+          }
+        }
+      }
+    },
+    "Text recognition": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Texterkennung"
+          }
+        }
+      }
+    },
+    "Text recognition below ran on this iPhone. Connect your Fixify server in Settings to get a diagnosis and a guided plan.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Texterkennung unten lief auf diesem iPhone. Verbinde deinen Fixify-Server in den Einstellungen, um eine Diagnose und einen geführten Plan zu erhalten."
+          }
+        }
+      }
+    },
+    "Text recognition works on this iPhone. For full analyses, connect your Fixify server in Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Texterkennung funktioniert auf diesem iPhone. Für vollständige Analysen verbinde deinen Fixify-Server in den Einstellungen."
+          }
+        }
+      }
+    },
+    "Text recognition, on-device analysis": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Texterkennung, Analyse auf dem Gerät"
+          }
+        }
+      }
+    },
+    "Text recognized on this iPhone": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf diesem iPhone erkannter Text"
+          }
+        }
+      }
+    },
+    "The AI declined to analyze this. Try a different photo or description.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die KI hat die Analyse abgelehnt. Versuch es mit einem anderen Foto oder einer anderen Beschreibung."
+          }
+        }
+      }
+    },
+    "The App Store could not be reached.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der App Store ist nicht erreichbar."
+          }
+        }
+      }
+    },
+    "The Claude key stays on your server. The app only stores an app token in the Keychain.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Claude-Schlüssel bleibt auf deinem Server. Die App speichert nur ein App-Token im Schlüsselbund."
+          }
+        }
+      }
+    },
+    "The Fixify server can't be reached. Check that it is running and that your iPhone is on the same network.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Fixify-Server ist nicht erreichbar. Prüfe, ob er läuft und ob dein iPhone im selben Netzwerk ist."
+          }
+        }
+      }
+    },
+    "The analysis came back in an unexpected format, so it is not shown. (%@)": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Analyse kam in einem unerwarteten Format zurück und wird daher nicht angezeigt. (%@)"
+          }
+        }
+      }
+    },
+    "The analysis separates what is visible from what is guessed, lists possible causes and says what is still unknown.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Analyse trennt Sichtbares von Vermutetem, nennt mögliche Ursachen und sagt, was noch unbekannt ist."
+          }
+        }
+      }
+    },
+    "The analysis took too long. Try again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Analyse hat zu lange gedauert. Versuch es noch einmal."
+          }
+        }
+      }
+    },
+    "The analysis, steps, history and photos of this session are removed from this iPhone.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyse, Schritte, Verlauf und Fotos dieser Session werden von diesem iPhone entfernt."
+          }
+        }
+      }
+    },
+    "The current plan doesn't know about it yet.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der aktuelle Plan berücksichtigt sie noch nicht."
+          }
+        }
+      }
+    },
+    "The image could not be saved.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Bild konnte nicht gespeichert werden."
+          }
+        }
+      }
+    },
+    "The on-device model could not complete this analysis. Try a shorter description or use the Fixify server.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das On-Device-Modell konnte die Analyse nicht abschließen. Versuch eine kürzere Beschreibung oder nutze den Fixify-Server."
+          }
+        }
+      }
+    },
+    "The on-device model is still downloading. Try again later.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das On-Device-Modell wird noch geladen. Versuch es später erneut."
+          }
+        }
+      }
+    },
+    "The on-device model reads the recognized text and your description. It cannot see the photo itself.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das On-Device-Modell liest den erkannten Text und deine Beschreibung. Das Foto selbst sieht es nicht."
+          }
+        }
+      }
+    },
+    "The photo could not be taken. Try again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Foto konnte nicht aufgenommen werden. Versuch es noch einmal."
+          }
+        }
+      }
+    },
+    "The purchase could not be verified.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Kauf konnte nicht bestätigt werden."
+          }
+        }
+      }
+    },
+    "The server is limiting requests. Try again in %lld seconds.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Server begrenzt Anfragen. Versuch es in %lld Sekunden erneut."
+          }
+        }
+      }
+    },
+    "The server is limiting requests. Try again later.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Server begrenzt Anfragen. Versuch es später erneut."
+          }
+        }
+      }
+    },
+    "The server rejected the app token. Copy the token from the server window into Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Server hat das App-Token abgelehnt. Kopiere das Token aus dem Server-Fenster in die Einstellungen."
+          }
+        }
+      }
+    },
+    "The server reported an error (%lld).": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Server meldet einen Fehler (%lld)."
+          }
+        }
+      }
+    },
+    "The window shows a server address and an app token.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Fenster zeigt eine Server-Adresse und ein App-Token."
+          }
+        }
+      }
+    },
+    "Then put your Anthropic API key into server/.env as ANTHROPIC_API_KEY.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trage dann deinen Anthropic-API-Schlüssel in server/.env als ANTHROPIC_API_KEY ein."
+          }
+        }
+      }
+    },
+    "They go to the Fixify server you configured, which sends them to Anthropic's Claude to create the analysis. Nothing is sent in the background. Avoid photographing passwords, IDs or other people.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sie gehen an den von dir eingerichteten Fixify-Server, der sie an Claude von Anthropic sendet, um die Analyse zu erstellen. Im Hintergrund wird nichts gesendet. Fotografiere möglichst keine Passwörter, Ausweise oder andere Personen."
+          }
+        }
+      }
+    },
+    "This iPhone does not support Apple Intelligence.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses iPhone unterstützt Apple Intelligence nicht."
+          }
+        }
+      }
+    },
+    "This session reached the %lld free plan updates. Pro allows longer, connected troubleshooting.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Session hat die %lld kostenlosen Plan-Aktualisierungen erreicht. Mit Pro sind längere, zusammenhängende Fehlersuchen möglich."
+          }
+        }
+      }
+    },
+    "Tick only what you have actually tested.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hake nur ab, was du wirklich getestet hast."
+          }
+        }
+      }
+    },
+    "Topic": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thema"
+          }
+        }
+      }
+    },
+    "Try again": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneut versuchen"
+          }
+        }
+      }
+    },
+    "Turn light off": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licht ausschalten"
+          }
+        }
+      }
+    },
+    "Turn light on": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licht einschalten"
+          }
+        }
+      }
+    },
+    "Turn on Apple Intelligence in the iOS Settings to use on-device analysis.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktiviere Apple Intelligence in den iOS-Einstellungen, um die Analyse auf dem Gerät zu nutzen."
+          }
+        }
+      }
+    },
+    "Turn on reminders in Settings → Notifications first.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktiviere zuerst Erinnerungen unter Einstellungen → Mitteilungen."
+          }
+        }
+      }
+    },
+    "Unlikely": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unwahrscheinlich"
+          }
+        }
+      }
+    },
+    "Unlimited": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unbegrenzt"
+          }
+        }
+      }
+    },
+    "Up to four photos (reduced to about 1600 pixels), the recognized text, your description, answers and the steps you tried in this session.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bis zu vier Fotos (verkleinert auf etwa 1600 Pixel), der erkannte Text, deine Beschreibung, Antworten und die Schritte, die du in dieser Session ausprobiert hast."
+          }
+        }
+      }
+    },
+    "Update plan": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan aktualisieren"
+          }
+        }
+      }
+    },
+    "Update the plan": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan aktualisieren"
+          }
+        }
+      }
+    },
+    "Use Document mode for a straight, readable scan.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutze den Dokument-Modus für einen geraden, gut lesbaren Scan."
+          }
+        }
+      }
+    },
+    "Used in steps": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verwendet in Schritten"
+          }
+        }
+      }
+    },
+    "Usually takes 20–60 seconds. You can leave this screen; the session keeps your photos either way.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dauert meist 20–60 Sekunden. Du kannst diesen Bildschirm verlassen; die Session behält deine Fotos in jedem Fall."
+          }
+        }
+      }
+    },
+    "Version": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        }
+      }
+    },
+    "Video": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video"
+          }
+        }
+      }
+    },
+    "Watch out": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Achtung"
+          }
+        }
+      }
+    },
+    "We recommend getting a qualified professional for this. Do not continue if you are unsure.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wir empfehlen dafür eine qualifizierte Fachkraft. Mach nicht weiter, wenn du unsicher bist."
+          }
+        }
+      }
+    },
+    "What Fixify processes": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was Fixify verarbeitet"
+          }
+        }
+      }
+    },
+    "What Fixify sees": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was Fixify sieht"
+          }
+        }
+      }
+    },
+    "What changed? (optional)": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was hat sich geändert? (optional)"
+          }
+        }
+      }
+    },
+    "What happened?": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was ist passiert?"
+          }
+        }
+      }
+    },
+    "What needs fixing?": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was muss repariert werden?"
+          }
+        }
+      }
+    },
+    "What's wrong? What did you already try?": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was ist los? Was hast du schon versucht?"
+          }
+        }
+      }
+    },
+    "When off, nothing leaves this iPhone: text recognition still works, and Fixify asks before the next analysis.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wenn aus, verlässt nichts dieses iPhone: Die Texterkennung funktioniert weiter, und Fixify fragt vor der nächsten Analyse."
+          }
+        }
+      }
+    },
+    "Wi-Fi & Bluetooth": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WLAN & Bluetooth"
+          }
+        }
+      }
+    },
+    "Without a photo, Fixify works from your description only.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ohne Foto arbeitet Fixify nur mit deiner Beschreibung."
+          }
+        }
+      }
+    },
+    "You can change this anytime in Settings → Privacy.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du kannst das jederzeit unter Einstellungen → Datenschutz ändern."
+          }
+        }
+      }
+    },
+    "You can still choose a photo or screenshot, or describe the problem in words.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du kannst trotzdem ein Foto oder einen Screenshot wählen oder das Problem in Worten beschreiben."
+          }
+        }
+      }
+    },
+    "You check the success criteria yourself. Fixify never marks a problem as solved on its own.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du prüfst die Erfolgskriterien selbst. Fixify markiert ein Problem nie von sich aus als gelöst."
+          }
+        }
+      }
+    },
+    "You chose text recognition only. Turn on an analysis method in Settings to get a guided plan.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du hast nur Texterkennung gewählt. Aktiviere eine Analysemethode in den Einstellungen, um einen geführten Plan zu erhalten."
+          }
+        }
+      }
+    },
+    "You're offline. Your photos and text recognition are saved; analyze again when you're connected.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du bist offline. Deine Fotos und die Texterkennung sind gespeichert; analysiere erneut, sobald du verbunden bist."
+          }
+        }
+      }
+    },
+    "You've saved %lld sessions. Delete old ones, or keep your full repair history with Pro.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du hast %lld Sessions gespeichert. Lösche alte oder behalte deine komplette Reparaturhistorie mit Pro."
+          }
+        }
+      }
+    },
+    "You've used your %lld free analyses this month. They renew on the 1st.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du hast deine %lld kostenlosen Analysen diesen Monat aufgebraucht. Sie erneuern sich am 1."
+          }
+        }
+      }
+    },
+    "Your Fixify server holds the Claude API key, so no key is stored in the app. Start it on your computer and copy the address and token it shows.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Fixify-Server verwaltet den Claude-API-Schlüssel, daher liegt kein Schlüssel in der App. Starte ihn auf deinem Computer und übernimm die angezeigte Adresse und das Token."
+          }
+        }
+      }
+    },
+    "Your Fixify server is analyzing": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Fixify-Server analysiert"
+          }
+        }
+      }
+    },
+    "Your description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Beschreibung"
+          }
+        }
+      }
+    },
+    "Your description, answers and the steps you tried": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Beschreibung, Antworten und die ausprobierten Schritte"
+          }
+        }
+      }
+    },
+    "Your free analyses renew every month. Text recognition and on-device analysis are always free.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine kostenlosen Analysen erneuern sich jeden Monat. Texterkennung und Analyse auf dem Gerät sind immer kostenlos."
+          }
+        }
+      }
+    },
+    "Your iPhone and computer must be on the same Wi-Fi. Allow the local network prompt and, on Windows, the firewall prompt.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone und Computer müssen im selben WLAN sein. Erlaube die Abfrage zum lokalen Netzwerk und unter Windows die Firewall-Abfrage."
+          }
+        }
+      }
+    },
+    "Your library is empty": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Bibliothek ist leer"
+          }
+        }
+      }
+    },
+    "Your photos and recognized text are saved. Analyze when your quota renews next month, or with Fixify Pro.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Fotos und der erkannte Text sind gespeichert. Analysiere, sobald sich dein Kontingent nächsten Monat erneuert, oder mit Fixify Pro."
+          }
+        }
+      }
+    },
+    "Your photos and the recognized text are saved.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Fotos und der erkannte Text sind gespeichert."
+          }
+        }
+      }
+    },
+    "Your server forwards this to Claude to create the analysis. The server logs only timing and sizes, never images or text.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Server leitet dies an Claude weiter, um die Analyse zu erstellen. Der Server protokolliert nur Dauer und Größen, nie Bilder oder Text."
+          }
+        }
+      }
+    },
+    "Your sessions": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Sessions"
+          }
+        }
+      }
+    },
+    "every %lld months": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "alle %lld Monate"
+          }
+        }
+      }
+    },
+    "not marked on the image": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "nicht im Bild markiert"
+          }
+        }
+      }
+    },
+    "per day": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pro Tag"
+          }
+        }
+      }
+    },
+    "per month": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pro Monat"
+          }
+        }
+      }
+    },
+    "per week": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pro Woche"
+          }
+        }
+      }
+    },
+    "per year": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pro Jahr"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

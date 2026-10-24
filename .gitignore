@@ -1,0 +1,7 @@
+.DS_Store
+*.xcodeproj/
+build/
+DerivedData/
+*.ipa
+server/node_modules/
+server/.env
