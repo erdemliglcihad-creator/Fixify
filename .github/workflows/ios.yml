@@ -77,6 +77,18 @@ jobs:
           path: Fixify-unsigned.ipa
           retention-days: 14
 
+      # Surface compiler errors as annotations (readable on the run page and via the public API).
+      - name: Report compiler errors
+        if: failure()
+        run: |
+          [ -f test.log ] || exit 0
+          grep -E "^/.*:[0-9]+:[0-9]+: error: " test.log | sort -u | head -50 | while IFS= read -r line; do
+            file=$(echo "$line" | cut -d: -f1 | sed "s#^$GITHUB_WORKSPACE/##")
+            num=$(echo "$line" | cut -d: -f2)
+            msg=$(echo "$line" | cut -d: -f5- | sed 's/^ //')
+            echo "::error file=$file,line=$num::$msg"
+          done
+
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
