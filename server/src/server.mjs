@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { createApp } from "./app.mjs";
 import { createAnalyzer } from "./analyze.mjs";
 import { RateLimiter } from "./ratelimit.mjs";
+import { recognizeLines } from "./ocr.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const envFile = path.join(root, ".env");
@@ -37,6 +38,8 @@ const handler = createApp({
   appToken,
   limiter: new RateLimiter({ perMinute: config.perMinute, perDay: config.perDay }),
   analyze: createAnalyzer({ model: config.model, effort: config.effort, timeoutMs: config.timeoutMs }),
+  ocr: recognizeLines,
+  ocrLimiter: new RateLimiter({ perMinute: 30, perDay: 2000 }),
   info: { version: "1.0.0", model: config.model, configured },
 });
 
@@ -51,6 +54,7 @@ server.listen(config.port, config.host, () => {
   console.log(`  Model:       ${config.model} (effort ${config.effort})`);
   console.log(`  API key:     ${configured ? "set" : "MISSING – add ANTHROPIC_API_KEY to server/.env"}`);
   console.log(`  Limits:      ${config.perMinute}/min, ${config.perDay}/day`);
+  console.log("  OCR:         Tesseract (deu+eng), local – language data downloads on first use");
   console.log("\nEnter in Fixify → Settings → AI service:");
   for (const url of lan) console.log(`  Server URL:  ${url}`);
   console.log(`  App token:   ${appToken}\n`);

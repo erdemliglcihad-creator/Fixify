@@ -1,0 +1,136 @@
+/// <reference types="node" />
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { drawnRect, markersForImage, rectInView, validateAnalysis, InvalidAnalysisError } from "../src/core/analysis.ts";
+import { carryOverStates, currentStep, hasNewObservation, imagesToSend, progress, searchText } from "../src/core/session.ts";
+import { FREE, recorded, remaining, rolled } from "../src/core/usage.ts";
+import { formatString } from "../src/core/format.ts";
+import type { FixSession, ProblemAnalysis, TextBlock } from "../src/core/types.ts";
+
+const analysis = (): ProblemAnalysis => ({
+  title: "Printer offline",
+  category: "peripheral",
+  summary: "The screen shows a printer offline error.",
+  confidenceNote: "",
+  canHelp: true,
+  cannotHelpReason: null,
+  findings: [
+    { id: "f1", label: "Error text", detail: "", imageIndex: 0, ocrBlockIds: ["t1", "t2"], box: null, boxConfidence: "none", source: "ocr" },
+    { id: "f2", label: "Cable", detail: "", imageIndex: 0, ocrBlockIds: [], box: { x: 0.5, y: 0.5, width: 0.2, height: 0.1 }, boxConfidence: "medium", source: "visual" },
+    { id: "f3", label: "Light", detail: "", imageIndex: 0, ocrBlockIds: [], box: { x: 0.1, y: 0.1, width: 0.1, height: 0.1 }, boxConfidence: "low", source: "visual" },
+    { id: "f4", label: "Elsewhere", detail: "", imageIndex: 5, ocrBlockIds: [], box: null, boxConfidence: "none", source: "visual" },
+  ],
+  causes: [],
+  unknowns: [],
+  questions: [],
+  nextDiagnostic: null,
+  steps: [
+    { id: "s1", title: "Restart printer", explanation: "", action: "Turn it off and on.", expectedResult: "", pitfalls: [], findingIds: ["f1", "f4"], safetyNote: null },
+    { id: "s2", title: "Print test page", explanation: "", action: "Print.", expectedResult: "", pitfalls: [], findingIds: [], safetyNote: null },
+  ],
+  tools: [],
+  difficulty: null,
+  estimatedMinutes: null,
+  safety: { level: "none", warnings: [], recommendProfessional: false },
+  successCriteria: ["A test page prints"],
+});
+
+const blocks: TextBlock[] = [
+  { id: "t1", text: "Printer", box: { x: 0.1, y: 0.2, width: 0.2, height: 0.05 }, confidence: 1 },
+  { id: "t2", text: "offline", box: { x: 0.35, y: 0.2, width: 0.2, height: 0.07 }, confidence: 1 },
+];
+
+const session = (a = analysis()): FixSession => ({
+  id: "s",
+  title: "Drucker",
+  createdAt: 0,
+  updatedAt: 0,
+  status: "active",
+  category: null,
+  description: "druckt nicht",
+  images: [],
+  revisions: [{ id: "r1", number: 1, createdAt: 100, analysis: a, provider: "test", trigger: "initial", sentImageIds: [] }],
+  events: [],
+  stepStates: {},
+  answers: [],
+  outcomeNote: null,
+});
+
+test("OCR findings use the union of their text boxes", () => {
+  const m = markersForImage(analysis(), 0, blocks);
+  const text = m.find((x) => x.id === "f1")!;
+  assert.equal(text.precision, "textMatch");
+  assert.ok(Math.abs(text.rect.width - 0.45) < 1e-9);
+  assert.ok(Math.abs(text.rect.height - 0.07) < 1e-9);
+  assert.deepEqual(m.map((x) => x.id), ["f1", "f2"], "low-confidence and other-image findings are not drawn");
+  assert.equal(m[1].precision, "estimated");
+});
+
+test("geometry: aspect fit and fill", () => {
+  assert.deepEqual(rectInView({ x: 0.5, y: 0.5, width: 0.5, height: 0.25 }, { width: 1000, height: 2000 }, { width: 400, height: 400 }),
+    { x: 200, y: 200, width: 100, height: 100 });
+  assert.deepEqual(drawnRect({ width: 1000, height: 2000 }, { width: 400, height: 400 }, true), { x: 0, y: -200, width: 400, height: 800 });
+});
+
+test("validation drops findings for unsent images and rejects duplicates", () => {
+  const v = validateAnalysis(analysis(), 1);
+  assert.deepEqual(v.findings.map((f) => f.id), ["f1", "f2", "f3"]);
+  assert.deepEqual(v.steps[0].findingIds, ["f1"]);
+  const dup = analysis();
+  dup.steps[1].id = "s1";
+  assert.throws(() => validateAnalysis(dup, 1), InvalidAnalysisError);
+  assert.throws(() => validateAnalysis({ title: "x" }, 1), InvalidAnalysisError);
+});
+
+test("progress and current step follow step states", () => {
+  const s = session();
+  assert.equal(progress(s), 0);
+  assert.equal(currentStep(s)?.id, "s1");
+  s.stepStates = { s1: "failed" };
+  assert.equal(currentStep(s)?.id, "s1", "a failed step stays current");
+  s.stepStates = { s1: "done", s2: "skipped" };
+  assert.equal(progress(s), 1);
+  assert.equal(currentStep(s), null);
+});
+
+test("replanning keeps state only for identical steps", () => {
+  const next = analysis();
+  next.steps[1].title = "Reinstall driver";
+  assert.deepEqual(carryOverStates(analysis(), { s1: "done", s2: "failed" }, next), { s1: "done" });
+});
+
+test("new observation is detected after the latest analysis", () => {
+  const s = session();
+  assert.equal(hasNewObservation(s), false);
+  s.images.push({ id: "i", createdAt: 200, uri: "", hash: "", width: 1, height: 1, source: "camera", blocks: [] });
+  assert.equal(hasNewObservation(s), true);
+});
+
+test("images to send: original first, then newest", () => {
+  assert.deepEqual(imagesToSend([1, 2, 3, 4, 5], 2), [1, 5]);
+  assert.deepEqual(imagesToSend([1, 2, 3, 4, 5], 4), [1, 3, 4, 5]);
+  assert.deepEqual(imagesToSend([1], 4), [1]);
+  assert.deepEqual(imagesToSend([1, 2], 1), [1]);
+});
+
+test("search text covers description, analysis and steps", () => {
+  const t = searchText(session());
+  for (const s of ["druckt nicht", "printer offline", "print test page"]) assert.ok(t.includes(s), s);
+});
+
+test("usage counts per month and rolls over", () => {
+  const oct = new Date(2026, 9, 24);
+  const nov = new Date(2026, 10, 1);
+  let u = { month: "", count: 0, lifetime: 0 };
+  u = recorded(recorded(u, oct), oct);
+  assert.equal(remaining(u, FREE, oct), FREE.analysesPerMonth - 2);
+  assert.equal(remaining(u, FREE, nov), FREE.analysesPerMonth);
+  assert.equal(rolled(u, nov).lifetime, 2);
+});
+
+test("format strings use catalog placeholders", () => {
+  assert.equal(formatString("Step %lld of %lld", [2, 5]), "Step 2 of 5");
+  assert.equal(formatString("Schritt %1$lld von %2$lld", [2, 5]), "Schritt 2 von 5");
+  assert.equal(formatString("Next: %@", ["Restart"]), "Next: Restart");
+  assert.equal(formatString("100%%", []), "100%");
+});

@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "Fixify",
+    "slug": "fixify",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.fixify.expo",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Fixify uses the camera to photograph the problem you want help with.",
+        "NSLocalNetworkUsageDescription": "Fixify connects to your own analysis server on this network."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-localization",
+      "expo-image",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Fixify uses the camera to photograph the problem you want help with.",
+          "recordAudioAndroid": false
+        }
+      ],
+      "expo-notifications",
+      "expo-secure-store",
+      "expo-font"
+    ],
+    "scheme": "fixify",
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

@@ -37,9 +37,23 @@ export const RequestSchema = z.object({
 
 function send(res, status, body, headers = {}) {
   const json = JSON.stringify(body);
-  res.writeHead(status, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", ...headers });
+  res.writeHead(status, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", ...CORS, ...headers });
   res.end(json);
 }
+
+// The Expo app's web preview runs on another origin. Access still requires the app token.
+const CORS = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-headers": "authorization, content-type",
+  "access-control-allow-methods": "GET, POST, OPTIONS",
+};
+
+export const OcrRequestSchema = z.object({
+  mediaType: z.enum(["image/jpeg", "image/png"]),
+  data: z.string().min(1).max(MAX_IMAGE_BASE64),
+  width: z.number().int().positive().max(10000),
+  height: z.number().int().positive().max(10000),
+});
 
 function sendError(res, status, code, message, headers) {
   send(res, status, { error: { code, message } }, headers);
@@ -71,26 +85,57 @@ function readBody(req) {
 }
 
 /** HTTP handler. `analyze` is injected so tests can run without calling the API. */
-export function createApp({ appToken, limiter, analyze, info, log = console }) {
+export function createApp({ appToken, limiter, analyze, ocr, ocrLimiter = limiter, info, log = console }) {
+  async function handleOcr(req, res, requestId) {
+    if (!ocr) return sendError(res, 503, "ocr_unavailable", "Text recognition is not available on this proxy.");
+    const verdict = ocrLimiter.check(req.socket.remoteAddress ?? "unknown");
+    if (!verdict.allowed) {
+      return sendError(res, 429, "rate_limited", "Too many text recognition requests.", { "retry-after": String(verdict.retryAfter) });
+    }
+    let body;
+    try {
+      body = OcrRequestSchema.safeParse(JSON.parse(await readBody(req)));
+    } catch (err) {
+      if (err instanceof AnalysisError) return sendError(res, err.status, err.code, err.message);
+      return sendError(res, 400, "invalid_request", "The request body is not valid JSON.");
+    }
+    if (!body.success) return sendError(res, 400, "invalid_request", "Invalid OCR request.");
+    const started = Date.now();
+    try {
+      const blocks = await ocr(Buffer.from(body.data.data, "base64"), { width: body.data.width, height: body.data.height });
+      log.info(`[${requestId}] ocr lines=${blocks.length} ${Date.now() - started}ms`);
+      return send(res, 200, { blocks });
+    } catch (err) {
+      log.error(`[${requestId}] ocr failed`, err);
+      return sendError(res, 500, "ocr_failed", "Text recognition failed on the proxy.");
+    }
+  }
+
   return async function handle(req, res) {
     const url = new URL(req.url, "http://localhost");
     const requestId = randomUUID().slice(0, 8);
 
-    if (req.method === "GET" && url.pathname === "/health") {
-      // Health is public so the app can tell "server unreachable" from "wrong token".
-      return send(res, 200, { ok: true, service: "fixify-proxy", version: info.version, configured: info.configured });
+    if (req.method === "OPTIONS") {
+      res.writeHead(204, CORS);
+      return res.end();
     }
 
-    if (url.pathname !== "/v1/analyze" && url.pathname !== "/v1/ping") {
+    if (req.method === "GET" && url.pathname === "/health") {
+      // Health is public so the app can tell "server unreachable" from "wrong token".
+      return send(res, 200, { ok: true, service: "fixify-proxy", version: info.version, configured: info.configured, ocr: Boolean(ocr) });
+    }
+
+    if (!["/v1/analyze", "/v1/ping", "/v1/ocr"].includes(url.pathname)) {
       return sendError(res, 404, "not_found", "Unknown endpoint.");
     }
     if (!tokenMatches(appToken, req.headers.authorization)) {
       return sendError(res, 401, "unauthorized", "The app token is missing or wrong. Copy it from the proxy console into Fixify settings.");
     }
     if (url.pathname === "/v1/ping") {
-      return send(res, 200, { ok: true, model: info.model, configured: info.configured });
+      return send(res, 200, { ok: true, model: info.model, configured: info.configured, ocr: Boolean(ocr) });
     }
     if (req.method !== "POST") return sendError(res, 405, "method_not_allowed", "Use POST.");
+    if (url.pathname === "/v1/ocr") return handleOcr(req, res, requestId);
     if (!info.configured) {
       return sendError(res, 503, "not_configured", "ANTHROPIC_API_KEY is not set on the proxy.");
     }

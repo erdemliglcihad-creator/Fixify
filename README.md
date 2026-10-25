@@ -18,6 +18,17 @@ SCAN → DETECT → UNDERSTAND → GUIDE → FIX → VERIFY
 | `project.yml` | XcodeGen-Projektdefinition (das `.xcodeproj` wird generiert, nicht eingecheckt) |
 | `.github/workflows/ios.yml` | Cloud-Build auf macOS: Tests + unsignierte IPA |
 
+## Schnellstart mit Expo Go (empfohlen zum Testen)
+
+Die Expo-Version in `app/` läuft direkt in **Expo Go** auf dem iPhone: QR-Code scannen, fertig. Kein Sideloadly, keine 7-Tage-Grenze.
+Schritt für Schritt: [docs/Expo-Go.md](docs/Expo-Go.md). Die Texterkennung übernimmt dabei der Proxy auf deinem PC (Tesseract, lokal).
+
+| | Swift-App (`Fixify/`) | Expo-App (`app/`) |
+|---|---|---|
+| Installation | Cloud-Build + Sideloadly | Expo Go, QR-Code |
+| Texterkennung | Apple Vision auf dem iPhone, Live-Rahmen | Tesseract auf dem PC |
+| Dokumentenscanner, Abo, On-Device-KI | ja | nein |
+
 ## 1. Analyse-Server starten (Windows/Mac/Linux)
 
 ```bash
