@@ -16,6 +16,7 @@ import { confirmDestructive } from "../../ui/confirm.ts";
 import type { IconName } from "../../ui/categories.ts";
 import { radius, space, type, useTheme } from "../../ui/theme.ts";
 import { Screen } from "../../ui/Screen.tsx";
+import { useArea } from "../../services/area.ts";
 
 type Connection = { state: "idle" } | { state: "checking" } | { state: "ok"; configured: boolean; ocr: boolean } | { state: "failed"; message: string };
 
@@ -70,6 +71,7 @@ function providerFooter(p: Provider) {
 }
 
 export default function Settings() {
+  useArea("settings");
   const { c } = useTheme();
   const s = useSettings();
   const quota = useQuota();

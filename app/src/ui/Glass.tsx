@@ -97,38 +97,20 @@ export function GlassGroup({ children, style, spacing = 8 }: { children: ReactNo
   return <View style={style}>{children}</View>;
 }
 
-/** Calm brand gradient behind screens, so the glass has something to refract. */
+/** Kept for old call sites: the global Aurora (ui/Aurora) now glows behind every screen. */
 export function Backdrop() {
-  const { dark } = useTheme();
-  const base = dark ? (["#0E1428", "#0B0D12", "#0B0D12"] as const) : (["#E3ECFF", "#F1F4FA", "#F4F5F7"] as const);
-  return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-      <LinearGradient colors={base} locations={[0, 0.45, 1]} style={StyleSheet.absoluteFill} />
-      <LinearGradient
-        colors={dark ? ["#2A4BD655", "#2A4BD600"] : ["#8FB2FF66", "#8FB2FF00"]}
-        start={{ x: 1, y: 0 }}
-        end={{ x: 0.2, y: 0.5 }}
-        style={StyleSheet.absoluteFill}
-      />
-      <LinearGradient
-        colors={dark ? ["#5B3FD622", "#5B3FD600"] : ["#C9B8FF40", "#C9B8FF00"]}
-        start={{ x: 0, y: 0.15 }}
-        end={{ x: 0.7, y: 0.6 }}
-        style={StyleSheet.absoluteFill}
-      />
-    </View>
-  );
+  return null;
 }
 
 /** Scroll edge effect: content softly fades under the status bar instead of a hard cut. */
 export function ScrollEdge() {
-  const { dark } = useTheme();
+  const { c } = useTheme();
   const insets = useSafeAreaInsets();
-  const top = dark ? "#0E1428" : "#E3ECFF";
+  const top = c.background;
   return (
     <LinearGradient
       pointerEvents="none"
-      colors={[top, top + "00"]}
+      colors={[top + "B3", top + "00"]}
       style={{ position: "absolute", top: 0, left: 0, right: 0, height: insets.top + 18 }}
     />
   );

@@ -32,9 +32,10 @@ import {
 } from "../../ui/guide/Sections.tsx";
 import { FindingSheet, outcomeTitle, StepFeedbackSheet, VerificationSheet, type Outcome } from "../../ui/guide/Sheets.tsx";
 import { space, type, useTheme } from "../../ui/theme.ts";
-import { Backdrop } from "../../ui/Glass.tsx";
+import { useArea } from "../../services/area.ts";
 
 export default function SessionScreen() {
+  useArea("session");
   const { id } = useLocalSearchParams<{ id: string }>();
   const session = useSession(id);
   const { c } = useTheme();
@@ -132,7 +133,6 @@ function Guide({ session }: { session: FixSession }) {
   return (
     <>
       <Stack.Screen options={{ title: analysis?.title ?? session.title }} />
-      <Backdrop />
       <ScrollView
         ref={scroll}
         contentInsetAdjustmentBehavior="automatic"

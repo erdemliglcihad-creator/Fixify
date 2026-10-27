@@ -22,6 +22,8 @@ export type ChatMessage = {
   degraded?: boolean;
   /** Set on a user message whose reply failed. */
   failed?: string;
+  /** Spoken in voice mode. */
+  voice?: boolean;
 };
 
 type ChatState = { messages: ChatMessage[]; contextSessionId: string | null; sending: boolean };
@@ -90,11 +92,12 @@ export function cancelReply() {
   controller?.abort();
 }
 
-export async function sendMessage(text: string, photo: ChatPhoto | null): Promise<void> {
+/** Sends a message and resolves with FixBot's reply, or null if it failed (the error is on the message). */
+export async function sendMessage(text: string, photo: ChatPhoto | null, options: { voice?: boolean } = {}): Promise<ChatMessage | null> {
   const s = settingsStore.get();
   const base = serverBase(s);
   const trimmed = text.trim();
-  if ((!trimmed && !photo) || chatStore.get().sending) return;
+  if ((!trimmed && !photo) || chatStore.get().sending) return null;
 
   const stored = photo ? await storeImage(photo.uri, photo.width, photo.height) : null;
   const userMessage: ChatMessage = {
@@ -103,6 +106,7 @@ export async function sendMessage(text: string, photo: ChatPhoto | null): Promis
     text: trimmed,
     photo: stored ? { uri: stored.uri, width: stored.width, height: stored.height } : null,
     createdAt: Date.now(),
+    voice: options.voice || undefined,
   };
   append(userMessage);
   chatStore.set((st) => ({ ...st, sending: true }));
@@ -126,10 +130,13 @@ export async function sendMessage(text: string, photo: ChatPhoto | null): Promis
     const contextId = chatStore.get().contextSessionId;
     const session = contextId ? getSession(contextId) : null;
     const out = await chat(base, s.provider === "proxy" ? s.appToken : "", { locale: lang, turns: cleaned, context: session ? sessionContext(session) : null }, controller.signal);
-    append({ id: Crypto.randomUUID(), role: "assistant", text: out.reply, createdAt: Date.now(), model: out.model, degraded: out.degraded });
+    const reply: ChatMessage = { id: Crypto.randomUUID(), role: "assistant", text: out.reply, createdAt: Date.now(), model: out.model, degraded: out.degraded };
+    append(reply);
+    return reply;
   } catch (err) {
     const message = err instanceof ProxyError ? (err.code === "cancelled" ? t("Stopped.") : err.message) : t("FixBot could not answer. Try again.");
     markFailed(userMessage.id, message);
+    return null;
   } finally {
     controller = null;
     chatStore.set((st) => ({ ...st, sending: false }));

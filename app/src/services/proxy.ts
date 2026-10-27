@@ -186,6 +186,14 @@ export async function chat(base: string, token: string, input: { locale: "de" | 
   return { reply: body.reply as string, model: String(body.model ?? ""), degraded: Boolean(body.degraded) };
 }
 
+export type AudioType = "audio/m4a" | "audio/mp4" | "audio/webm" | "audio/wav" | "audio/mpeg";
+
+/** Speech to text for the voice mode (Whisper on the server). Empty string when nothing was said. */
+export async function transcribe(base: string, token: string, input: { locale: "de" | "en"; mediaType: AudioType; data: string }, signal?: AbortSignal) {
+  const body = await request(base, token, "/v1/transcribe", { method: "POST", signal, timeoutMs: 30_000, body: JSON.stringify(input) });
+  return typeof body?.text === "string" ? body.text.trim() : "";
+}
+
 /** Refreshes the upload quota (e.g. at app start). */
 export async function refreshQuota(base: string, token: string) {
   try {

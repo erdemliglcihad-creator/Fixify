@@ -194,3 +194,22 @@ test("FixBot uses the vision model only for a new photo", async () => {
   assert.equal(text.reply, "Antwort", "reasoning tags are stripped");
   assert.equal(photo.hasImage, true);
 });
+
+import { transcribe, TranscribeRequestSchema } from "../src/transcribe.mjs";
+
+test("transcription posts multipart audio and filters silence hallucinations", async () => {
+  let sent;
+  const fetchImpl = async (url, init) => {
+    sent = { url, file: init.body.get("file"), model: init.body.get("model"), language: init.body.get("language") };
+    return new Response(JSON.stringify({ text: " Mein Drucker ist offline. " }));
+  };
+  const req = TranscribeRequestSchema.parse({ locale: "de", mediaType: "audio/m4a", data: btoa("abc") });
+  const text = await transcribe({ baseUrl: "https://x/openai/v1", apiKey: "k", model: "whisper-large-v3-turbo", req, fetchImpl });
+  assert.equal(text, "Mein Drucker ist offline.");
+  assert.equal(sent.url, "https://x/openai/v1/audio/transcriptions");
+  assert.equal(sent.model, "whisper-large-v3-turbo");
+  assert.equal(sent.language, "de");
+  assert.equal(sent.file.name, "speech.m4a");
+  const silent = await transcribe({ baseUrl: "https://x", apiKey: "k", model: "m", req, fetchImpl: async () => new Response(JSON.stringify({ text: "Untertitel im Auftrag des ZDF" })) });
+  assert.equal(silent, "");
+});

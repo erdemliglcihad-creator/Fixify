@@ -5,11 +5,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { t } from "../i18n/index.ts";
 import { updateSettings } from "../services/settings.ts";
 import { Button, Caption, Card, InfoRow } from "../ui/components.tsx";
-import { Backdrop } from "../ui/Glass.tsx";
 import { space, type, useTheme } from "../ui/theme.ts";
+import { useArea } from "../services/area.ts";
 
 /** Shown once on first launch: what Fixify does, the free daily limits, and what is sent where. */
 export default function Welcome() {
+  useArea("home");
   const { c } = useTheme();
   const insets = useSafeAreaInsets();
   const done = () => {
@@ -18,7 +19,6 @@ export default function Welcome() {
   };
   return (
     <View style={{ flex: 1 }}>
-      <Backdrop />
       <ScrollView contentContainerStyle={{ paddingTop: insets.top + space.xxl, paddingHorizontal: space.xl, paddingBottom: space.xl, gap: space.xl }}>
         <View style={{ alignItems: "center", gap: space.m }}>
           <Image source={require("../../assets/icon.png")} style={styles.icon} accessibilityIgnoresInvertColors />

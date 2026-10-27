@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Backdrop, ScrollEdge } from "./Glass.tsx";
+import { ScrollEdge } from "./Glass.tsx";
 import { space, type, useTheme } from "./theme.ts";
 
 /** Room for the floating glass tab bar, so the last content can scroll above it. */
@@ -24,7 +24,6 @@ export function Screen({
   const bottom = useTabBarSpace();
   return (
     <View style={styles.root}>
-      <Backdrop />
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={[{ paddingTop: insets.top + space.l, paddingBottom: bottom, paddingHorizontal: space.l, gap: space.xl }, contentStyle]}

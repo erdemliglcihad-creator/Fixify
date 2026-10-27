@@ -8,6 +8,7 @@ import { AnalysisError, createAnalyzer } from "../../server/src/analyze.mjs";
 import { createOpenAIAnalyzer } from "./openai.mjs";
 import { OcrError, recognizeWithOcrSpace } from "./ocrspace.mjs";
 import { ChatRequestSchema, fixbotReply } from "./chat.mjs";
+import { TranscribeRequestSchema, transcribe } from "./transcribe.mjs";
 
 const CORS = {
   "access-control-allow-origin": "*",
@@ -148,9 +149,9 @@ export default {
     const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
 
     if (request.method === "GET" && url.pathname === "/health") {
-      return json(200, { ok: true, service: "fixify-cloud", version: "1.1.0", configured: info.configured, ocr: Boolean(env.OCR_SPACE_KEY), chat: true, provider: info.provider });
+      return json(200, { ok: true, service: "fixify-cloud", version: "1.2.0", configured: info.configured, ocr: Boolean(env.OCR_SPACE_KEY), chat: true, voice: true, provider: info.provider });
     }
-    if (!["/v1/ping", "/v1/ocr", "/v1/analyze", "/v1/chat"].includes(url.pathname)) return fail(404, "not_found", "Unknown endpoint.");
+    if (!["/v1/ping", "/v1/ocr", "/v1/analyze", "/v1/chat", "/v1/transcribe"].includes(url.pathname)) return fail(404, "not_found", "Unknown endpoint.");
 
     // Optional invite-only mode: set the APP_TOKEN secret and hand the token out.
     if (env.APP_TOKEN && request.headers.get("authorization") !== `Bearer ${env.APP_TOKEN}`) {
@@ -204,6 +205,23 @@ export default {
     }
 
     if (!info.configured) return fail(503, "not_configured", "The AI service is not set up on the server.");
+
+    if (url.pathname === "/v1/transcribe") {
+      const parsed = TranscribeRequestSchema.safeParse(body);
+      if (!parsed.success) return fail(400, "invalid_request", "Invalid audio.");
+      // Voice turns share the fair-use message budget with typed messages.
+      const verdict = await take({ message: true });
+      if (!verdict.ok) return verdict.response;
+      try {
+        const text = await transcribe({ baseUrl: env.AI_BASE_URL, apiKey: env.AI_API_KEY, model: env.STT_MODEL || "whisper-large-v3-turbo", req: parsed.data, signal: request.signal });
+        if (!text) await limiter.refund(day, verdict.receipt);
+        return json(200, { text });
+      } catch (err) {
+        await limiter.refund(day, verdict.receipt);
+        if (err instanceof AnalysisError) return fail(err.status, err.code, err.message);
+        return fail(502, "upstream_error", "Speech recognition failed.");
+      }
+    }
 
     if (url.pathname === "/v1/chat") {
       const parsed = ChatRequestSchema.safeParse(body);

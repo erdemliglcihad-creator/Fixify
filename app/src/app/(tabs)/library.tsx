@@ -12,11 +12,12 @@ import { Caption, Card, Chip, Divider, StatusBadge } from "../../ui/components.t
 import { SessionRow } from "../../ui/SessionRow.tsx";
 import { radius, space, type, useTheme } from "../../ui/theme.ts";
 import { Screen } from "../../ui/Screen.tsx";
-import { Backdrop } from "../../ui/Glass.tsx";
+import { useArea } from "../../services/area.ts";
 
 type Scope = "sessions" | "photos" | "guides";
 
 export default function Library() {
+  useArea("library");
   const { c } = useTheme();
   const sessions = [...useSessions()].sort((a, b) => b.updatedAt - a.updatedAt);
   const [query, setQuery] = useState("");
@@ -31,7 +32,6 @@ export default function Library() {
   if (!sessions.length) {
     return (
       <View style={styles.empty}>
-        <Backdrop />
         <Ionicons name="library-outline" size={44} color={c.secondary} />
         <Text style={[type.title, { color: c.text }]}>{t("Your library is empty")}</Text>
         <Caption style={{ textAlign: "center" }}>{t("Photos, analyses and guides from your sessions are collected here.")}</Caption>

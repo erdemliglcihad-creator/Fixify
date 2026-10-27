@@ -39,7 +39,8 @@
       ],
       "expo-notifications",
       "expo-secure-store",
-      "expo-font"
+      "expo-font",
+      ["expo-audio", { "microphonePermission": "Fixify uses the microphone so you can talk to FixBot. Audio is only sent for transcription while you use voice mode." }]
     ],
     "scheme": "fixify",
     "experiments": {

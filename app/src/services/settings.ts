@@ -24,7 +24,8 @@ export type Settings = {
 };
 
 const DEFAULTS: Settings = {
-  appearance: "system",
+  // Dark-first: the gradients are designed for a dark base. Light stays available in Settings.
+  appearance: "dark",
   provider: "cloud",
   serverURL: "",
   appToken: "",
