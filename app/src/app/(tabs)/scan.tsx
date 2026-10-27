@@ -1,5 +1,4 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { BlurView } from "expo-blur";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as Crypto from "expo-crypto";
 import * as Haptics from "expo-haptics";
@@ -16,17 +15,19 @@ import type { Capture } from "../../services/sessions.ts";
 import { updateSettings, useSettings } from "../../services/settings.ts";
 import { categoryInfo } from "../../ui/categories.ts";
 import { space, type } from "../../ui/theme.ts";
+import { Glass as GlassSurface } from "../../ui/Glass.tsx";
 
 type Mode = "photo" | "video";
 type CamState = "starting" | "ready" | "capturing" | "recording" | "extracting";
 
 const MARKER = "#FFB61E";
 
-function Glass({ children, style }: { children: ReactNode; style?: object }) {
+/** Clear Liquid Glass over the live camera (dark scheme, so white symbols stay legible). */
+function Glass({ children, style, interactive }: { children: ReactNode; style?: object; interactive?: boolean }) {
   return (
-    <BlurView intensity={40} tint="dark" style={[{ overflow: "hidden" }, style]}>
+    <GlassSurface variant="clear" dark interactive={interactive} style={style}>
       {children}
-    </BlurView>
+    </GlassSurface>
   );
 }
 
@@ -298,7 +299,7 @@ export default function Scan() {
 function RoundButton({ icon, label, onPress, size = 44, disabled }: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void; size?: number; disabled?: boolean }) {
   return (
     <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" accessibilityLabel={label} style={{ opacity: disabled ? 0.4 : 1 }}>
-      <Glass style={{ width: size, height: size, borderRadius: size / 2, alignItems: "center", justifyContent: "center" }}>
+      <Glass interactive style={{ width: size, height: size, borderRadius: size / 2, alignItems: "center", justifyContent: "center" }}>
         <Ionicons name={icon} size={size * 0.45} color="#fff" />
       </Glass>
     </Pressable>
@@ -308,7 +309,7 @@ function RoundButton({ icon, label, onPress, size = 44, disabled }: { icon: keyo
 function GlassButton({ label, onPress }: { label: string; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} accessibilityRole="button">
-      <Glass style={{ borderRadius: 14, paddingHorizontal: 20, paddingVertical: 12 }}>
+      <Glass interactive style={{ borderRadius: 14, paddingHorizontal: 20, paddingVertical: 12 }}>
         <Text style={[type.headline, { color: "#fff" }]}>{label}</Text>
       </Glass>
     </Pressable>

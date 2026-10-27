@@ -11,6 +11,8 @@ import { categoryInfo } from "../../ui/categories.ts";
 import { Caption, Card, Chip, Divider, StatusBadge } from "../../ui/components.tsx";
 import { SessionRow } from "../../ui/SessionRow.tsx";
 import { radius, space, type, useTheme } from "../../ui/theme.ts";
+import { Screen } from "../../ui/Screen.tsx";
+import { Backdrop } from "../../ui/Glass.tsx";
 
 type Scope = "sessions" | "photos" | "guides";
 
@@ -28,7 +30,8 @@ export default function Library() {
 
   if (!sessions.length) {
     return (
-      <View style={[styles.empty, { backgroundColor: c.background }]}>
+      <View style={styles.empty}>
+        <Backdrop />
         <Ionicons name="library-outline" size={44} color={c.secondary} />
         <Text style={[type.title, { color: c.text }]}>{t("Your library is empty")}</Text>
         <Caption style={{ textAlign: "center" }}>{t("Photos, analyses and guides from your sessions are collected here.")}</Caption>
@@ -39,7 +42,7 @@ export default function Library() {
   const noResults = <Caption style={{ textAlign: "center", marginTop: space.xl }}>{t("No results for \"%@\"", query)}</Caption>;
 
   return (
-    <ScrollView style={{ backgroundColor: c.background }} contentContainerStyle={{ padding: space.l, gap: space.l }} keyboardShouldPersistTaps="handled">
+    <Screen title={t("Library")} contentStyle={{ gap: space.l }}>
       <View style={[styles.search, { backgroundColor: c.surface, borderColor: c.hairline }]}>
         <Ionicons name="search" size={18} color={c.secondary} />
         <TextInput
@@ -126,7 +129,7 @@ export default function Library() {
               );
             })
           : noResults)}
-    </ScrollView>
+    </Screen>
   );
 }
 

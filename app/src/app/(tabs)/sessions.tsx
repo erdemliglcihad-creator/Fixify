@@ -7,6 +7,8 @@ import { useSessions } from "../../services/sessions.ts";
 import { Button, Card, Caption, Divider } from "../../ui/components.tsx";
 import { SessionRow } from "../../ui/SessionRow.tsx";
 import { space, type, useTheme } from "../../ui/theme.ts";
+import { Screen } from "../../ui/Screen.tsx";
+import { Backdrop } from "../../ui/Glass.tsx";
 import type { FixSession } from "../../core/types.ts";
 
 export default function Sessions() {
@@ -17,7 +19,8 @@ export default function Sessions() {
 
   if (!sessions.length) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: space.xxl, gap: space.l, backgroundColor: c.background }}>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: space.xxl, gap: space.l }}>
+        <Backdrop />
         <Ionicons name="build-outline" size={44} color={c.secondary} />
         <Text style={[type.title, { color: c.text }]}>{t("No fix sessions yet")}</Text>
         <Caption style={{ textAlign: "center" }}>{t("Each problem you scan becomes a session with its analysis, steps and result.")}</Caption>
@@ -42,10 +45,10 @@ export default function Sessions() {
     );
 
   return (
-    <ScrollView style={{ backgroundColor: c.background }} contentContainerStyle={{ padding: space.l, gap: space.xl }}>
+    <Screen title={t("Fix Sessions")}>
       {section(t("Active"), open)}
       {section(t("Completed"), done)}
       <Caption style={{ textAlign: "center" }}>{t("Open a session to delete it.")}</Caption>
-    </ScrollView>
+    </Screen>
   );
 }

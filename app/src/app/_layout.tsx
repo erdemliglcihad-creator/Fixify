@@ -1,7 +1,7 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Platform, View } from "react-native";
 import { t } from "../i18n/index.ts";
 import { applyRetention, loadSessions } from "../services/sessions.ts";
 import { loadSettings, settingsStore } from "../services/settings.ts";
@@ -33,7 +33,11 @@ export default function RootLayout() {
       <StatusBar style={dark ? "light" : "dark"} />
       <Stack screenOptions={{ headerBackButtonDisplayMode: "minimal", contentStyle: { backgroundColor: c.background } }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="session/[id]" options={{ title: "" }} />
+        {/* iOS: translucent native header (Liquid Glass on iOS 26); content scrolls under it. */}
+        <Stack.Screen
+          name="session/[id]"
+          options={{ title: "", headerTransparent: Platform.OS === "ios", headerBlurEffect: Platform.OS === "ios" ? "systemChromeMaterial" : undefined }}
+        />
         <Stack.Screen name="review" options={{ presentation: "modal", title: t("Review") }} />
         <Stack.Screen name="privacy" options={{ title: t("What Fixify processes") }} />
         <Stack.Screen name="help" options={{ title: t("How Fixify works") }} />

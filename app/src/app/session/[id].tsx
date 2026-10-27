@@ -31,6 +31,7 @@ import {
 } from "../../ui/guide/Sections.tsx";
 import { FindingSheet, outcomeTitle, StepFeedbackSheet, VerificationSheet, type Outcome } from "../../ui/guide/Sheets.tsx";
 import { space, type, useTheme } from "../../ui/theme.ts";
+import { Backdrop } from "../../ui/Glass.tsx";
 
 export default function SessionScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -130,7 +131,12 @@ function Guide({ session }: { session: FixSession }) {
   return (
     <>
       <Stack.Screen options={{ title: analysis?.title ?? session.title }} />
-      <ScrollView ref={scroll} style={{ backgroundColor: c.background }} contentContainerStyle={{ padding: space.l, gap: space.l, paddingBottom: space.xxl * 2 }}>
+      <Backdrop />
+      <ScrollView
+        ref={scroll}
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={{ padding: space.l, gap: space.l, paddingBottom: space.xxl * 2 }}
+      >
         {session.images.length > 0 ? (
           <EvidenceGallery
             session={session}

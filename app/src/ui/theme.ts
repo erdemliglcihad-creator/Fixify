@@ -49,9 +49,10 @@ export function useTheme(): { c: Palette; dark: boolean } {
 export const space = { xs: 4, s: 8, m: 12, l: 16, xl: 24, xxl: 32 };
 export const radius = { card: 22, control: 14, chip: 9 };
 export const type = {
-  display: { fontSize: 34, fontWeight: "700" as const, letterSpacing: 0.3 },
-  title: { fontSize: 22, fontWeight: "600" as const },
-  headline: { fontSize: 17, fontWeight: "600" as const },
+  // Size-specific tracking like SF Pro: tight for large text, neutral for body.
+  display: { fontSize: 34, fontWeight: "700" as const, letterSpacing: -0.6, lineHeight: 40 },
+  title: { fontSize: 22, fontWeight: "700" as const, letterSpacing: -0.3, lineHeight: 28 },
+  headline: { fontSize: 17, fontWeight: "600" as const, letterSpacing: -0.2 },
   body: { fontSize: 17 },
   caption: { fontSize: 14 },
   small: { fontSize: 12 },

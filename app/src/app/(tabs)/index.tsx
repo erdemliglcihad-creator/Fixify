@@ -1,7 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { isOpen } from "../../core/session.ts";
 import { t } from "../../i18n/index.ts";
 import { openSession, startScan } from "../../services/nav.ts";
@@ -11,6 +10,9 @@ import { categoryInfo, suggestedCategories } from "../../ui/categories.ts";
 import { Caption, Card, Divider, SectionTitle } from "../../ui/components.tsx";
 import { ActiveCard, SessionRow } from "../../ui/SessionRow.tsx";
 import { radius, space, type, useTheme } from "../../ui/theme.ts";
+import { Screen } from "../../ui/Screen.tsx";
+import { Glass, GlassGroup } from "../../ui/Glass.tsx";
+import { LinearGradient } from "expo-linear-gradient";
 
 function greeting() {
   const h = new Date().getHours();
@@ -19,45 +21,52 @@ function greeting() {
 
 export default function Home() {
   const { c } = useTheme();
-  const insets = useSafeAreaInsets();
   const sessions = useSessions();
   const settings = useSettings();
   const open = sessions.filter((s) => isOpen(s.status)).sort((a, b) => b.updatedAt - a.updatedAt);
   const solved = sessions.filter((s) => s.status === "solved").sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 3);
 
   return (
-    <ScrollView style={{ backgroundColor: c.background }} contentContainerStyle={[styles.content, { paddingTop: insets.top + space.xl }]}>
+    <Screen>
       <View style={{ gap: space.xs }}>
         <Text style={[type.display, { color: c.text }]}>{greeting()}</Text>
         <Text style={[type.body, { color: c.secondary, fontSize: 20 }]}>{t("What needs fixing?")}</Text>
       </View>
 
-      <View style={[styles.hero, { backgroundColor: c.hero }]}>
+      <LinearGradient colors={["#2F6BFF", "#1C3FC4", "#25208F"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
         <View style={{ flexDirection: "row", gap: space.m }}>
           <View style={{ flex: 1, gap: space.s }}>
             <Text style={[type.title, { color: "#fff" }]}>Live Fix</Text>
-            <Text style={[type.body, { color: "#FFFFFFD0" }]}>
+            <Text style={[type.body, { color: "#FFFFFFD9" }]}>
               {t("Show the problem. Fixify marks what matters and guides you step by step until you have checked that it works.")}
             </Text>
           </View>
           <Ionicons name="scan-outline" size={34} color="#FFFFFFE6" />
         </View>
-        <View style={{ flexDirection: "row", gap: space.m }}>
-          <Pressable style={({ pressed }) => [styles.heroPrimary, { opacity: pressed ? 0.8 : 1 }]} onPress={() => startScan()} accessibilityRole="button">
-            <Ionicons name="camera" size={18} color={c.hero} />
-            <Text style={[type.headline, { color: c.hero }]}>{t("Open camera")}</Text>
+        <GlassGroup style={{ flexDirection: "row", gap: space.m }}>
+          <Pressable
+            style={({ pressed }) => [{ flex: 1, transform: [{ scale: pressed ? 0.97 : 1 }] }]}
+            onPress={() => startScan()}
+            accessibilityRole="button"
+          >
+            <Glass interactive tint="#FFFFFFEE" style={styles.heroButton}>
+              <Ionicons name="camera" size={18} color={c.hero} />
+              <Text style={[type.headline, { color: c.hero }]}>{t("Open camera")}</Text>
+            </Glass>
           </Pressable>
           <Pressable
-            style={({ pressed }) => [styles.heroSecondary, { opacity: pressed ? 0.8 : 1 }]}
+            style={({ pressed }) => [{ transform: [{ scale: pressed ? 0.97 : 1 }] }]}
             onPress={() => startScan({ library: true })}
             accessibilityRole="button"
             accessibilityHint={t("Pick a photo or screenshot of the problem")}
           >
-            <Ionicons name="images-outline" size={18} color="#fff" />
-            <Text style={[type.headline, { color: "#fff" }]}>{t("Photos")}</Text>
+            <Glass interactive variant="clear" tint="#FFFFFF2E" style={[styles.heroButton, { paddingHorizontal: space.l }]}>
+              <Ionicons name="images-outline" size={18} color="#fff" />
+              <Text style={[type.headline, { color: "#fff" }]}>{t("Photos")}</Text>
+            </Glass>
           </Pressable>
-        </View>
-      </View>
+        </GlassGroup>
+      </LinearGradient>
 
       {!isServerConfigured(settings) && settings.provider === "proxy" && (
         <Pressable onPress={() => router.navigate("/settings")} accessibilityRole="button">
@@ -113,15 +122,13 @@ export default function Home() {
           </Card>
         </View>
       )}
-    </ScrollView>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { paddingHorizontal: space.l, paddingBottom: space.xxl, gap: space.xl },
-  hero: { borderRadius: 28, padding: space.xl, gap: space.l, borderCurve: "continuous" },
-  heroPrimary: { flex: 1, flexDirection: "row", gap: space.s, alignItems: "center", justifyContent: "center", backgroundColor: "#fff", borderRadius: radius.control, paddingVertical: 13 },
-  heroSecondary: { flexDirection: "row", gap: space.s, alignItems: "center", justifyContent: "center", backgroundColor: "#FFFFFF26", borderRadius: radius.control, paddingVertical: 13, paddingHorizontal: space.l },
+  hero: { borderRadius: 28, padding: space.xl, gap: space.l, borderCurve: "continuous", overflow: "hidden", boxShadow: "0 12px 32px rgba(31, 70, 214, 0.28)" },
+  heroButton: { flexDirection: "row", gap: space.s, alignItems: "center", justifyContent: "center", borderRadius: radius.control, paddingVertical: 13 },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: space.m },
   tile: { flexBasis: "47%", flexGrow: 1, flexDirection: "row", alignItems: "center", gap: space.s, padding: space.m, minHeight: 56, borderRadius: radius.control },
 });

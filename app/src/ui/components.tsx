@@ -5,11 +5,12 @@ import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View, type St
 import type { ProblemAnalysis, SessionStatus } from "../core/types.ts";
 import { t } from "../i18n/index.ts";
 import { statusInfo, type IconName } from "./categories.ts";
+import { Glass } from "./Glass.tsx";
 import { radius, space, type, useTheme, type Palette } from "./theme.ts";
 
 export function Card({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
-  const { c } = useTheme();
-  return <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.hairline }, style]}>{children}</View>;
+  const { c, dark } = useTheme();
+  return <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.hairline }, !dark && styles.lift, style]}>{children}</View>;
 }
 
 export function SectionTitle({ title, icon }: { title: string; icon?: IconName }) {
@@ -101,8 +102,15 @@ type ButtonProps = {
 
 export function Button({ title, onPress, icon, kind = "primary", disabled, loading, style, compact }: ButtonProps) {
   const { c } = useTheme();
-  const bg = kind === "primary" ? c.accent : kind === "danger" ? c.danger + "18" : kind === "secondary" ? c.accentSoft : "transparent";
+  const glass = kind === "primary" || kind === "secondary";
   const fg = kind === "primary" ? c.onAccent : kind === "danger" ? c.danger : c.accent;
+  const inner = [styles.button, compact && { paddingVertical: 9, paddingHorizontal: 14 }];
+  const label = (
+    <>
+      {loading ? <ActivityIndicator color={fg} /> : icon ? <Ionicons name={icon} size={18} color={fg} /> : null}
+      <Text style={[type.headline, { color: fg, fontSize: compact ? 15 : 17 }]}>{title}</Text>
+    </>
+  );
   return (
     <Pressable
       accessibilityRole="button"
@@ -112,15 +120,16 @@ export function Button({ title, onPress, icon, kind = "primary", disabled, loadi
         if (Platform.OS !== "web") Haptics.selectionAsync();
         onPress();
       }}
-      style={({ pressed }) => [
-        styles.button,
-        compact && { paddingVertical: 9, paddingHorizontal: 14 },
-        { backgroundColor: bg, opacity: disabled ? 0.45 : pressed ? 0.75 : 1 },
-        style,
-      ]}
+      // Feedback on touch-down, not on release.
+      style={({ pressed }) => [{ opacity: disabled ? 0.45 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] }, style]}
     >
-      {loading ? <ActivityIndicator color={fg} /> : icon ? <Ionicons name={icon} size={18} color={fg} /> : null}
-      <Text style={[type.headline, { color: fg, fontSize: compact ? 15 : 17 }]}>{title}</Text>
+      {glass ? (
+        <Glass interactive tint={kind === "primary" ? c.accent : undefined} style={[inner, { borderRadius: radius.control }]}>
+          {label}
+        </Glass>
+      ) : (
+        <View style={[inner, { backgroundColor: kind === "danger" ? c.danger + "18" : "transparent" }]}>{label}</View>
+      )}
     </Pressable>
   );
 }
@@ -165,6 +174,8 @@ export function Divider() {
 
 const styles = StyleSheet.create({
   card: { borderRadius: radius.card, padding: space.l, gap: space.m, borderWidth: StyleSheet.hairlineWidth, borderCurve: "continuous" },
+  // Content cards are solid; a soft shadow separates them from the gradient behind.
+  lift: { boxShadow: "0 1px 2px rgba(16, 24, 48, 0.06), 0 8px 24px rgba(16, 24, 48, 0.06)" },
   row: { flexDirection: "row", alignItems: "center", gap: space.s },
   chip: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: radius.chip, alignSelf: "flex-start" },
   marker: { alignItems: "center", justifyContent: "center", borderWidth: 1.5, borderColor: "#FFFFFFE6" },

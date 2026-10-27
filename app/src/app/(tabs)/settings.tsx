@@ -15,6 +15,7 @@ import { Caption, Divider } from "../../ui/components.tsx";
 import { confirmDestructive } from "../../ui/confirm.ts";
 import type { IconName } from "../../ui/categories.ts";
 import { radius, space, type, useTheme } from "../../ui/theme.ts";
+import { Screen } from "../../ui/Screen.tsx";
 
 type Connection = { state: "idle" } | { state: "checking" } | { state: "ok"; configured: boolean; ocr: boolean } | { state: "failed"; message: string };
 
@@ -92,7 +93,7 @@ export default function Settings() {
   const input = [styles.input, { color: c.text, backgroundColor: c.background, borderColor: c.hairline }];
 
   return (
-    <ScrollView style={{ backgroundColor: c.background }} contentContainerStyle={{ padding: space.l, gap: space.xl }} keyboardShouldPersistTaps="handled">
+    <Screen title={t("Settings")}>
       <Section title={t("Appearance")}>
         <Segmented<Appearance>
           value={s.appearance}
@@ -170,7 +171,7 @@ export default function Settings() {
       <Section title={t("Privacy")} footer={t("When off, nothing leaves this iPhone, and Fixify asks before the next analysis.")}>
         <Row>
           <Label>{t("Allow sending photos for analysis")}</Label>
-          <Switch value={s.consent} onValueChange={(consent) => updateSettings({ consent })} />
+          <Switch value={s.consent} onValueChange={(consent) => updateSettings({ consent })} trackColor={{ true: c.success }} thumbColor="#FFFFFF" />
         </Row>
         <Divider />
         <Link icon="shield-checkmark-outline" title={t("What Fixify processes")} onPress={() => router.push("/privacy")} />
@@ -219,6 +220,8 @@ export default function Settings() {
         <Row>
           <Label>{t("Reminders for open sessions")}</Label>
           <Switch
+            trackColor={{ true: c.success }}
+            thumbColor="#FFFFFF"
             value={s.reminders}
             onValueChange={(reminders) => {
               updateSettings({ reminders });
@@ -241,7 +244,7 @@ export default function Settings() {
           <Caption>{`${Constants.expoConfig?.version ?? "–"} · Expo Go`}</Caption>
         </Row>
       </Section>
-    </ScrollView>
+    </Screen>
   );
 }
 
