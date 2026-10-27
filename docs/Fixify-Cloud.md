@@ -10,10 +10,10 @@ Fixify Cloud ist ein kleiner Server auf **Cloudflare Workers** (Ordner `worker/`
 
 Zeitbedarf: etwa 15 Minuten. Die Konten legst du selbst an, Schlüssel tippst du nur in dein eigenes Terminal ein.
 
-## 1. Drei kostenlose Konten
+## 1. Kostenlose Konten
 1. **Cloudflare:** [dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up)
 2. **Groq:** [console.groq.com](https://console.groq.com) → *API Keys* → *Create API Key*. Den Schlüssel kopieren, er wird nur einmal angezeigt.
-3. **OCR.space:** [ocr.space/ocrapi/freekey](https://ocr.space/ocrapi/freekey) → E-Mail eintragen. Der Schlüssel kommt per Mail.
+3. **OCR.space (optional):** [ocr.space/ocrapi/freekey](https://ocr.space/ocrapi/freekey) → E-Mail eintragen. Der Schlüssel kommt per Mail. Ohne ihn läuft die Analyse trotzdem, nur ohne exakte Markierungen auf erkanntem Text.
 
 ## 2. Server veröffentlichen
 ```bash

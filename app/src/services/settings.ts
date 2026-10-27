@@ -37,7 +37,9 @@ const TOKEN_KEY = "fixify.appToken";
 const DEVICE_KEY = "fixify.deviceId";
 
 /** Address of the deployed Fixify Cloud worker (worker/). Set in app/.env as EXPO_PUBLIC_CLOUD_URL; inlined at build time. */
-export const CLOUD_URL: string = (process.env.EXPO_PUBLIC_CLOUD_URL ?? "").replace(/\/+$/, "");
+const RAW_CLOUD_URL = (process.env.EXPO_PUBLIC_CLOUD_URL ?? "").replace(/\/+$/, "");
+// On a phone, "localhost" is the phone itself, so a local test address must never be used there.
+export const CLOUD_URL: string = Platform.OS !== "web" && /\/\/(localhost|127\.0\.0\.1)/.test(RAW_CLOUD_URL) ? "" : RAW_CLOUD_URL;
 
 export const settingsStore = createStore<Settings>(DEFAULTS);
 export const useSettings = () => useStore(settingsStore);

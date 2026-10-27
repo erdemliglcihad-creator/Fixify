@@ -103,7 +103,14 @@ async function run(sessionId: string, mode: AnalysisMode, feedback: string | nul
     if (!base) throw new ProxyError("notConfigured", t("No analysis server is set up. Add its address and app token in Settings."));
 
     phase("recognizing");
-    await ocrPending(sessionId, base, s.appToken, controller.signal);
+    try {
+      await ocrPending(sessionId, base, s.appToken, controller.signal);
+    } catch (err) {
+      // Text recognition only adds exact markers. If it is unavailable, the analysis still runs;
+      // only a cancel or an unreachable server stops here.
+      if (err instanceof ProxyError && (err.code === "cancelled" || err.code === "unreachable" || err.code === "offline")) throw err;
+      updateSession(sessionId, (cur) => logEvent(cur, "note", t("Text recognition was not available. The analysis uses the photo only.")));
+    }
 
     phase("preparing");
     const session = getSession(sessionId);
