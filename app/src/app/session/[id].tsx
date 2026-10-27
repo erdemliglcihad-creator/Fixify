@@ -6,6 +6,7 @@ import type { AnalysisMode, Finding, FixSession, FixStep, ResolvedMarker, StepSt
 import { t } from "../../i18n/index.ts";
 import { cancel, preflight, start, useFailure, useJob } from "../../services/analysis.ts";
 import { startScan } from "../../services/nav.ts";
+import { setChatContext } from "../../services/chat.ts";
 import { cancelReminder, scheduleReminder } from "../../services/reminders.ts";
 import { deletePhotos, deleteSession, logEvent, updateSession, useSession } from "../../services/sessions.ts";
 import { settingsStore, updateSettings } from "../../services/settings.ts";
@@ -235,6 +236,16 @@ function Guide({ session }: { session: FixSession }) {
 
         <Card style={{ gap: space.s }}>
           <SectionTitle title={t("More")} icon="ellipsis-horizontal-circle-outline" />
+          <Button
+            title={t("Ask FixBot about this")}
+            icon="chatbubbles-outline"
+            kind="plain"
+            compact
+            onPress={() => {
+              setChatContext(session.id);
+              router.navigate("/fixbot");
+            }}
+          />
           <Button title={t("Add a photo")} icon="camera-outline" kind="plain" compact onPress={() => startScan({ category: session.category, targetSessionId: session.id })} />
           {analysis && <Button title={t("Analyze again")} icon="refresh" kind="plain" compact disabled={Boolean(job)} onPress={() => run("replan", "The user asked for a fresh look at the problem.")} />}
           <Button title={t("Remind me tomorrow")} icon="notifications-outline" kind="plain" compact onPress={remind} />

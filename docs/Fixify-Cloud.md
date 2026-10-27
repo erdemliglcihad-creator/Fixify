@@ -53,13 +53,14 @@ Danach `npx expo start` neu starten. In Fixify unter *Einstellungen → KI-Analy
 ## Limits (in `worker/wrangler.jsonc`, Abschnitt `vars`)
 | Einstellung | Standard | Bedeutung |
 |---|---|---|
-| `DEVICE_DAILY` | 10 | Analysen pro Gerät und Tag |
-| `IP_DAILY` | 30 | Analysen pro Internetanschluss und Tag (falls jemand Geräte-IDs fälscht) |
-| `GLOBAL_ANALYZE_DAILY` | 30 | Analysen für **alle** zusammen pro Tag |
+| `UPLOADS_DAILY` | 10 | Verschiedene Fotos pro Gerät und Tag (Analyse und FixBot zusammen, dasselbe Foto zählt einmal) |
+| `IP_UPLOADS_DAILY` | 30 | Fotos pro Internetanschluss und Tag (falls jemand Geräte-IDs fälscht) |
+| `MESSAGES_DAILY` | 150 | Verdecktes Fair-Use-Limit für Nachrichten und Analysen ohne Foto |
+| `GLOBAL_VISION_DAILY` | 50 | Bildanfragen für **alle** zusammen pro Tag |
 | `GLOBAL_OCR_DAILY` | 450 | Texterkennungen für alle pro Tag |
-| `MAX_IMAGES` | 2 | Fotos pro Analyse |
+| `CHAT_MODELS` | `gpt-oss-120b, gpt-oss-20b, llama-3.1-8b-instant` | FixBot-Modelle in Reihenfolge; ist eines ausgelastet, antwortet automatisch das nächste |
 
-Warum nur 30 Analysen für alle? Das Gratis-Kontingent von Groq für das Bildmodell liegt bei etwa 200.000 Tokens pro Tag, eine Analyse mit Foto braucht etwa 5.000 bis 7.000. Nach Änderungen erneut `npx wrangler deploy` ausführen. Fehlgeschlagene Analysen zählen nicht.
+Warum nur 50 Bildanfragen für alle? Groq gibt pro Modell etwa 200.000 Tokens am Tag gratis, eine Anfrage mit Foto braucht etwa 4.000 bis 7.000. Text-Chats laufen über eigene Modelle mit eigenem Kontingent. Nach Änderungen erneut `npx wrangler deploy` ausführen. Fehlgeschlagene Analysen zählen nicht.
 
 ## Anbieter wechseln (ohne die App neu zu bauen)
 - **Anderer Gratis-Anbieter** (OpenAI-kompatibel, z. B. Mistral): In `wrangler.jsonc` `AI_BASE_URL`, `AI_MODEL` und `AI_PROVIDER_NAME` ändern, dann `npx wrangler secret put AI_API_KEY` mit dem neuen Schlüssel und `npx wrangler deploy`.

@@ -140,3 +140,57 @@ test("provider errors map to clear codes", async () => {
   });
   await assert.rejects(garbage(request), (e) => e.code === "invalid_model_output");
 });
+
+import { chatCompletion } from "../src/openai.mjs";
+import { buildChatMessages, fixbotReply, ChatRequestSchema } from "../src/chat.mjs";
+
+const okReply = (model, content = "Hallo") =>
+  new Response(JSON.stringify({ model, choices: [{ finish_reason: "stop", message: { content } }], usage: { prompt_tokens: 1, completion_tokens: 1 } }));
+
+test("model chain falls back to the next model when one is rate limited", async () => {
+  const tried = [];
+  const out = await chatCompletion({
+    baseUrl: "https://x",
+    apiKey: "k",
+    models: ["big", "small"],
+    messages: [{ role: "user", content: "hi" }],
+    fetchImpl: async (_url, init) => {
+      const model = JSON.parse(init.body).model;
+      tried.push(model);
+      return model === "big" ? new Response("{}", { status: 429 }) : okReply(model);
+    },
+  });
+  assert.deepEqual(tried, ["big", "small"]);
+  assert.equal(out.model, "small");
+  assert.equal(out.degraded, true);
+  await assert.rejects(
+    chatCompletion({ baseUrl: "https://x", apiKey: "k", models: ["a", "b"], messages: [], fetchImpl: async () => new Response("{}", { status: 429 }) }),
+    (e) => e.code === "upstream_rate_limited",
+  );
+});
+
+test("only a photo in the newest message is sent, older ones become [photo]", () => {
+  const img = { mediaType: "image/jpeg", data: "AAA" };
+  const older = buildChatMessages(ChatRequestSchema.parse({ locale: "de", messages: [{ role: "user", text: "Was ist das?", image: img }, { role: "assistant", text: "Ein Router." }, { role: "user", text: "Und jetzt?" }] }));
+  assert.equal(older.hasImage, false);
+  assert.equal(older.messages[1].content, "[photo] Was ist das?");
+  assert.match(older.messages[0].content, /German/);
+  const newest = buildChatMessages(ChatRequestSchema.parse({ messages: [{ role: "user", text: "", image: img }], context: "Session: Drucker offline" }));
+  assert.equal(newest.hasImage, true);
+  assert.equal(newest.messages[1].content[0].type, "image_url");
+  assert.match(newest.messages[0].content, /Drucker offline/);
+});
+
+test("FixBot uses the vision model only for a new photo", async () => {
+  const used = [];
+  const fetchImpl = async (_url, init) => {
+    used.push(JSON.parse(init.body).model);
+    return okReply(JSON.parse(init.body).model, "<think>x</think>Antwort");
+  };
+  const opts = { baseUrl: "https://x", apiKey: "k", textModels: ["text-model"], visionModels: ["vision-model"], fetchImpl };
+  const text = await fixbotReply(ChatRequestSchema.parse({ messages: [{ role: "user", text: "WLAN weg" }] }), opts);
+  const photo = await fixbotReply(ChatRequestSchema.parse({ messages: [{ role: "user", text: "", image: { mediaType: "image/jpeg", data: "AAA" } }] }), opts);
+  assert.deepEqual(used, ["text-model", "vision-model"]);
+  assert.equal(text.reply, "Antwort", "reasoning tags are stripped");
+  assert.equal(photo.hasImage, true);
+});

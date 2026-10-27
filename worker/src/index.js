@@ -1,11 +1,13 @@
-// Fixify cloud server (Cloudflare Workers). Same API as server/ (the local Claude proxy), so the app talks to either.
-// Anyone with the app may use it; abuse and cost are capped by daily limits per device, per IP and for everyone together.
+// Fixify cloud server (Cloudflare Workers). Same API as server/ (the local Claude proxy), plus FixBot chat.
+// Anyone with the app may use it. Limits: 10 photo uploads per device and day (the same photo counts once),
+// a generous hidden fair-use limit for messages, and a shared daily cap on vision calls to protect the free quota.
 import { DurableObject } from "cloudflare:workers";
 import Anthropic from "@anthropic-ai/sdk";
 import { OcrRequestSchema, RequestSchema } from "../../server/src/app.mjs";
 import { AnalysisError, createAnalyzer } from "../../server/src/analyze.mjs";
 import { createOpenAIAnalyzer } from "./openai.mjs";
 import { OcrError, recognizeWithOcrSpace } from "./ocrspace.mjs";
+import { ChatRequestSchema, fixbotReply } from "./chat.mjs";
 
 const CORS = {
   "access-control-allow-origin": "*",
@@ -17,27 +19,30 @@ const DEVICE_ID = /^[0-9a-f-]{16,64}$/i;
 
 const json = (status, body, headers = {}) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", ...CORS, ...headers } });
-const fail = (status, code, message, headers) => json(status, { error: { code, message } }, headers);
+const fail = (status, code, message, extra = {}) => json(status, { error: { code, message }, ...extra });
 
 const today = () => new Date().toISOString().slice(0, 10);
 const num = (v, fallback) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : fallback);
 
-function limitsFrom(env) {
+export function limitsFrom(env) {
   return {
-    deviceDaily: num(env.DEVICE_DAILY, 10),
-    ipDaily: num(env.IP_DAILY, 30),
-    globalAnalyzeDaily: num(env.GLOBAL_ANALYZE_DAILY, 30),
+    uploadsDaily: num(env.UPLOADS_DAILY, 10),
+    ipUploadsDaily: num(env.IP_UPLOADS_DAILY, 30),
+    messagesDaily: num(env.MESSAGES_DAILY, 150),
+    globalVisionDaily: num(env.GLOBAL_VISION_DAILY, 50),
     globalOcrDaily: num(env.GLOBAL_OCR_DAILY, 450),
     maxImages: num(env.MAX_IMAGES, 2),
   };
 }
+
+const textModels = (env) => String(env.CHAT_MODELS || "openai/gpt-oss-120b,openai/gpt-oss-20b,llama-3.1-8b-instant").split(",").map((m) => m.trim()).filter(Boolean);
 
 function providerInfo(env) {
   if (env.AI_PROVIDER === "anthropic") return { provider: "anthropic", model: env.ANTHROPIC_MODEL || "claude-opus-5-5", configured: Boolean(env.ANTHROPIC_API_KEY) };
   return { provider: env.AI_PROVIDER_NAME || "groq", model: env.AI_MODEL, configured: Boolean(env.AI_API_KEY && env.AI_BASE_URL && env.AI_MODEL) };
 }
 
-function analyzerFor(env) {
+function analyzerFor(env, withImages) {
   if (env.AI_PROVIDER === "anthropic") {
     // Claude switch for later: set AI_PROVIDER=anthropic and the ANTHROPIC_API_KEY secret.
     return createAnalyzer({
@@ -47,14 +52,21 @@ function analyzerFor(env) {
       client: new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 1, timeout: 120_000 }),
     });
   }
-  return createOpenAIAnalyzer({ baseUrl: env.AI_BASE_URL, apiKey: env.AI_API_KEY, model: env.AI_MODEL });
+  // Photos need the vision model; text-only analyses use the chat chain and spare the scarce vision quota.
+  return createOpenAIAnalyzer({ baseUrl: env.AI_BASE_URL, apiKey: env.AI_API_KEY, models: withImages ? [env.AI_MODEL] : textModels(env) });
 }
 
-/** Daily counters in SQLite. take() checks every key first, then counts all of them, so a refused request costs nothing. */
+async function sha256(text) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/** Daily counters and the set of photos each device uploaded today, in SQLite. */
 export class Limiter extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env);
     ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS usage (day TEXT NOT NULL, key TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (day, key))");
+    ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS uploads (day TEXT NOT NULL, device TEXT NOT NULL, hash TEXT NOT NULL, PRIMARY KEY (day, device, hash))");
   }
 
   count(day, key) {
@@ -62,23 +74,49 @@ export class Limiter extends DurableObject {
     return row ? row.n : 0;
   }
 
-  take(day, checks) {
-    for (const { key, limit } of checks) {
-      if (this.count(day, key) >= limit) return { ok: false, key };
-    }
-    for (const { key } of checks) {
-      this.ctx.storage.sql.exec("INSERT INTO usage (day, key, n) VALUES (?, ?, 1) ON CONFLICT (day, key) DO UPDATE SET n = n + 1", day, key);
-    }
+  bump(day, key, by) {
+    this.ctx.storage.sql.exec("INSERT INTO usage (day, key, n) VALUES (?, ?, ?) ON CONFLICT (day, key) DO UPDATE SET n = MAX(n + ?, 0)", day, key, Math.max(by, 0), by);
+  }
+
+  uploadsUsed(day, device) {
+    return this.ctx.storage.sql.exec("SELECT COUNT(*) AS n FROM uploads WHERE day = ? AND device = ?", day, device).one().n;
+  }
+
+  /**
+   * Checks everything first and only then records, so a refused request costs nothing.
+   * hashes: photos in this request (already-uploaded ones are free); vision: does this call use the vision model;
+   * message: does it count against the fair-use message limit.
+   */
+  take(day, { device, ip, hashes = [], vision = false, ocr = false, message = false }, limits) {
+    const seen = new Set(this.ctx.storage.sql.exec("SELECT hash FROM uploads WHERE day = ? AND device = ?", day, device).toArray().map((r) => r.hash));
+    const fresh = [...new Set(hashes)].filter((h) => !seen.has(h));
+    if (seen.size + fresh.length > limits.uploadsDaily) return { ok: false, code: "upload_limit" };
+    if (fresh.length && this.count(day, `ip:${ip}`) + fresh.length > limits.ipUploadsDaily) return { ok: false, code: "upload_limit" };
+    if (message && this.count(day, `msg:${device}`) >= limits.messagesDaily) return { ok: false, code: "message_limit" };
+    if (vision && this.count(day, "vision:global") >= limits.globalVisionDaily) return { ok: false, code: "vision_limit" };
+    if (ocr && this.count(day, "ocr:global") >= limits.globalOcrDaily) return { ok: false, code: "ocr_limit" };
+
+    for (const h of fresh) this.ctx.storage.sql.exec("INSERT INTO uploads (day, device, hash) VALUES (?, ?, ?)", day, device, h);
+    if (fresh.length) this.bump(day, `ip:${ip}`, fresh.length);
+    if (message) this.bump(day, `msg:${device}`, 1);
+    if (vision) this.bump(day, "vision:global", 1);
+    if (ocr) this.bump(day, "ocr:global", 1);
     this.ctx.storage.sql.exec("DELETE FROM usage WHERE day < ?", day);
-    return { ok: true };
+    this.ctx.storage.sql.exec("DELETE FROM uploads WHERE day < ?", day);
+    return { ok: true, receipt: { device, ip, fresh, vision, ocr, message }, uploadsLeft: Math.max(0, limits.uploadsDaily - seen.size - fresh.length) };
   }
 
-  refund(day, keys) {
-    for (const key of keys) this.ctx.storage.sql.exec("UPDATE usage SET n = MAX(n - 1, 0) WHERE day = ? AND key = ?", day, key);
+  /** Undoes a take() whose AI call failed: failed requests never count. */
+  refund(day, receipt) {
+    for (const h of receipt.fresh) this.ctx.storage.sql.exec("DELETE FROM uploads WHERE day = ? AND device = ? AND hash = ?", day, receipt.device, h);
+    if (receipt.fresh.length) this.bump(day, `ip:${receipt.ip}`, -receipt.fresh.length);
+    if (receipt.message) this.bump(day, `msg:${receipt.device}`, -1);
+    if (receipt.vision) this.bump(day, "vision:global", -1);
+    if (receipt.ocr) this.bump(day, "ocr:global", -1);
   }
 
-  peek(day, keys) {
-    return Object.fromEntries(keys.map((k) => [k, this.count(day, k)]));
+  uploadsLeft(day, device, uploadsDaily) {
+    return Math.max(0, uploadsDaily - this.uploadsUsed(day, device));
   }
 }
 
@@ -90,10 +128,12 @@ async function readJson(request) {
   return JSON.parse(text);
 }
 
-const limitMessage = (key) =>
-  key.startsWith("device:") || key.startsWith("ip:")
-    ? ["daily_limit", "You've used today's free analyses on this device. They renew tomorrow."]
-    : ["global_limit", "Today's free analyses for all Fixify users are used up. They renew tomorrow."];
+const LIMIT_MESSAGES = {
+  upload_limit: "You've used today's photo uploads on this device. They renew tomorrow; you can keep asking without a photo.",
+  message_limit: "You've sent a lot of messages today. FixBot is available again tomorrow.",
+  vision_limit: "Photo analysis is fully booked for today for all users. It renews tomorrow; text questions still work.",
+  ocr_limit: "Today's free text recognition is used up. It renews tomorrow.",
+};
 
 export default {
   async fetch(request, env) {
@@ -106,12 +146,11 @@ export default {
     const day = today();
     const device = request.headers.get("x-fixify-device") ?? "";
     const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
-    const deviceKey = `device:${device}`;
 
     if (request.method === "GET" && url.pathname === "/health") {
-      return json(200, { ok: true, service: "fixify-cloud", version: "1.0.0", configured: info.configured, ocr: Boolean(env.OCR_SPACE_KEY), provider: info.provider });
+      return json(200, { ok: true, service: "fixify-cloud", version: "1.1.0", configured: info.configured, ocr: Boolean(env.OCR_SPACE_KEY), chat: true, provider: info.provider });
     }
-    if (!["/v1/ping", "/v1/ocr", "/v1/analyze"].includes(url.pathname)) return fail(404, "not_found", "Unknown endpoint.");
+    if (!["/v1/ping", "/v1/ocr", "/v1/analyze", "/v1/chat"].includes(url.pathname)) return fail(404, "not_found", "Unknown endpoint.");
 
     // Optional invite-only mode: set the APP_TOKEN secret and hand the token out.
     if (env.APP_TOKEN && request.headers.get("authorization") !== `Bearer ${env.APP_TOKEN}`) {
@@ -120,15 +159,15 @@ export default {
     if (!DEVICE_ID.test(device)) return fail(400, "invalid_request", "Missing device id.");
 
     if (url.pathname === "/v1/ping") {
-      const used = await limiter.peek(day, [deviceKey]);
       return json(200, {
         ok: true,
         configured: info.configured,
         ocr: Boolean(env.OCR_SPACE_KEY),
+        chat: true,
         provider: info.provider,
         model: info.model,
-        remainingToday: Math.max(0, limits.deviceDaily - used[deviceKey]),
-        deviceDaily: limits.deviceDaily,
+        uploadsLeft: await limiter.uploadsLeft(day, device, limits.uploadsDaily),
+        uploadsDaily: limits.uploadsDaily,
       });
     }
     if (request.method !== "POST") return fail(405, "method_not_allowed", "Use POST.");
@@ -141,28 +180,56 @@ export default {
       return fail(400, "invalid_request", "The request body is not valid JSON.");
     }
 
+    const take = async (spec) => {
+      const verdict = await limiter.take(day, { device, ip, ...spec }, limits);
+      return verdict.ok ? verdict : { ...verdict, response: fail(429, verdict.code, LIMIT_MESSAGES[verdict.code], { uploadsDaily: limits.uploadsDaily }) };
+    };
+    const quota = (left) => ({ uploadsLeft: left, uploadsDaily: limits.uploadsDaily });
+
     if (url.pathname === "/v1/ocr") {
       if (!env.OCR_SPACE_KEY) return fail(503, "ocr_unavailable", "Text recognition is not set up on the server.");
       const parsed = OcrRequestSchema.safeParse(body);
       if (!parsed.success) return fail(400, "invalid_request", "Invalid OCR request.");
-      const keys = ["ocr:global", `ocr:${deviceKey}`];
-      const verdict = await limiter.take(day, [
-        { key: "ocr:global", limit: limits.globalOcrDaily },
-        { key: `ocr:${deviceKey}`, limit: limits.deviceDaily * 4 },
-      ]);
-      if (!verdict.ok) return fail(429, "ocr_limit", "Today's free text recognition is used up. It renews tomorrow.");
+      // The same photo is sent for the analysis right after, so it counts as one upload.
+      const verdict = await take({ hashes: [await sha256(parsed.data.data)], ocr: true });
+      if (!verdict.ok) return verdict.response;
       try {
         const blocks = await recognizeWithOcrSpace({ apiKey: env.OCR_SPACE_KEY, endpoint: env.OCR_SPACE_URL || undefined, ...parsed.data, signal: request.signal });
-        return json(200, { blocks });
+        return json(200, { blocks, ...quota(verdict.uploadsLeft) });
       } catch (err) {
-        await limiter.refund(day, keys);
+        await limiter.refund(day, verdict.receipt);
         if (err instanceof OcrError) return fail(err.status, err.code, err.message);
         return fail(500, "ocr_failed", "Text recognition failed.");
       }
     }
 
-    // /v1/analyze
     if (!info.configured) return fail(503, "not_configured", "The AI service is not set up on the server.");
+
+    if (url.pathname === "/v1/chat") {
+      const parsed = ChatRequestSchema.safeParse(body);
+      if (!parsed.success) return fail(400, "invalid_request", "Invalid chat request.");
+      const lastMessage = parsed.data.messages.at(-1);
+      const image = lastMessage.role === "user" ? lastMessage.image : null;
+      const verdict = await take({ hashes: image ? [await sha256(image.data)] : [], vision: Boolean(image), message: true });
+      if (!verdict.ok) return verdict.response;
+      try {
+        const out = await fixbotReply(parsed.data, {
+          baseUrl: env.AI_BASE_URL,
+          apiKey: env.AI_API_KEY,
+          textModels: textModels(env),
+          visionModels: [env.AI_MODEL],
+          signal: request.signal,
+        });
+        return json(200, { reply: out.reply, model: out.model, degraded: out.degraded, ...quota(verdict.uploadsLeft) });
+      } catch (err) {
+        await limiter.refund(day, verdict.receipt);
+        if (err instanceof AnalysisError) return fail(err.status === 499 ? 400 : err.status, err.code, err.message);
+        console.error("chat failed", err);
+        return fail(502, "upstream_error", "FixBot could not answer.");
+      }
+    }
+
+    // /v1/analyze
     const parsed = RequestSchema.safeParse(body);
     if (!parsed.success) {
       const issue = parsed.error.issues[0];
@@ -171,30 +238,21 @@ export default {
     const req = { ...parsed.data, images: parsed.data.images.slice(0, limits.maxImages) };
     if (!req.images.length && !req.description.trim()) return fail(400, "invalid_request", "Send at least one image or a description.");
 
-    const keys = [deviceKey, `ip:${ip}`, "analyze:global"];
-    const verdict = await limiter.take(day, [
-      { key: deviceKey, limit: limits.deviceDaily },
-      { key: `ip:${ip}`, limit: limits.ipDaily },
-      { key: "analyze:global", limit: limits.globalAnalyzeDaily },
-    ]);
-    if (!verdict.ok) {
-      const [code, message] = limitMessage(verdict.key);
-      return fail(429, code, message);
-    }
+    const withImages = req.images.length > 0;
+    const verdict = await take({ hashes: await Promise.all(req.images.map((i) => sha256(i.data))), vision: withImages, message: !withImages });
+    if (!verdict.ok) return verdict.response;
 
     try {
-      const result = await analyzerFor(env)(req, { signal: request.signal });
+      const result = await analyzerFor(env, withImages)(req, { signal: request.signal });
       // Small open models place boxes poorly (tested: off by a third of the image height). Unless trusted,
       // only OCR-anchored markers are drawn, so the app never points at the wrong spot.
       if (env.AI_PROVIDER !== "anthropic" && env.TRUST_AI_BOXES !== "true") {
         result.analysis.findings = result.analysis.findings.map((f) => ({ ...f, box: null, boxConfidence: "none" }));
       }
-      const used = await limiter.peek(day, [deviceKey]);
-      const remainingToday = Math.max(0, limits.deviceDaily - used[deviceKey]);
-      return json(200, { requestId: crypto.randomUUID().slice(0, 8), ...result, remainingToday }, { "x-fixify-remaining": String(remainingToday) });
+      return json(200, { requestId: crypto.randomUUID().slice(0, 8), ...result, ...quota(verdict.uploadsLeft) });
     } catch (err) {
       // Failed analyses do not count against anyone's limit.
-      await limiter.refund(day, keys);
+      await limiter.refund(day, verdict.receipt);
       if (err instanceof AnalysisError) return fail(err.status === 499 ? 400 : err.status, err.code, err.message);
       console.error("unexpected", err);
       return fail(500, "internal", "Unexpected server error.");

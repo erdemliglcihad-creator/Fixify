@@ -11,6 +11,7 @@ import { Caption, Card, Divider, SectionTitle } from "../../ui/components.tsx";
 import { ActiveCard, SessionRow } from "../../ui/SessionRow.tsx";
 import { radius, space, type, useTheme } from "../../ui/theme.ts";
 import { Screen } from "../../ui/Screen.tsx";
+import { useQuota } from "../../services/usage.ts";
 import { Glass, GlassGroup } from "../../ui/Glass.tsx";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -23,6 +24,7 @@ export default function Home() {
   const { c } = useTheme();
   const sessions = useSessions();
   const settings = useSettings();
+  const quota = useQuota();
   const open = sessions.filter((s) => isOpen(s.status)).sort((a, b) => b.updatedAt - a.updatedAt);
   const solved = sessions.filter((s) => s.status === "solved").sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 3);
 
@@ -31,6 +33,12 @@ export default function Home() {
       <View style={{ gap: space.xs }}>
         <Text style={[type.display, { color: c.text }]}>{greeting()}</Text>
         <Text style={[type.body, { color: c.secondary, fontSize: 20 }]}>{t("What needs fixing?")}</Text>
+        {quota.uploadsLeft !== null && quota.uploadsDaily ? (
+          <View style={[styles.quota, { backgroundColor: c.surface }]} accessible accessibilityLabel={t("%lld of %lld photo uploads left today", quota.uploadsLeft, quota.uploadsDaily)}>
+            <Ionicons name="images-outline" size={14} color={quota.uploadsLeft > 0 ? c.accent : c.caution} />
+            <Text style={{ color: c.text, fontSize: 13, fontWeight: "600" }}>{t("%lld of %lld photo uploads left today", quota.uploadsLeft, quota.uploadsDaily)}</Text>
+          </View>
+        ) : null}
       </View>
 
       <LinearGradient colors={["#2F6BFF", "#1C3FC4", "#25208F"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
@@ -129,6 +137,7 @@ export default function Home() {
 const styles = StyleSheet.create({
   hero: { borderRadius: 28, padding: space.xl, gap: space.l, borderCurve: "continuous", overflow: "hidden", boxShadow: "0 12px 32px rgba(31, 70, 214, 0.28)" },
   heroButton: { flexDirection: "row", gap: space.s, alignItems: "center", justifyContent: "center", borderRadius: radius.control, paddingVertical: 13 },
+  quota: { flexDirection: "row", alignItems: "center", gap: 6, alignSelf: "flex-start", paddingHorizontal: 10, paddingVertical: 6, borderRadius: 14, marginTop: space.s },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: space.m },
   tile: { flexBasis: "47%", flexGrow: 1, flexDirection: "row", alignItems: "center", gap: space.s, padding: space.m, minHeight: 56, borderRadius: radius.control },
 });

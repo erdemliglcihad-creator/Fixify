@@ -9,7 +9,7 @@ import { checkServer, ProxyError } from "../../services/proxy.ts";
 import { cancelAllReminders } from "../../services/reminders.ts";
 import { deleteEverything, deletePhotos, useSessions } from "../../services/sessions.ts";
 import { CLOUD_URL, isServerConfigured, serverBase, updateSettings, useSettings, type Appearance, type Provider } from "../../services/settings.ts";
-import { setQuota, useQuota } from "../../services/usage.ts";
+import { useQuota } from "../../services/usage.ts";
 import { isOpen } from "../../core/session.ts";
 import { Caption, Divider } from "../../ui/components.tsx";
 import { confirmDestructive } from "../../ui/confirm.ts";
@@ -64,7 +64,7 @@ function Section({ title, footer, children }: { title: string; footer?: string; 
 }
 
 function providerFooter(p: Provider) {
-  if (p === "cloud") return t("Free for everyone, no setup. Photos and text go to Fixify Cloud, which uses Groq (AI) and OCR.space (text recognition). Each device has a daily limit.");
+  if (p === "cloud") return t("Free for everyone, no setup. Photos and text go to Fixify Cloud, which uses Groq (AI) and OCR.space (text recognition). 10 photo uploads per day; messages to FixBot are free within fair use.");
   if (p === "proxy") return t("For your own Fixify server (server/ folder), e.g. with Claude. Enter the address and token it shows.");
   return t("Fixify only saves photos and your notes. No text recognition, diagnosis or plan.");
 }
@@ -84,7 +84,6 @@ export default function Settings() {
     try {
       const h = await checkServer(base, s.provider === "proxy" ? s.appToken.trim() : "");
       setConnection({ state: "ok", configured: h.configured, ocr: h.ocr });
-      if (h.remainingToday !== undefined) setQuota({ remainingToday: h.remainingToday, deviceDaily: h.deviceDaily ?? null });
     } catch (e) {
       setConnection({ state: "failed", message: e instanceof ProxyError ? e.message : t("Not reachable") });
     }
@@ -157,12 +156,12 @@ export default function Settings() {
             {connection.state === "ok" && !connection.ocr && <Caption color={c.caution}>{t("This server has no text recognition.")}</Caption>}
           </>
         )}
-        {s.provider === "cloud" && quota.remainingToday !== null && (
+        {s.provider === "cloud" && quota.uploadsLeft !== null && (
           <>
             <Divider />
             <Row>
-              <Label>{t("Free analyses left today")}</Label>
-              <Caption>{quota.deviceDaily ? `${quota.remainingToday} / ${quota.deviceDaily}` : String(quota.remainingToday)}</Caption>
+              <Label>{t("Photo uploads left today")}</Label>
+              <Caption>{quota.uploadsDaily ? `${quota.uploadsLeft} / ${quota.uploadsDaily}` : String(quota.uploadsLeft)}</Caption>
             </Row>
           </>
         )}

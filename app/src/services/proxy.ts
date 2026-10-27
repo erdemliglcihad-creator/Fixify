@@ -1,6 +1,7 @@
 // Client for Fixify Cloud (worker/) and the self-hosted proxy (server/). Both speak the same API.
 // AI keys stay on the server; the app only sends a random device id (and an app token for a self-hosted server).
 import { deviceId } from "./settings.ts";
+import { noteQuota } from "./usage.ts";
 import type { AnalysisMode, AnsweredQuestion, ProblemAnalysis, ProblemCategory, TextBlock } from "../core/types.ts";
 import { InvalidAnalysisError, validateAnalysis } from "../core/analysis.ts";
 import { t } from "../i18n/index.ts";
@@ -15,6 +16,7 @@ export type FailureCode =
   | "timeout"
   | "invalidResponse"
   | "server"
+  | "uploadLimit"
   | "cancelled";
 
 export class ProxyError extends Error {
@@ -54,14 +56,18 @@ async function request(base: string, token: string, path: string, init: RequestI
       },
     });
     const body = await res.json().catch(() => null);
+    noteQuota(body);
     if (res.ok) return body;
     const code: string | undefined = body?.error?.code;
     const message: string | undefined = body?.error?.message;
     if (res.status === 401) throw new ProxyError("unauthorized", messages.unauthorized());
-    if (code === "daily_limit") throw new ProxyError("rateLimited", t("You've used today's free analyses on this device. They renew tomorrow."));
-    if (code === "global_limit") throw new ProxyError("rateLimited", t("Today's free analyses for all Fixify users are used up. They renew tomorrow."));
+    if (code === "upload_limit") {
+      throw new ProxyError("uploadLimit", t("You've used today's %lld photo uploads. They renew tomorrow; you can keep asking without a photo.", body?.uploadsDaily ?? 10));
+    }
+    if (code === "message_limit") throw new ProxyError("rateLimited", t("You've sent a lot of messages today. FixBot is available again tomorrow."));
+    if (code === "vision_limit") throw new ProxyError("rateLimited", t("Photo analysis is fully booked for today for all users. Text questions still work."));
     if (code === "ocr_limit") throw new ProxyError("rateLimited", t("Today's free text recognition is used up. It renews tomorrow."));
-    if (code === "upstream_rate_limited") throw new ProxyError("rateLimited", t("The free AI quota is used up for the moment. Try again in a few minutes."));
+    if (code === "upstream_rate_limited") throw new ProxyError("rateLimited", t("FixBot is very busy right now. Try again in a few minutes."));
     if (res.status === 429) {
       const after = Number(res.headers.get("retry-after"));
       throw new ProxyError(
@@ -86,22 +92,14 @@ async function request(base: string, token: string, path: string, init: RequestI
   }
 }
 
-export type Health = { reachable: true; configured: boolean; ocr: boolean; model?: string; provider?: string; remainingToday?: number; deviceDaily?: number };
+export type Health = { reachable: true; configured: boolean; ocr: boolean; chat: boolean; model?: string; provider?: string };
 
 /** Checks reachability (public /health) and the token (/v1/ping). */
 export async function checkServer(base: string, token: string): Promise<Health> {
   const health = await fetch(`${base}/health`).then((r) => r.json()).catch(() => null);
   if (!health?.ok) throw new ProxyError("unreachable", messages.unreachable());
   const ping = await request(base, token, "/v1/ping", { method: "GET", timeoutMs: 8000 });
-  return {
-    reachable: true,
-    configured: Boolean(ping.configured),
-    ocr: Boolean(ping.ocr),
-    model: ping.model,
-    provider: ping.provider,
-    remainingToday: typeof ping.remainingToday === "number" ? ping.remainingToday : undefined,
-    deviceDaily: typeof ping.deviceDaily === "number" ? ping.deviceDaily : undefined,
-  };
+  return { reachable: true, configured: Boolean(ping.configured), ocr: Boolean(ping.ocr), chat: Boolean(ping.chat), model: ping.model, provider: ping.provider };
 }
 
 export async function recognizeText(
@@ -157,12 +155,42 @@ export async function analyze(base: string, token: string, input: AnalyzeInput, 
     return {
       analysis: validateAnalysis(body?.analysis, input.images.length),
       model: String(body?.model ?? "ai"),
-      remainingToday: typeof body?.remainingToday === "number" ? (body.remainingToday as number) : null,
     };
   } catch (err) {
     if (err instanceof InvalidAnalysisError) {
       throw new ProxyError("invalidResponse", t("The analysis came back in an unexpected format, so it is not shown. (%@)", err.message));
     }
     throw err;
+  }
+}
+
+export type ChatTurn = { role: "user" | "assistant"; text: string; image?: { base64: string } | null };
+
+/** One FixBot reply. Only a photo in the newest turn is sent; the server picks the model. */
+export async function chat(base: string, token: string, input: { locale: "de" | "en"; turns: ChatTurn[]; context: string | null }, signal?: AbortSignal) {
+  const body = await request(base, token, "/v1/chat", {
+    method: "POST",
+    signal,
+    timeoutMs: 75_000,
+    body: JSON.stringify({
+      locale: input.locale,
+      context: input.context,
+      messages: input.turns.map((m, i) => ({
+        role: m.role,
+        text: m.text.slice(0, 4000),
+        image: m.image && i === input.turns.length - 1 ? { mediaType: "image/jpeg", data: m.image.base64 } : null,
+      })),
+    }),
+  });
+  if (typeof body?.reply !== "string" || !body.reply.trim()) throw new ProxyError("invalidResponse", t("FixBot could not answer. Try again."));
+  return { reply: body.reply as string, model: String(body.model ?? ""), degraded: Boolean(body.degraded) };
+}
+
+/** Refreshes the upload quota (e.g. at app start). */
+export async function refreshQuota(base: string, token: string) {
+  try {
+    await request(base, token, "/v1/ping", { method: "GET", timeoutMs: 8000 });
+  } catch {
+    // Quota display is optional; errors show up when the user actually sends something.
   }
 }

@@ -97,13 +97,16 @@ export function extractJson(text) {
   }
 }
 
-export function createOpenAIAnalyzer({ baseUrl, apiKey, model, timeoutMs = 90_000, fetchImpl = fetch }) {
-  return async function analyze(req, { signal } = {}) {
-    const ocrIds = new Set(req.images.flatMap((img, i) => (img.ocr ?? []).map((b) => `${i}:${b.id}`)));
+/**
+ * One chat completion with automatic fallback, like ChatGPT dropping to a smaller model:
+ * models are tried in order; a rate limit or overload on one moves on to the next.
+ */
+export async function chatCompletion({ baseUrl, apiKey, models, messages, json = false, maxTokens = 3000, timeoutMs = 90_000, signal, fetchImpl = fetch }) {
+  let lastLimit;
+  for (const [index, model] of models.entries()) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     signal?.addEventListener("abort", () => controller.abort());
-
     let res;
     try {
       res = await fetchImpl(`${baseUrl.replace(/\/$/, "")}/chat/completions`, {
@@ -112,13 +115,12 @@ export function createOpenAIAnalyzer({ baseUrl, apiKey, model, timeoutMs = 90_00
         signal: controller.signal,
         body: JSON.stringify({
           model,
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT + JSON_INSTRUCTIONS },
-            { role: "user", content: toOpenAIContent(buildUserContent(req)) },
-          ],
-          response_format: { type: "json_object" },
-          temperature: 0.2,
-          max_completion_tokens: 3000,
+          messages,
+          ...(json ? { response_format: { type: "json_object" } } : {}),
+          // gpt-oss models reason before answering; keep that short and out of the reply.
+          ...(model.startsWith("openai/gpt-oss") ? { reasoning_effort: "low", include_reasoning: false } : {}),
+          temperature: json ? 0.2 : 0.5,
+          max_completion_tokens: maxTokens,
         }),
       });
     } catch {
@@ -128,27 +130,50 @@ export function createOpenAIAnalyzer({ baseUrl, apiKey, model, timeoutMs = 90_00
     } finally {
       clearTimeout(timer);
     }
-
     if (res.status === 401 || res.status === 403) throw new AnalysisError("not_configured", "The server's AI key was rejected.", 503);
-    if (res.status === 429) {
-      throw new AnalysisError("upstream_rate_limited", "The free AI quota is used up for the moment. Try again later.", 503);
+    if (res.status === 429 || res.status === 503) {
+      lastLimit = res.status;
+      continue; // this model's free quota is used up: try the next, smaller one
     }
     if (!res.ok) {
       const body = await res.json().catch(() => null);
       throw new AnalysisError("upstream_error", `AI service error (${res.status}${body?.error?.message ? `: ${body.error.message}` : ""}).`, 502);
     }
-
     const body = await res.json();
     const choice = body?.choices?.[0];
-    if (choice?.finish_reason === "length") throw new AnalysisError("invalid_model_output", "The analysis was cut off before it was complete.", 502);
-    const result = validateAnalysis(normalizeLoose(extractJson(choice?.message?.content)), { imageCount: req.images.length, ocrIds });
+    if (choice?.finish_reason === "length" && json) throw new AnalysisError("invalid_model_output", "The analysis was cut off before it was complete.", 502);
+    return {
+      content: String(choice?.message?.content ?? ""),
+      model: body.model ?? model,
+      degraded: index > 0,
+      usage: { inputTokens: body.usage?.prompt_tokens ?? 0, outputTokens: body.usage?.completion_tokens ?? 0, cacheReadTokens: 0 },
+    };
+  }
+  throw new AnalysisError("upstream_rate_limited", "The free AI quota is used up for the moment. Try again later.", lastLimit === 503 ? 503 : 503);
+}
+
+/** Structured analysis through chatCompletion; `models` is the fallback chain. */
+export function createOpenAIAnalyzer({ baseUrl, apiKey, model, models, timeoutMs = 90_000, fetchImpl = fetch }) {
+  const chain = models ?? [model];
+  return async function analyze(req, { signal } = {}) {
+    const ocrIds = new Set(req.images.flatMap((img, i) => (img.ocr ?? []).map((b) => `${i}:${b.id}`)));
+    const out = await chatCompletion({
+      baseUrl,
+      apiKey,
+      models: chain,
+      json: true,
+      timeoutMs,
+      signal,
+      fetchImpl,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT + JSON_INSTRUCTIONS },
+        { role: "user", content: toOpenAIContent(buildUserContent(req)) },
+      ],
+    });
+    const result = validateAnalysis(normalizeLoose(extractJson(out.content)), { imageCount: req.images.length, ocrIds });
     if (!result.ok) {
       throw new AnalysisError("invalid_model_output", `The analysis did not match the expected format (${result.issues.join("; ")}).`, 502);
     }
-    return {
-      analysis: result.analysis,
-      model: body.model ?? model,
-      usage: { inputTokens: body.usage?.prompt_tokens ?? 0, outputTokens: body.usage?.completion_tokens ?? 0, cacheReadTokens: 0 },
-    };
+    return { analysis: result.analysis, model: out.model, usage: out.usage };
   };
 }

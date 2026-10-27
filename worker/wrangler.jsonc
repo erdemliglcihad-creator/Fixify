@@ -18,10 +18,14 @@
     "AI_MODEL": "qwen/qwen3.8-27b",
     // Claude later: set "AI_PROVIDER": "anthropic" and the ANTHROPIC_API_KEY secret.
     "AI_PROVIDER": "openai-compatible",
-    // Daily limits. Groq's free vision quota (~200k tokens/day) covers roughly 30 analyses for everyone together.
-    "DEVICE_DAILY": "10",
-    "IP_DAILY": "30",
-    "GLOBAL_ANALYZE_DAILY": "30",
+    // FixBot text chain: tried in order; a used-up free quota moves on to the next, smaller model.
+    "CHAT_MODELS": "openai/gpt-oss-120b,openai/gpt-oss-20b,llama-3.1-8b-instant",
+    // Daily limits. 10 different photos per device; messages have a generous hidden fair-use cap.
+    // Groq's free vision quota (~200k tokens/day) covers roughly 50 photo calls for everyone together.
+    "UPLOADS_DAILY": "10",
+    "IP_UPLOADS_DAILY": "30",
+    "MESSAGES_DAILY": "150",
+    "GLOBAL_VISION_DAILY": "50",
     "GLOBAL_OCR_DAILY": "450",
     "MAX_IMAGES": "2",
     // Draw AI-estimated marker boxes for this provider? Off: qwen's boxes were measurably wrong.

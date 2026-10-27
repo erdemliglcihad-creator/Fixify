@@ -18,6 +18,8 @@ export type Settings = {
   consent: boolean;
   reminders: boolean;
   seenCameraTip: boolean;
+  /** The welcome screen (features, daily limits, privacy) was shown once. */
+  seenWelcome: boolean;
   autoDeleteDays: number;
 };
 
@@ -29,6 +31,7 @@ const DEFAULTS: Settings = {
   consent: false,
   reminders: false,
   seenCameraTip: false,
+  seenWelcome: false,
   autoDeleteDays: 0,
 };
 

@@ -9,7 +9,7 @@ import { analyze, ProxyError, recognizeText } from "./proxy.ts";
 import { getSession, logEvent, updateSession } from "./sessions.ts";
 import { isServerConfigured, serverBase, settingsStore } from "./settings.ts";
 import { createStore, useStore } from "./store.ts";
-import { limits, setQuota } from "./usage.ts";
+import { limits } from "./usage.ts";
 
 export type Phase = "preparing" | "recognizing" | "analyzing" | "checking";
 export type Job = { phase: Phase; mode: AnalysisMode; startedAt: number; controller: AbortController };
@@ -162,7 +162,6 @@ async function run(sessionId: string, mode: AnalysisMode, feedback: string | nul
       );
       return next;
     });
-    if (result.remainingToday !== null) setQuota({ remainingToday: result.remainingToday });
   } catch (err) {
     const e = err instanceof ProxyError ? err : new ProxyError("server", String((err as Error)?.message ?? err));
     if (e.code === "cancelled") {

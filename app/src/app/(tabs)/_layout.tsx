@@ -44,7 +44,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="index" options={{ title: t("Home"), tabBarIcon: icon("home-outline", "home") }} />
       {/* The scan tab is the camera itself: full screen, no tab bar. */}
       <Tabs.Screen name="scan" options={{ title: t("Scan"), tabBarStyle: { display: "none" }, tabBarIcon: icon("scan-outline", "scan") }} />
-      <Tabs.Screen name="sessions" options={{ title: t("Sessions"), tabBarIcon: icon("build-outline", "build") }} />
+      <Tabs.Screen name="fixbot" options={{ title: "FixBot", tabBarIcon: icon("chatbubbles-outline", "chatbubbles") }} />
       <Tabs.Screen name="library" options={{ title: t("Library"), tabBarIcon: icon("library-outline", "library") }} />
       <Tabs.Screen name="settings" options={{ title: t("Settings"), tabBarIcon: icon("settings-outline", "settings") }} />
     </Tabs>
