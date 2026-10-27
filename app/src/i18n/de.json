@@ -1,6 +1,9 @@
 {
   "%@ %llds": "%1$@ %2$lld s",
+  "%lld days ago": "vor %lld Tagen",
+  "%lld h ago": "vor %lld Std.",
   "%lld min": "%lld Min.",
+  "%lld min ago": "vor %lld Min.",
   "%lld of %lld checks confirmed": "%1$lld von %2$lld Prüfungen bestätigt",
   "%lld of %lld photos": "%1$lld von %2$lld Fotos",
   "%lld s": "%lld s",
@@ -450,9 +453,11 @@
   "Your server forwards this to Claude to create the analysis. The server logs only timing and sizes, never images or text.": "Dein Server leitet dies an Claude weiter, um die Analyse zu erstellen. Der Server protokolliert nur Dauer und Größen, nie Bilder oder Text.",
   "Your sessions": "Deine Sessions",
   "every %lld months": "alle %lld Monate",
+  "just now": "gerade eben",
   "not marked on the image": "nicht im Bild markiert",
   "per day": "pro Tag",
   "per month": "pro Monat",
   "per week": "pro Woche",
-  "per year": "pro Jahr"
+  "per year": "pro Jahr",
+  "yesterday": "gestern"
 }

@@ -123,3 +123,17 @@ test("format strings use catalog placeholders", () => {
   assert.equal(formatString("Next: %@", ["Restart"]), "Next: Restart");
   assert.equal(formatString("100%%", []), "100%");
 });
+
+test("relative dates work without Intl", async () => {
+  const { agoParts, formatDate, formatDateTime } = await import("../src/core/format.ts");
+  const now = new Date(2026, 9, 27, 15, 0).getTime();
+  assert.deepEqual(agoParts(now - 20_000, now), { unit: "now", n: 0 });
+  assert.deepEqual(agoParts(now - 5 * 60_000, now), { unit: "minutes", n: 5 });
+  assert.deepEqual(agoParts(now - 3 * 3_600_000, now), { unit: "hours", n: 3 });
+  assert.deepEqual(agoParts(now - 30 * 3_600_000, now), { unit: "yesterday", n: 1 });
+  assert.deepEqual(agoParts(now - 4 * 86_400_000, now), { unit: "days", n: 4 });
+  assert.equal(agoParts(now - 10 * 86_400_000, now).unit, "date");
+  assert.equal(formatDate(now, "de"), "27.10.2026");
+  assert.equal(formatDate(now, "en"), "10/27/2026");
+  assert.equal(formatDateTime(new Date(2026, 9, 27, 9, 5).getTime(), "de"), "27.10.2026, 09:05");
+});

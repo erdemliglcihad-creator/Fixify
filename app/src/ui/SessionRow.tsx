@@ -3,7 +3,8 @@ import { Image } from "expo-image";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { currentAnalysis, currentStep, progress } from "../core/session.ts";
 import type { FixSession } from "../core/types.ts";
-import { t } from "../i18n/index.ts";
+import { lang, t } from "../i18n/index.ts";
+import { agoParts, formatDate } from "../core/format.ts";
 import { categoryInfo } from "./categories.ts";
 import { Caption, ProgressBar, StatusBadge } from "./components.tsx";
 import { space, type, useTheme } from "./theme.ts";
@@ -20,11 +21,21 @@ export function Thumb({ session, size }: { session: FixSession; size: number }) 
 }
 
 export function relativeTime(ms: number) {
-  const diff = (ms - Date.now()) / 1000;
-  const fmt = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
-  const units: [Intl.RelativeTimeFormatUnit, number][] = [["day", 86400], ["hour", 3600], ["minute", 60]];
-  for (const [unit, sec] of units) if (Math.abs(diff) >= sec) return fmt.format(Math.round(diff / sec), unit);
-  return fmt.format(0, "minute");
+  const ago = agoParts(ms, Date.now());
+  switch (ago.unit) {
+    case "now":
+      return t("just now");
+    case "minutes":
+      return t("%lld min ago", ago.n);
+    case "hours":
+      return t("%lld h ago", ago.n);
+    case "yesterday":
+      return t("yesterday");
+    case "days":
+      return t("%lld days ago", ago.n);
+    default:
+      return formatDate(ms, lang);
+  }
 }
 
 export function SessionRow({ session, onPress }: { session: FixSession; onPress: () => void }) {

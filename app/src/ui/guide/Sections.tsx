@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { findingNumber } from "../../core/analysis.ts";
 import type { AnsweredQuestion, AnalysisRevision, Cause, Diagnostic, Finding, FixSession, FixStep, ProblemAnalysis, Question, SessionEvent, StepState } from "../../core/types.ts";
-import { t } from "../../i18n/index.ts";
+import { lang, t } from "../../i18n/index.ts";
+import { formatDateTime } from "../../core/format.ts";
 import { phaseTitle, type Failure, type Job, type Preflight } from "../../services/analysis.ts";
 import { categoryInfo, type IconName } from "../categories.ts";
 import { Body, Button, Caption, Card, Chip, Divider, MarkerBadge, SectionTitle } from "../components.tsx";
@@ -431,7 +432,7 @@ export function HistoryCard({ events }: { events: SessionEvent[] }) {
             <Ionicons name={eventIcon[e.kind]} size={17} color={e.kind === "analysisFailed" || e.kind === "stepFailed" ? c.danger : c.accent} />
             <View style={{ flex: 1 }}>
               <Text style={{ color: c.text, fontSize: 14 }}>{e.text}</Text>
-              <Caption style={{ fontSize: 12 }}>{new Date(e.date).toLocaleString()}</Caption>
+              <Caption style={{ fontSize: 12 }}>{formatDateTime(e.date, lang)}</Caption>
             </View>
           </View>
         ))}

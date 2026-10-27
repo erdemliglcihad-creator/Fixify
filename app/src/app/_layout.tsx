@@ -7,6 +7,9 @@ import { applyRetention, loadSessions } from "../services/sessions.ts";
 import { loadSettings, settingsStore } from "../services/settings.ts";
 import { useTheme } from "../ui/theme.ts";
 
+// iOS 26 headers bring their own Liquid Glass scroll edge effect; an extra blur would stack on top of it.
+const IOS_26 = Platform.OS === "ios" && parseInt(String(Platform.Version), 10) >= 26;
+
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
   const { c, dark } = useTheme();
@@ -36,7 +39,7 @@ export default function RootLayout() {
         {/* iOS: translucent native header (Liquid Glass on iOS 26); content scrolls under it. */}
         <Stack.Screen
           name="session/[id]"
-          options={{ title: "", headerTransparent: Platform.OS === "ios", headerBlurEffect: Platform.OS === "ios" ? "systemChromeMaterial" : undefined }}
+          options={{ title: "", headerTransparent: Platform.OS === "ios", headerBlurEffect: Platform.OS === "ios" && !IOS_26 ? "systemChromeMaterial" : undefined }}
         />
         <Stack.Screen name="review" options={{ presentation: "modal", title: t("Review") }} />
         <Stack.Screen name="privacy" options={{ title: t("What Fixify processes") }} />
