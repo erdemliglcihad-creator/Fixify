@@ -184,6 +184,11 @@ export default {
 
     try {
       const result = await analyzerFor(env)(req, { signal: request.signal });
+      // Small open models place boxes poorly (tested: off by a third of the image height). Unless trusted,
+      // only OCR-anchored markers are drawn, so the app never points at the wrong spot.
+      if (env.AI_PROVIDER !== "anthropic" && env.TRUST_AI_BOXES !== "true") {
+        result.analysis.findings = result.analysis.findings.map((f) => ({ ...f, box: null, boxConfidence: "none" }));
+      }
       const used = await limiter.peek(day, [deviceKey]);
       const remainingToday = Math.max(0, limits.deviceDaily - used[deviceKey]);
       return json(200, { requestId: crypto.randomUUID().slice(0, 8), ...result, remainingToday }, { "x-fixify-remaining": String(remainingToday) });

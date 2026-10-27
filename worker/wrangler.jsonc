@@ -23,7 +23,9 @@
     "IP_DAILY": "30",
     "GLOBAL_ANALYZE_DAILY": "30",
     "GLOBAL_OCR_DAILY": "450",
-    "MAX_IMAGES": "2"
+    "MAX_IMAGES": "2",
+    // Draw AI-estimated marker boxes for this provider? Off: qwen's boxes were measurably wrong.
+    "TRUST_AI_BOXES": "false"
   },
   "observability": { "enabled": true }
 }
