@@ -1,4 +1,4 @@
-// FixBot conversation: one ongoing chat, kept on this iPhone. Replies come from Fixify Cloud (Groq).
+// FixVoice conversation memory: kept on this iPhone so a call can refer to what was said before. Replies come from Fixify Cloud (Groq).
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Crypto from "expo-crypto";
 import type { FixSession } from "../core/types.ts";
@@ -55,13 +55,13 @@ export function newChat() {
   persist();
 }
 
-/** Ask FixBot about a Fix session: its summary goes along as context. */
+/** Ask FixVoice about a Fix session: its summary goes along as context. */
 export function setChatContext(sessionId: string | null) {
   chatStore.set((s) => ({ ...s, contextSessionId: sessionId }));
   persist();
 }
 
-/** Compact, factual summary of a session for FixBot (no photos). */
+/** Compact, factual summary of a session for FixVoice (no photos). */
 export function sessionContext(session: FixSession): string {
   const a = currentAnalysis(session);
   const step = currentStep(session);
@@ -92,7 +92,7 @@ export function cancelReply() {
   controller?.abort();
 }
 
-/** Sends a message and resolves with FixBot's reply, or null if it failed (the error is on the message). */
+/** Sends a message and resolves with FixVoice's reply, or null if it failed (the error is on the message). */
 export async function sendMessage(text: string, photo: ChatPhoto | null, options: { voice?: boolean } = {}): Promise<ChatMessage | null> {
   const s = settingsStore.get();
   const base = serverBase(s);
@@ -129,12 +129,17 @@ export async function sendMessage(text: string, photo: ChatPhoto | null, options
     const cleaned = turns.map((turn, i) => (i === turns.length - 1 ? turn : { ...turn, text: turn.image ? `[photo] ${turn.text}` : turn.text, image: null }));
     const contextId = chatStore.get().contextSessionId;
     const session = contextId ? getSession(contextId) : null;
-    const out = await chat(base, s.provider === "proxy" ? s.appToken : "", { locale: lang, turns: cleaned, context: session ? sessionContext(session) : null }, controller.signal);
+    const out = await chat(
+      base,
+      s.provider === "proxy" ? s.appToken : "",
+      { locale: lang, turns: cleaned, context: session ? sessionContext(session) : null, mode: options.voice ? "voice" : "chat" },
+      controller.signal,
+    );
     const reply: ChatMessage = { id: Crypto.randomUUID(), role: "assistant", text: out.reply, createdAt: Date.now(), model: out.model, degraded: out.degraded };
     append(reply);
     return reply;
   } catch (err) {
-    const message = err instanceof ProxyError ? (err.code === "cancelled" ? t("Stopped.") : err.message) : t("FixBot could not answer. Try again.");
+    const message = err instanceof ProxyError ? (err.code === "cancelled" ? t("Stopped.") : err.message) : t("FixVoice could not answer. Try again.");
     markFailed(userMessage.id, message);
     return null;
   } finally {

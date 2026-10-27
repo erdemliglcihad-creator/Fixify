@@ -2,7 +2,7 @@
 import { z } from "zod";
 import { chatCompletion } from "./openai.mjs";
 
-export const FIXBOT_PROMPT = `You are FixBot, the assistant inside Fixify, an iPhone app that helps people solve practical problems: computers and software, Wi-Fi and Bluetooth, printers and other devices, household appliances, everyday objects, documents and forms.
+export const FIXBOT_PROMPT = `You are FixVoice, the voice assistant inside Fixify, an iPhone app that helps people solve practical problems: computers and software, Wi-Fi and Bluetooth, printers and other devices, household appliances, everyday objects, documents and forms.
 
 How you answer
 - Be concrete and practical. Short paragraphs, numbered steps when there is something to do, at most about 180 words unless the user asks for more.
@@ -24,7 +24,16 @@ export const ChatRequestSchema = z.object({
   messages: z.array(Message).min(1).max(24),
   /** Short summary of a Fix session the user is asking about. */
   context: z.string().max(3000).nullable().optional(),
+  /** "voice": a spoken phone-style call (FixVoice), answers are read aloud. */
+  mode: z.enum(["chat", "voice"]).default("chat"),
 });
+
+const VOICE_RULES = `
+
+This is a live voice call (FixVoice). Your answer is read aloud:
+- Talk like a calm, friendly technician on the phone. Plain sentences, no markdown, no lists, no symbols, no emojis.
+- Keep it short: 2 to 4 sentences, at most about 70 words. Give one step at a time and ask if it worked before the next.
+- If you need details, ask exactly one short question.`;
 
 /** Only a photo in the newest message is sent (to the vision model); older ones become "[photo]" to save tokens. */
 export function buildChatMessages(req) {
@@ -32,6 +41,7 @@ export function buildChatMessages(req) {
   const lastImageIndex = req.messages[last].role === "user" && req.messages[last].image ? last : -1;
   const system =
     FIXBOT_PROMPT +
+    (req.mode === "voice" ? VOICE_RULES : "") +
     `\n\nReply in: ${req.locale === "de" ? "German" : "English"}.` +
     (req.context ? `\n\nThe user is asking about this Fixify session:\n${req.context}` : "");
   const messages = [{ role: "system", content: system }];

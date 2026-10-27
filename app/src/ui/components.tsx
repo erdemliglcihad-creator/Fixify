@@ -6,7 +6,7 @@ import type { ProblemAnalysis, SessionStatus } from "../core/types.ts";
 import { t } from "../i18n/index.ts";
 import { statusInfo, type IconName } from "./categories.ts";
 import { Glass } from "./Glass.tsx";
-import { radius, space, type, useTheme, type Palette } from "./theme.ts";
+import { radius, space, type, useTheme, type Palette, font } from "./theme.ts";
 
 export function Card({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
   const { c, dark } = useTheme();
@@ -42,7 +42,7 @@ export function Chip({ text, color, icon }: { text: string; color?: string; icon
   return (
     <View style={[styles.chip, { backgroundColor: tint + "22" }]}>
       {icon && <Ionicons name={icon} size={12} color={tint} />}
-      <Text style={[type.small, { color: tint, fontWeight: "600" }]}>{text}</Text>
+      <Text style={[type.small, { color: tint, fontFamily: font.semibold }]}>{text}</Text>
     </View>
   );
 }
@@ -71,7 +71,7 @@ export function MarkerBadge({ number, size = 24, estimated, dimmed }: { number: 
         },
       ]}
     >
-      <Text style={{ fontSize: size * 0.5, fontWeight: "800", color: "#000" }}>{number}</Text>
+      <Text style={{ fontSize: size * 0.5, fontFamily: font.bold, color: "#000" }}>{number}</Text>
     </View>
   );
 }
@@ -161,7 +161,7 @@ export function SafetyBanner({ safety }: { safety: ProblemAnalysis["safety"] }) 
         <Body key={w}>{w}</Body>
       ))}
       {safety.recommendProfessional && (
-        <Body style={{ fontWeight: "600" }}>{t("We recommend getting a qualified professional for this. Do not continue if you are unsure.")}</Body>
+        <Body style={{ fontFamily: font.semibold }}>{t("We recommend getting a qualified professional for this. Do not continue if you are unsure.")}</Body>
       )}
     </View>
   );

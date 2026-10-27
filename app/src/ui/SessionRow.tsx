@@ -7,7 +7,7 @@ import { lang, t } from "../i18n/index.ts";
 import { agoParts, formatDate } from "../core/format.ts";
 import { categoryInfo } from "./categories.ts";
 import { Caption, ProgressBar, StatusBadge } from "./components.tsx";
-import { space, type, useTheme } from "./theme.ts";
+import { space, type, useTheme, font } from "./theme.ts";
 
 export function Thumb({ session, size }: { session: FixSession; size: number }) {
   const { c } = useTheme();
@@ -73,7 +73,7 @@ export function ActiveCard({ session, onPress }: { session: FixSession; onPress:
           </View>
         )}
         <View style={styles.progressPill}>
-          <Text style={{ color: "#fff", fontSize: 12, fontWeight: "700" }}>{Math.round(progress(session) * 100)}%</Text>
+          <Text style={{ color: "#fff", fontSize: 12, fontFamily: font.bold }}>{Math.round(progress(session) * 100)}%</Text>
         </View>
       </View>
       <Text style={[type.headline, { color: c.text }]} numberOfLines={1}>

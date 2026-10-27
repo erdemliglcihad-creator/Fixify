@@ -21,7 +21,11 @@ export type Settings = {
   /** The welcome screen (features, daily limits, privacy) was shown once. */
   seenWelcome: boolean;
   autoDeleteDays: number;
+  /** FixVoice speaks with this voice (German or English follows the app language). */
+  voice: VoiceGender;
 };
+
+export type VoiceGender = "female" | "male";
 
 const DEFAULTS: Settings = {
   // Dark-first: the gradients are designed for a dark base. Light stays available in Settings.
@@ -34,6 +38,7 @@ const DEFAULTS: Settings = {
   seenCameraTip: false,
   seenWelcome: false,
   autoDeleteDays: 0,
+  voice: "female",
 };
 
 const KEY = "settings.v1";

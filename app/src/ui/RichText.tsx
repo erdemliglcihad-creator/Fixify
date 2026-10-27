@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
-import { space, type } from "./theme.ts";
+import { space, type, font } from "./theme.ts";
 
-/** Renders the small markdown subset FixBot uses: **bold**, "-" bullets, "1." lists and "#" headings. */
+/** Renders the small markdown subset FixVoice uses: **bold**, "-" bullets, "1." lists and "#" headings. */
 export function RichText({ text, color }: { text: string; color: string }) {
   const lines = text.replace(/\r/g, "").split("\n");
   return (
@@ -42,7 +42,7 @@ function inline(text: string, color: string) {
   // Split on **bold** spans; everything else is plain text.
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
     part.startsWith("**") && part.endsWith("**") && part.length > 4 ? (
-      <Text key={i} style={{ fontWeight: "700", color }}>
+      <Text key={i} style={{ fontFamily: font.bold, color }}>
         {part.slice(2, -2)}
       </Text>
     ) : (

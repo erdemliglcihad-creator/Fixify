@@ -1,5 +1,5 @@
 // Glowing wave orb for the voice mode (Skia, UI thread). Wave rings wobble with the voice level:
-// your microphone while listening, word pulses while FixBot speaks, a slow breath while thinking.
+// your microphone while listening, word pulses while FixVoice speaks, a slow breath while thinking.
 import { BlurMask, Canvas, Circle, Group, Path, RadialGradient, usePathValue, vec } from "@shopify/react-native-skia";
 import { useDerivedValue, useFrameCallback, useReducedMotion, useSharedValue, type SharedValue } from "react-native-reanimated";
 

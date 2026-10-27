@@ -237,13 +237,13 @@ function Guide({ session }: { session: FixSession }) {
         <Card style={{ gap: space.s }}>
           <SectionTitle title={t("More")} icon="ellipsis-horizontal-circle-outline" />
           <Button
-            title={t("Ask FixBot about this")}
-            icon="chatbubbles-outline"
+            title={t("Ask FixVoice about this")}
+            icon="mic-outline"
             kind="plain"
             compact
             onPress={() => {
               setChatContext(session.id);
-              router.navigate("/fixbot");
+              router.navigate("/fixvoice");
             }}
           />
           <Button title={t("Add a photo")} icon="camera-outline" kind="plain" compact onPress={() => startScan({ category: session.category, targetSessionId: session.id })} />

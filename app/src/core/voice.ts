@@ -60,7 +60,7 @@ export function vadStep(state: VadState, db: number | undefined, now: number, o:
   return { state: next, event: "none" };
 }
 
-/** FixBot answers in light markdown; read it aloud without the symbols. */
+/** FixVoice answers in light markdown; read it aloud without the symbols. */
 export function speakable(markdown: string) {
   return markdown
     .replace(/```[\s\S]*?```/g, " ")

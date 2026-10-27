@@ -1,3 +1,4 @@
+import { useFonts } from "expo-font";
 import { DarkTheme, DefaultTheme, router, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -17,6 +18,18 @@ const IOS_26 = Platform.OS === "ios" && parseInt(String(Platform.Version), 10) >
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
   const { c, dark } = useTheme();
+  const [fontsLoaded, fontError] = useFonts({
+    "Montserrat-Light": require("../../assets/fonts/Montserrat-Light.ttf"),
+    "Montserrat-Regular": require("../../assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Medium": require("../../assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-SemiBold": require("../../assets/fonts/Montserrat-SemiBold.ttf"),
+    "Montserrat-Bold": require("../../assets/fonts/Montserrat-Bold.ttf"),
+    // Demo license: these files stay on this PC (gitignored).
+    "NeueMontreal-Light": require("../../assets/fonts/NeueMontreal-Light.otf"),
+    "NeueMontreal-Regular": require("../../assets/fonts/NeueMontreal-Regular.otf"),
+    "NeueMontreal-Medium": require("../../assets/fonts/NeueMontreal-Medium.otf"),
+    "NeueMontreal-Bold": require("../../assets/fonts/NeueMontreal-Bold.otf"),
+  });
 
   useEffect(() => {
     Promise.all([loadSettings(), loadSessions(), loadChat()])
@@ -38,7 +51,7 @@ export default function RootLayout() {
   // Screens are transparent: one global aurora glows behind all of them and morphs per area.
   const navTheme = { ...base, colors: { ...base.colors, primary: c.accent, background: "transparent", card: c.surface, text: c.text, border: c.hairline } };
 
-  if (!ready) {
+  if (!ready || !(fontsLoaded || fontError)) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: c.background }}>
         <ActivityIndicator />
@@ -63,7 +76,6 @@ export default function RootLayout() {
         <Stack.Screen name="privacy" options={{ title: t("What Fixify processes") }} />
         <Stack.Screen name="help" options={{ title: t("How Fixify works") }} />
         <Stack.Screen name="server-help" options={{ title: t("Server setup") }} />
-        <Stack.Screen name="voice" options={{ presentation: "fullScreenModal", headerShown: false, animation: "fade" }} />
       </Stack>
       </GestureHandlerRootView>
     </ThemeProvider>

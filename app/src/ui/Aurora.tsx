@@ -49,7 +49,7 @@ export function Aurora() {
   return (
     <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
       <Fill color={c.background} />
-      <Group opacity={dark ? 0.85 : 0.45}>
+      <Group opacity={dark ? 0.6 : 0.35}>
         <Circle cx={x0} cy={y0} r={r} color={c0}>
           <BlurMask blur={120} style="normal" />
         </Circle>

@@ -1,13 +1,13 @@
 import { ScrollView, View } from "react-native";
 import { t } from "../i18n/index.ts";
 import { Caption, Card, InfoRow } from "../ui/components.tsx";
-import { space, useTheme } from "../ui/theme.ts";
+import { space, useTheme, font } from "../ui/theme.ts";
 
 export default function Privacy() {
   const { c } = useTheme();
   const group = (title: string, rows: [Parameters<typeof InfoRow>[0]["icon"], string, string][]) => (
     <View style={{ gap: space.s }}>
-      <Caption style={{ textTransform: "uppercase", fontWeight: "600", marginLeft: space.s }}>{title}</Caption>
+      <Caption style={{ textTransform: "uppercase", fontFamily: font.semibold, marginLeft: space.s }}>{title}</Caption>
       <Card>
         {rows.map(([icon, title, detail]) => (
           <InfoRow key={title} icon={icon} title={title} detail={detail} />

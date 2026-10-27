@@ -16,13 +16,13 @@ import { useCurrentArea } from "../services/area.ts";
 import type { IconName } from "./categories.ts";
 import { Glass } from "./Glass.tsx";
 import { PressScale } from "./motion.tsx";
-import { areaColors, useTheme } from "./theme.ts";
+import { areaColors, useTheme, font } from "./theme.ts";
 
 type TabBarProps = Parameters<NonNullable<ComponentProps<typeof Tabs>["tabBar"]>>[0];
 
 const ICONS: Record<string, [IconName, IconName]> = {
   index: ["home-outline", "home"],
-  fixbot: ["sparkles-outline", "sparkles"],
+  fixvoice: ["mic-outline", "mic"],
   library: ["albums-outline", "albums"],
   settings: ["options-outline", "options"],
 };
@@ -182,6 +182,6 @@ const styles = StyleSheet.create({
   bar: { flexDirection: "row", height: 68, borderRadius: 34, alignItems: "center" },
   slot: { flex: 1, alignItems: "center", justifyContent: "center", gap: 2, height: "100%" },
   pill: { position: "absolute", left: PILL_INSET, top: PILL_INSET, bottom: PILL_INSET, borderRadius: 28, borderWidth: StyleSheet.hairlineWidth, borderColor: "transparent" },
-  label: { fontSize: 10.5, fontWeight: "600", letterSpacing: 0.1 },
+  label: { fontSize: 10.5, fontFamily: font.semibold, letterSpacing: 0.1 },
   center: { width: 60, height: 60, borderRadius: 30, marginTop: -26, alignItems: "center", justifyContent: "center", overflow: "hidden" },
 });

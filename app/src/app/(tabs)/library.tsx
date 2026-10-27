@@ -10,7 +10,7 @@ import { useSessions } from "../../services/sessions.ts";
 import { categoryInfo } from "../../ui/categories.ts";
 import { Caption, Card, Chip, Divider, StatusBadge } from "../../ui/components.tsx";
 import { SessionRow } from "../../ui/SessionRow.tsx";
-import { radius, space, type, useTheme } from "../../ui/theme.ts";
+import { radius, space, type, useTheme, font } from "../../ui/theme.ts";
 import { Screen } from "../../ui/Screen.tsx";
 import { useArea } from "../../services/area.ts";
 
@@ -59,7 +59,7 @@ export default function Library() {
       <View style={[styles.segment, { backgroundColor: c.hairline }]}>
         {(["sessions", "photos", "guides"] as const).map((s) => (
           <Pressable key={s} onPress={() => setScope(s)} style={[styles.segmentItem, scope === s && { backgroundColor: c.surface }]} aria-selected={scope === s}>
-            <Text style={{ color: c.text, fontWeight: scope === s ? "600" : "400", fontSize: 14 }}>
+            <Text style={{ color: c.text, fontFamily: scope === s ? font.semibold : font.regular, fontSize: 14 }}>
               {s === "sessions" ? t("Sessions") : s === "photos" ? t("Photos") : t("Guides")}
             </Text>
           </Pressable>

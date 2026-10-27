@@ -10,7 +10,7 @@ export default function TabsLayout() {
       screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: "transparent" }, animation: "shift" }}
     >
       <Tabs.Screen name="index" options={{ title: t("Home") }} />
-      <Tabs.Screen name="fixbot" options={{ title: "FixBot" }} />
+      <Tabs.Screen name="fixvoice" options={{ title: "FixVoice" }} />
       {/* The scan tab is the camera itself: full screen, no tab bar. The bar shows it as the raised middle button. */}
       <Tabs.Screen name="scan" options={{ title: t("Scan"), tabBarStyle: { display: "none" } }} />
       <Tabs.Screen name="library" options={{ title: t("Library") }} />

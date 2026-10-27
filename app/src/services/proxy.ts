@@ -64,10 +64,10 @@ async function request(base: string, token: string, path: string, init: RequestI
     if (code === "upload_limit") {
       throw new ProxyError("uploadLimit", t("You've used today's %lld photo uploads. They renew tomorrow; you can keep asking without a photo.", body?.uploadsDaily ?? 10));
     }
-    if (code === "message_limit") throw new ProxyError("rateLimited", t("You've sent a lot of messages today. FixBot is available again tomorrow."));
+    if (code === "message_limit") throw new ProxyError("rateLimited", t("You've sent a lot of messages today. FixVoice is available again tomorrow."));
     if (code === "vision_limit") throw new ProxyError("rateLimited", t("Photo analysis is fully booked for today for all users. Text questions still work."));
     if (code === "ocr_limit") throw new ProxyError("rateLimited", t("Today's free text recognition is used up. It renews tomorrow."));
-    if (code === "upstream_rate_limited") throw new ProxyError("rateLimited", t("FixBot is very busy right now. Try again in a few minutes."));
+    if (code === "upstream_rate_limited") throw new ProxyError("rateLimited", t("FixVoice is very busy right now. Try again in a few minutes."));
     if (res.status === 429) {
       const after = Number(res.headers.get("retry-after"));
       throw new ProxyError(
@@ -166,8 +166,13 @@ export async function analyze(base: string, token: string, input: AnalyzeInput, 
 
 export type ChatTurn = { role: "user" | "assistant"; text: string; image?: { base64: string } | null };
 
-/** One FixBot reply. Only a photo in the newest turn is sent; the server picks the model. */
-export async function chat(base: string, token: string, input: { locale: "de" | "en"; turns: ChatTurn[]; context: string | null }, signal?: AbortSignal) {
+/** One FixVoice reply. Only a photo in the newest turn is sent; the server picks the model. */
+export async function chat(
+  base: string,
+  token: string,
+  input: { locale: "de" | "en"; turns: ChatTurn[]; context: string | null; mode?: "chat" | "voice" },
+  signal?: AbortSignal,
+) {
   const body = await request(base, token, "/v1/chat", {
     method: "POST",
     signal,
@@ -175,6 +180,7 @@ export async function chat(base: string, token: string, input: { locale: "de" | 
     body: JSON.stringify({
       locale: input.locale,
       context: input.context,
+      mode: input.mode ?? "chat",
       messages: input.turns.map((m, i) => ({
         role: m.role,
         text: m.text.slice(0, 4000),
@@ -182,7 +188,7 @@ export async function chat(base: string, token: string, input: { locale: "de" | 
       })),
     }),
   });
-  if (typeof body?.reply !== "string" || !body.reply.trim()) throw new ProxyError("invalidResponse", t("FixBot could not answer. Try again."));
+  if (typeof body?.reply !== "string" || !body.reply.trim()) throw new ProxyError("invalidResponse", t("FixVoice could not answer. Try again."));
   return { reply: body.reply as string, model: String(body.model ?? ""), degraded: Boolean(body.degraded) };
 }
 
@@ -192,6 +198,18 @@ export type AudioType = "audio/m4a" | "audio/mp4" | "audio/webm" | "audio/wav" |
 export async function transcribe(base: string, token: string, input: { locale: "de" | "en"; mediaType: AudioType; data: string }, signal?: AbortSignal) {
   const body = await request(base, token, "/v1/transcribe", { method: "POST", signal, timeoutMs: 30_000, body: JSON.stringify(input) });
   return typeof body?.text === "string" ? body.text.trim() : "";
+}
+
+/** Server voice (Fish Audio). Resolves with MP3 bytes, or null when the server has no voice set up. */
+export async function serverSpeech(base: string, token: string, input: { locale: "de" | "en"; gender: "female" | "male"; text: string }, signal?: AbortSignal) {
+  const res = await fetch(`${base}/v1/tts`, {
+    method: "POST",
+    signal,
+    headers: { "content-type": "application/json", "x-fixify-device": deviceId, ...(token ? { authorization: `Bearer ${token}` } : {}) },
+    body: JSON.stringify({ ...input, text: input.text.slice(0, 1500) }),
+  });
+  if (!res.ok) return null;
+  return res.arrayBuffer();
 }
 
 /** Refreshes the upload quota (e.g. at app start). */

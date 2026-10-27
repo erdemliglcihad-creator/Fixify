@@ -10,12 +10,12 @@ import { useSessions } from "../../services/sessions.ts";
 import { isServerConfigured, useSettings } from "../../services/settings.ts";
 import { useQuota } from "../../services/usage.ts";
 import { categoryInfo, suggestedCategories } from "../../ui/categories.ts";
-import { Caption, Card, Divider, SectionTitle } from "../../ui/components.tsx";
-import { Glass, GlassGroup } from "../../ui/Glass.tsx";
+import { Caption, Divider } from "../../ui/components.tsx";
+import { Glass } from "../../ui/Glass.tsx";
 import { GradientText, PressScale, Rise } from "../../ui/motion.tsx";
 import { Screen } from "../../ui/Screen.tsx";
 import { ActiveCard, SessionRow } from "../../ui/SessionRow.tsx";
-import { areaColors, radius, space, type, useTheme } from "../../ui/theme.ts";
+import { font, radius, space, type, useTheme } from "../../ui/theme.ts";
 
 function greeting() {
   const h = new Date().getHours();
@@ -28,98 +28,90 @@ export default function Home() {
   const sessions = useSessions();
   const settings = useSettings();
   const quota = useQuota();
-  const glow = areaColors.home.glow;
   const open = sessions.filter((s) => isOpen(s.status)).sort((a, b) => b.updatedAt - a.updatedAt);
   const solved = sessions.filter((s) => s.status === "solved").sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 3);
 
   return (
-    <Screen>
+    <Screen contentStyle={{ gap: space.xxl }}>
       <Rise index={0} style={styles.topRow}>
-        <View style={styles.brand}>
-          <LinearGradient colors={[glow[2], glow[0], glow[1]]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.brandDot}>
-            <Text style={{ fontSize: 16 }}>🛠️</Text>
-          </LinearGradient>
-          <Text style={[type.headline, { color: c.text }]}>Fixify</Text>
-        </View>
+        <Text style={[styles.wordmark, { color: c.text }]}>Fixify</Text>
         {quota.uploadsLeft !== null && quota.uploadsDaily ? (
-          <Glass style={styles.quota}>
-            <View accessible accessibilityLabel={t("%lld of %lld photo uploads left today", quota.uploadsLeft, quota.uploadsDaily)} style={styles.quotaInner}>
-              <Text style={{ fontSize: 13 }}>📸</Text>
-              <Text style={{ color: quota.uploadsLeft > 0 ? c.text : c.caution, fontSize: 13, fontWeight: "700" }}>
-                {quota.uploadsLeft}/{quota.uploadsDaily}
-              </Text>
-            </View>
-          </Glass>
+          <View
+            style={[styles.quota, { borderColor: c.hairline }]}
+            accessible
+            accessibilityLabel={t("%lld of %lld photo uploads left today", quota.uploadsLeft, quota.uploadsDaily)}
+          >
+            <Ionicons name="image-outline" size={13} color={quota.uploadsLeft > 0 ? c.secondary : c.caution} />
+            <Text style={{ color: quota.uploadsLeft > 0 ? c.secondary : c.caution, fontSize: 13, fontFamily: font.medium }}>
+              {quota.uploadsLeft}/{quota.uploadsDaily}
+            </Text>
+          </View>
         ) : null}
       </Rise>
 
-      <Rise index={1} style={{ gap: space.xs }}>
-        <Text style={[type.body, { color: c.secondary, fontSize: 19, fontWeight: "500" }]}>{greeting()} 👋</Text>
-        <GradientText colors={dark ? ["#FFFFFF", "#BFD0FF", "#9C86FF"] : ["#10131A", "#2F4FD8", "#6A4DFF"]} style={type.hero}>
+      <Rise index={1} style={{ gap: space.s }}>
+        <Text style={[type.eyebrow, { color: c.secondary }]}>{greeting()}</Text>
+        <GradientText colors={dark ? ["#FFFFFF", "#DCE8FF", "#8DB8FF"] : ["#070B14", "#16357F", "#1E5BFF"]} style={type.hero}>
           {t("What are we fixing today?")}
         </GradientText>
       </Rise>
 
-      <Rise index={2}>
-        <LinearGradient
-          colors={[glow[0], "#2533C9", "#3A1C9E"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.hero, { boxShadow: `0 18px 48px ${glow[0]}55` }]}
-        >
-          {/* Soft light spill in the corner, like light catching the card. */}
-          <View pointerEvents="none" style={[styles.heroGlow, { backgroundColor: glow[2] }]} />
-          <View style={{ flexDirection: "row", gap: space.m, alignItems: "flex-start" }}>
-            <View style={{ flex: 1, gap: space.s }}>
-              <View style={styles.liveChip}>
-                <View style={styles.liveDot} />
-                <Text style={{ color: "#fff", fontSize: 12, fontWeight: "700", letterSpacing: 0.4 }}>LIVE FIX</Text>
-              </View>
-              <Text style={[type.title, { color: "#fff", fontSize: 24 }]}>{t("Show it. Fix it.")}</Text>
-              <Text style={[type.body, { color: "#FFFFFFD0", fontSize: 15, lineHeight: 21 }]}>
-                {t("Show the problem. Fixify marks what matters and guides you step by step until you have checked that it works.")}
-              </Text>
-            </View>
-            <Text style={{ fontSize: 44 }}>🔍</Text>
+      <Rise index={2} style={{ gap: space.m }}>
+        {/* Live Fix: the one primary action, a calm dark card lit from below. */}
+        <View style={[styles.hero, { backgroundColor: c.surface, borderColor: c.hairline }]}>
+          <LinearGradient pointerEvents="none" colors={["#1E5BFF00", "#1E5BFF33"]} start={{ x: 0, y: 0.2 }} end={{ x: 0.6, y: 1 }} style={StyleSheet.absoluteFill} />
+          <View style={{ gap: space.s }}>
+            <Text style={[type.eyebrow, { color: c.accent, fontSize: 13, letterSpacing: 1.2 }]}>LIVE FIX</Text>
+            <Text style={[type.title, { color: c.text }]}>{t("Show it. Fix it.")}</Text>
+            <Text style={[type.body, { color: c.secondary, fontSize: 15, lineHeight: 22 }]}>
+              {t("Show the problem. Fixify marks what matters and guides you step by step until you have checked that it works.")}
+            </Text>
           </View>
-          <GlassGroup style={{ flexDirection: "row", gap: space.m }}>
+          <View style={{ flexDirection: "row", gap: space.s }}>
             <PressScale style={{ flex: 1 }} haptic="medium" onPress={() => startScan()}>
-              <Glass interactive tint="#FFFFFFF0" style={styles.heroButton}>
-                <Ionicons name="camera" size={18} color={c.hero} />
-                <Text style={[type.headline, { color: c.hero }]}>{t("Open camera")}</Text>
-              </Glass>
+              <View style={[styles.primary, { backgroundColor: c.text }]}>
+                <Ionicons name="scan-outline" size={18} color={c.background} />
+                <Text style={[type.headline, { color: c.background }]}>{t("Open camera")}</Text>
+              </View>
             </PressScale>
             <PressScale onPress={() => startScan({ library: true })} accessibilityHint={t("Pick a photo or screenshot of the problem")}>
-              <Glass interactive variant="clear" tint="#FFFFFF2E" style={[styles.heroButton, { paddingHorizontal: space.l }]}>
-                <Ionicons name="images-outline" size={18} color="#fff" />
-                <Text style={[type.headline, { color: "#fff" }]}>{t("Photos")}</Text>
+              <Glass style={styles.secondary}>
+                <Ionicons name="images-outline" size={18} color={c.text} />
               </Glass>
             </PressScale>
-          </GlassGroup>
-        </LinearGradient>
-      </Rise>
+          </View>
+        </View>
 
-      <Rise index={3} style={{ flexDirection: "row", gap: space.m }}>
-        <QuickCard emoji="🤖" title={t("Ask FixBot")} detail={t("Type or send a photo")} colors={["#6A4DFF", "#2453FF"]} onPress={() => router.navigate("/fixbot")} />
-        <QuickCard emoji="🎙️" title={t("Talk to FixBot")} detail={t("Hands-free, by voice")} colors={["#C04DFF", "#6A4DFF"]} onPress={() => router.push("/voice")} />
-      </Rise>
-
-      {!isServerConfigured(settings) && settings.provider === "proxy" && (
-        <PressScale onPress={() => router.navigate("/settings")}>
-          <Card style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text style={{ fontSize: 24 }}>🔌</Text>
+        <PressScale onPress={() => router.navigate("/fixvoice")}>
+          <View style={[styles.row, { backgroundColor: c.surface, borderColor: c.hairline }]}>
+            <View style={[styles.rowIcon, { borderColor: c.hairline }]}>
+              <Ionicons name="mic-outline" size={20} color={c.accent} />
+            </View>
             <View style={{ flex: 1, gap: 2 }}>
-              <Text style={[type.headline, { color: c.text }]}>{t("AI analysis is not set up")}</Text>
-              <Caption>{t("Choose an AI service in Settings to get a diagnosis and a guided plan.")}</Caption>
+              <Text style={[type.headline, { color: c.text }]}>{t("Talk to FixVoice")}</Text>
+              <Caption style={{ fontSize: 13 }}>{t("Hands-free, by voice")}</Caption>
             </View>
             <Ionicons name="chevron-forward" size={18} color={c.secondary} />
-          </Card>
+          </View>
         </PressScale>
-      )}
+
+        {!isServerConfigured(settings) && settings.provider === "proxy" && (
+          <PressScale onPress={() => router.navigate("/settings")}>
+            <View style={[styles.row, { backgroundColor: c.surface, borderColor: c.hairline }]}>
+              <Ionicons name="server-outline" size={20} color={c.caution} />
+              <View style={{ flex: 1, gap: 2 }}>
+                <Text style={[type.headline, { color: c.text }]}>{t("AI analysis is not set up")}</Text>
+                <Caption>{t("Choose an AI service in Settings to get a diagnosis and a guided plan.")}</Caption>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={c.secondary} />
+            </View>
+          </PressScale>
+        )}
+      </Rise>
 
       {open.length > 0 && (
-        <Rise index={4} style={{ gap: space.m }}>
-          <SectionTitle title={t("In progress")} icon="build-outline" />
+        <Rise index={3} style={{ gap: space.m }}>
+          <Label text={t("In progress")} />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.m }} style={{ overflow: "visible" }}>
             {open.slice(0, 8).map((s) => (
               <ActiveCard key={s.id} session={s} onPress={() => openSession(s.id)} />
@@ -128,82 +120,67 @@ export default function Home() {
         </Rise>
       )}
 
-      <View style={{ gap: space.m }}>
-        <Rise index={5}>
-          <SectionTitle title={t("Start with a topic")} icon="grid-outline" />
-        </Rise>
-        <View style={styles.grid}>
+      <Rise index={4} style={{ gap: space.m }}>
+        <Label text={t("Start with a topic")} />
+        <View style={[styles.list, { borderColor: c.hairline }]}>
           {suggestedCategories.map((cat, i) => (
-            <Rise key={cat} index={6 + i} style={styles.tileWrap}>
-              <PressScale onPress={() => startScan({ category: cat })} style={[styles.tile, { backgroundColor: c.surface, borderColor: c.hairline }]}>
-                <View style={[styles.tileEmoji, { backgroundColor: c.raised }]}>
-                  <Text style={{ fontSize: 22 }}>{categoryInfo[cat].emoji}</Text>
-                </View>
-                <Text style={{ color: c.text, fontSize: 15, fontWeight: "600", letterSpacing: -0.2 }} numberOfLines={2}>
-                  {categoryInfo[cat].title()}
-                </Text>
+            <View key={cat}>
+              {i > 0 && <Divider />}
+              <PressScale onPress={() => startScan({ category: cat })} scaleTo={0.98} style={styles.topic}>
+                <Ionicons name={categoryInfo[cat].icon} size={20} color={c.secondary} />
+                <Text style={[type.body, { color: c.text, flex: 1 }]}>{categoryInfo[cat].title()}</Text>
+                <Ionicons name="arrow-forward" size={16} color={c.secondary} />
               </PressScale>
-            </Rise>
+            </View>
           ))}
         </View>
-      </View>
+      </Rise>
 
       {solved.length > 0 && (
         <View style={{ gap: space.m }}>
-          <SectionTitle title={t("Recently solved")} icon="checkmark-done-outline" />
-          <Card style={{ gap: 0, paddingVertical: space.s }}>
+          <Label text={t("Recently solved")} />
+          <View style={[styles.list, { borderColor: c.hairline, paddingVertical: space.xs }]}>
             {solved.map((s, i) => (
-              <View key={s.id}>
+              <View key={s.id} style={{ paddingHorizontal: space.l }}>
                 {i > 0 && <Divider />}
                 <SessionRow session={s} onPress={() => openSession(s.id)} />
               </View>
             ))}
-          </Card>
+          </View>
         </View>
       )}
     </Screen>
   );
 }
 
-function QuickCard({ emoji, title, detail, colors, onPress }: { emoji: string; title: string; detail: string; colors: [string, string]; onPress: () => void }) {
+/** Quiet section label (Neue Montreal), instead of icon headers. */
+function Label({ text }: { text: string }) {
   const { c } = useTheme();
   return (
-    <PressScale onPress={onPress} style={{ flex: 1 }}>
-      <View style={[styles.quick, { backgroundColor: c.surface, borderColor: c.hairline }]}>
-        <LinearGradient colors={[colors[0] + "55", colors[1] + "00"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-        <Text style={{ fontSize: 28 }}>{emoji}</Text>
-        <View style={{ gap: 2 }}>
-          <Text style={[type.headline, { color: c.text }]}>{title}</Text>
-          <Caption style={{ fontSize: 13 }}>{detail}</Caption>
-        </View>
-      </View>
-    </PressScale>
+    <Text style={[type.eyebrow, { color: c.secondary, fontSize: 13, letterSpacing: 1, textTransform: "uppercase" }]} accessibilityRole="header">
+      {text}
+    </Text>
   );
 }
 
 const styles = StyleSheet.create({
-  topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: space.xs },
-  brand: { flexDirection: "row", alignItems: "center", gap: space.s },
-  brandDot: { width: 34, height: 34, borderRadius: 12, alignItems: "center", justifyContent: "center", borderCurve: "continuous" },
-  quota: { borderRadius: 16 },
-  quotaInner: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 7 },
-  hero: { borderRadius: radius.card, padding: space.l, paddingTop: space.xl, gap: space.l, borderCurve: "continuous", overflow: "hidden" },
-  heroGlow: { position: "absolute", width: 220, height: 220, borderRadius: 110, top: -110, right: -60, opacity: 0.45, filter: [{ blur: 40 }] },
-  liveChip: { flexDirection: "row", alignItems: "center", gap: 6, alignSelf: "flex-start", backgroundColor: "#FFFFFF24", paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12 },
-  liveDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: "#7CFFB2" },
-  heroButton: { flexDirection: "row", gap: space.s, alignItems: "center", justifyContent: "center", borderRadius: radius.control, paddingVertical: 14 },
-  quick: {
-    borderRadius: 24,
-    padding: space.l,
+  topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  wordmark: { fontFamily: font.accentMedium, fontSize: 20, letterSpacing: -0.2 },
+  quota: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: StyleSheet.hairlineWidth },
+  hero: { borderRadius: radius.card, padding: space.l, gap: space.l, overflow: "hidden", borderWidth: StyleSheet.hairlineWidth, borderCurve: "continuous" },
+  primary: { flexDirection: "row", gap: space.s, alignItems: "center", justifyContent: "center", borderRadius: radius.control, height: 52 },
+  secondary: { width: 52, height: 52, borderRadius: radius.control, alignItems: "center", justifyContent: "center" },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: space.m,
-    minHeight: 132,
-    justifyContent: "space-between",
-    overflow: "hidden",
+    padding: space.m,
+    paddingRight: space.l,
+    borderRadius: radius.card,
     borderWidth: StyleSheet.hairlineWidth,
     borderCurve: "continuous",
   },
-  grid: { flexDirection: "row", flexWrap: "wrap", gap: space.m },
-  tileWrap: { flexBasis: "47%", flexGrow: 1 },
-  tile: { gap: space.m, padding: space.m, paddingVertical: space.l, borderRadius: 22, borderWidth: StyleSheet.hairlineWidth, minHeight: 112, borderCurve: "continuous" },
-  tileEmoji: { width: 44, height: 44, borderRadius: 14, alignItems: "center", justifyContent: "center", borderCurve: "continuous" },
+  rowIcon: { width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center", borderWidth: StyleSheet.hairlineWidth },
+  list: { borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, overflow: "hidden", borderCurve: "continuous" },
+  topic: { flexDirection: "row", alignItems: "center", gap: space.m, paddingHorizontal: space.l, paddingVertical: 16 },
 });

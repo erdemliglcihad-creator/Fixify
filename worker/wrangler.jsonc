@@ -20,6 +20,11 @@
     "AI_PROVIDER": "openai-compatible",
     // FixBot text chain: tried in order; a used-up free quota moves on to the next, smaller model.
     "STT_MODEL": "whisper-large-v3-turbo",
+    // Fish Audio voices for FixVoice (active once the FISH_API_KEY secret is set).
+    "FISH_VOICE_EN_MALE": "919aeec52e4548b0b2f89252dff277bb",
+    "FISH_VOICE_DE_MALE": "90042f762dbf49baa2e7776d011eee6b",
+    "FISH_VOICE_EN_FEMALE": "7cefff1c89464d7dbc412482f909ec2d",
+    "FISH_VOICE_DE_FEMALE": "b59d1164746a48bf971f4a0fd2cbf814",
     "CHAT_MODELS": "openai/gpt-oss-120b,openai/gpt-oss-20b,llama-3.1-8b-instant",
     // Daily limits. 10 different photos per device; messages have a generous hidden fair-use cap.
     // Groq's free vision quota (~200k tokens/day) covers roughly 50 photo calls for everyone together.

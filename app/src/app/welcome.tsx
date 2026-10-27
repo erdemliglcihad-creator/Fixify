@@ -28,13 +28,13 @@ export default function Welcome() {
 
         <Card style={{ gap: space.l }}>
           <InfoRow icon="scan-outline" title={t("Live Fix")} detail={t("Show the problem with the camera. Fixify explains it and guides you step by step.")} />
-          <InfoRow icon="chatbubbles-outline" title="FixBot" detail={t("Ask anytime, with text or a photo.")} />
+          <InfoRow icon="mic-outline" title="FixVoice" detail={t("Talk to Fixify like on the phone, hands-free.")} />
           <InfoRow icon="ribbon-outline" title={t("Check the result")} detail={t("You confirm yourself whether it is really fixed. Fixify never claims that on its own.")} />
         </Card>
 
         <Card style={{ gap: space.m }}>
           <Text style={[type.headline, { color: c.text }]}>{t("Free, with a daily limit")}</Text>
-          <InfoRow icon="images-outline" title={t("10 photo uploads per day")} detail={t("For analyses and FixBot together. The same photo counts only once.")} />
+          <InfoRow icon="images-outline" title={t("10 photo uploads per day")} detail={t("For photo analyses. The same photo counts only once.")} />
           <InfoRow
             icon="chatbubble-ellipses-outline"
             title={t("Messages without a fixed limit")}

@@ -5,6 +5,7 @@ import type { Finding, FixStep, MarkerPrecision, ProblemAnalysis } from "../../c
 import { t } from "../../i18n/index.ts";
 import { Body, Button, Caption, Card, MarkerBadge } from "../components.tsx";
 import { mono, radius, space, type, useTheme } from "../theme.ts";
+import { font } from "../theme.ts";
 
 function Sheet({ visible, title, onClose, children, footer }: { visible: boolean; title: string; onClose: () => void; children: ReactNode; footer?: ReactNode }) {
   const { c } = useTheme();
@@ -125,7 +126,7 @@ export function StepFeedbackSheet({
       }
     >
       <Text style={[type.headline, { color: c.text }]}>{step?.title}</Text>
-      <Caption style={{ textTransform: "uppercase", fontWeight: "600" }}>{t("What happened?")}</Caption>
+      <Caption style={{ textTransform: "uppercase", fontFamily: font.semibold }}>{t("What happened?")}</Caption>
       <Card style={{ gap: 0, paddingVertical: space.xs }}>
         {options.map((o) => (
           <Pressable key={o} onPress={() => setChoice(o)} style={styles.choice} aria-selected={choice === o}>
@@ -195,7 +196,7 @@ export function VerificationSheet({
     <Sheet visible={visible} title={t("Check the result")} onClose={onClose} footer={<Button title={t("Save")} disabled={!outcome} onPress={() => submit(false)} />}>
       {criteria.length > 0 && (
         <>
-          <Caption style={{ textTransform: "uppercase", fontWeight: "600" }}>{t("Check it yourself")}</Caption>
+          <Caption style={{ textTransform: "uppercase", fontFamily: font.semibold }}>{t("Check it yourself")}</Caption>
           <Card style={{ gap: space.m }}>
             {criteria.map((k) => (
               <Pressable key={k} onPress={() => toggle(k)} style={{ flexDirection: "row", gap: space.m }} accessibilityRole="checkbox" aria-checked={checked.includes(k)}>
@@ -207,7 +208,7 @@ export function VerificationSheet({
           <Caption>{t("Tick only what you have actually tested.")}</Caption>
         </>
       )}
-      <Caption style={{ textTransform: "uppercase", fontWeight: "600" }}>{t("Result")}</Caption>
+      <Caption style={{ textTransform: "uppercase", fontFamily: font.semibold }}>{t("Result")}</Caption>
       <Card style={{ gap: 0, paddingVertical: space.xs }}>
         {(["solved", "partiallySolved", "unresolved", "unclear"] as const).map((o) => (
           <Pressable key={o} onPress={() => setOutcome(o)} style={styles.choice} accessibilityRole="radio" aria-selected={outcome === o}>

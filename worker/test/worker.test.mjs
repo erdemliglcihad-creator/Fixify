@@ -213,3 +213,29 @@ test("transcription posts multipart audio and filters silence hallucinations", a
   const silent = await transcribe({ baseUrl: "https://x", apiKey: "k", model: "m", req, fetchImpl: async () => new Response(JSON.stringify({ text: "Untertitel im Auftrag des ZDF" })) });
   assert.equal(silent, "");
 });
+
+test("FixVoice: voice mode adds spoken-answer rules, Fish TTS sends the voice id", async () => {
+  const { buildChatMessages } = await import("../src/chat.mjs");
+  const { fishSpeech, fishVoice } = await import("../src/tts.mjs");
+  const voice = buildChatMessages({ locale: "de", mode: "voice", messages: [{ role: "user", text: "Drucker offline" }] });
+  assert.match(voice.messages[0].content, /live voice call/);
+  const chatOnly = buildChatMessages({ locale: "de", messages: [{ role: "user", text: "Drucker offline" }] });
+  assert.doesNotMatch(chatOnly.messages[0].content, /live voice call/);
+
+  assert.equal(fishVoice({ FISH_VOICE_DE_FEMALE: "abc" }, "de", "female"), "abc");
+  assert.equal(fishVoice({}, "en", "male"), null);
+  let sent;
+  const audio = await fishSpeech({
+    apiKey: "k",
+    voice: "abc",
+    text: "Hallo",
+    fetchImpl: async (url, init) => {
+      sent = { url, body: JSON.parse(init.body), auth: init.headers.authorization };
+      return new Response(new Uint8Array([1, 2, 3]), { status: 200 });
+    },
+  });
+  assert.equal(sent.url, "https://api.fish.audio/v1/tts");
+  assert.equal(sent.body.reference_id, "abc");
+  assert.equal(sent.auth, "Bearer k");
+  assert.equal(audio.byteLength, 3);
+});

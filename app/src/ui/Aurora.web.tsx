@@ -17,7 +17,7 @@ export function Aurora() {
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: c.background, overflow: "hidden" }]}>
       {layers.map((layer, i) => {
         const [a, b, d] = areaColors[layer.area].glow;
-        const alpha = dark ? "CC" : "66";
+        const alpha = dark ? "88" : "44";
         return (
           <View
             key={layer.key}

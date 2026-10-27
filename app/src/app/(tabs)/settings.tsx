@@ -8,13 +8,13 @@ import { storageBytes } from "../../services/images.ts";
 import { checkServer, ProxyError } from "../../services/proxy.ts";
 import { cancelAllReminders } from "../../services/reminders.ts";
 import { deleteEverything, deletePhotos, useSessions } from "../../services/sessions.ts";
-import { CLOUD_URL, isServerConfigured, serverBase, updateSettings, useSettings, type Appearance, type Provider } from "../../services/settings.ts";
+import { CLOUD_URL, isServerConfigured, serverBase, updateSettings, useSettings, type Appearance, type Provider, type VoiceGender } from "../../services/settings.ts";
 import { useQuota } from "../../services/usage.ts";
 import { isOpen } from "../../core/session.ts";
 import { Caption, Divider } from "../../ui/components.tsx";
 import { confirmDestructive } from "../../ui/confirm.ts";
 import type { IconName } from "../../ui/categories.ts";
-import { radius, space, type, useTheme } from "../../ui/theme.ts";
+import { radius, space, type, useTheme, font } from "../../ui/theme.ts";
 import { Screen } from "../../ui/Screen.tsx";
 import { useArea } from "../../services/area.ts";
 
@@ -35,7 +35,7 @@ function Segmented<T extends string>({ value, options, onChange }: { value: T; o
     <View style={[styles.segment, { backgroundColor: c.hairline }]}>
       {options.map(([v, label]) => (
         <Pressable key={v} onPress={() => onChange(v)} style={[styles.segmentItem, value === v && { backgroundColor: c.surface }]} aria-selected={value === v}>
-          <Text style={{ color: c.text, fontSize: 14, fontWeight: value === v ? "600" : "400" }}>{label}</Text>
+          <Text style={{ color: c.text, fontSize: 14, fontFamily: value === v ? font.semibold : font.regular }}>{label}</Text>
         </Pressable>
       ))}
     </View>
@@ -57,7 +57,7 @@ function Section({ title, footer, children }: { title: string; footer?: string; 
   const { c } = useTheme();
   return (
     <View style={{ gap: space.s }}>
-      <Caption style={{ textTransform: "uppercase", fontWeight: "600", marginLeft: space.s }}>{title}</Caption>
+      <Caption style={{ textTransform: "uppercase", fontFamily: font.semibold, marginLeft: space.s }}>{title}</Caption>
       <View style={[styles.group, { backgroundColor: c.surface }]}>{children}</View>
       {footer ? <Caption style={{ marginHorizontal: space.s }}>{footer}</Caption> : null}
     </View>
@@ -65,7 +65,7 @@ function Section({ title, footer, children }: { title: string; footer?: string; 
 }
 
 function providerFooter(p: Provider) {
-  if (p === "cloud") return t("Free for everyone, no setup. Photos and text go to Fixify Cloud, which uses Groq (AI) and OCR.space (text recognition). 10 photo uploads per day; messages to FixBot are free within fair use.");
+  if (p === "cloud") return t("Free for everyone, no setup. Photos and text go to Fixify Cloud, which uses Groq (AI) and OCR.space (text recognition). 10 photo uploads per day; messages to FixVoice are free within fair use.");
   if (p === "proxy") return t("For your own Fixify server (server/ folder), e.g. with Claude. Enter the address and token it shows.");
   return t("Fixify only saves photos and your notes. No text recognition, diagnosis or plan.");
 }
@@ -100,6 +100,14 @@ export default function Settings() {
           value={s.appearance}
           options={[["system", t("System")], ["light", t("Light")], ["dark", t("Dark")]]}
           onChange={(appearance) => updateSettings({ appearance })}
+        />
+      </Section>
+
+      <Section title="FixVoice" footer={t("German or English follows the app language. Uses the iPhone's built-in voices for now.")}>
+        <Segmented<VoiceGender>
+          value={s.voice}
+          options={[["female", t("Female voice")], ["male", t("Male voice")]]}
+          onChange={(voice) => updateSettings({ voice })}
         />
       </Section>
 
@@ -149,7 +157,7 @@ export default function Settings() {
               <Text style={[type.body, { color: c.accent, flex: 1, opacity: isServerConfigured(s) ? 1 : 0.4 }]}>{t("Test connection")}</Text>
               {connection.state === "checking" && <ActivityIndicator />}
               {connection.state === "ok" && (
-                <Text style={{ color: connection.configured ? c.success : c.caution, fontSize: 14, fontWeight: "600" }}>
+                <Text style={{ color: connection.configured ? c.success : c.caution, fontSize: 14, fontFamily: font.semibold }}>
                   {connection.configured ? t("Connected") : t("AI not set up on the server")}
                 </Text>
               )}
