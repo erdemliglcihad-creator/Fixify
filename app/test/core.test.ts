@@ -3,7 +3,6 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { drawnRect, markersForImage, rectInView, validateAnalysis, InvalidAnalysisError } from "../src/core/analysis.ts";
 import { carryOverStates, currentStep, hasNewObservation, imagesToSend, progress, searchText } from "../src/core/session.ts";
-import { FREE, recorded, remaining, rolled } from "../src/core/usage.ts";
 import { formatString } from "../src/core/format.ts";
 import type { FixSession, ProblemAnalysis, TextBlock } from "../src/core/types.ts";
 
@@ -116,16 +115,6 @@ test("images to send: original first, then newest", () => {
 test("search text covers description, analysis and steps", () => {
   const t = searchText(session());
   for (const s of ["druckt nicht", "printer offline", "print test page"]) assert.ok(t.includes(s), s);
-});
-
-test("usage counts per month and rolls over", () => {
-  const oct = new Date(2026, 9, 24);
-  const nov = new Date(2026, 10, 1);
-  let u = { month: "", count: 0, lifetime: 0 };
-  u = recorded(recorded(u, oct), oct);
-  assert.equal(remaining(u, FREE, oct), FREE.analysesPerMonth - 2);
-  assert.equal(remaining(u, FREE, nov), FREE.analysesPerMonth);
-  assert.equal(rolled(u, nov).lifetime, 2);
 });
 
 test("format strings use catalog placeholders", () => {

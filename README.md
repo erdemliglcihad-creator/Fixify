@@ -13,7 +13,9 @@ SCAN → DETECT → UNDERSTAND → GUIDE → FIX → VERIFY
 |---|---|
 | `Fixify/` | iOS-App (Swift/SwiftUI, SwiftData, Vision, VisionKit, AVFoundation, PhotosUI, StoreKit 2, FoundationModels) |
 | `FixifyTests/` | Unit-Tests (Swift Testing) |
-| `server/` | Lokaler Analyse-Proxy (Node.js). Hält den Anthropic-Key, ruft `claude-opus-5-5` mit Structured Outputs auf |
+| `worker/` | **Fixify Cloud** (Cloudflare Workers): kostenlose KI (Groq) + Texterkennung (OCR.space) für alle Nutzer, mit Tageslimits. Einrichtung: [docs/Fixify-Cloud.md](docs/Fixify-Cloud.md) |
+| `app/` | Expo-Go-Version der App (Expo SDK 58) |
+| `server/` | Optionaler eigener Server (Node.js). Hält den Anthropic-Key, ruft `claude-opus-5-5` mit Structured Outputs auf |
 | `tools/` | App-Icon-Generator, String-Katalog-Builder + deutsche Übersetzungen (`de.json`) |
 | `project.yml` | XcodeGen-Projektdefinition (das `.xcodeproj` wird generiert, nicht eingecheckt) |
 | `.github/workflows/ios.yml` | Cloud-Build auf macOS: Tests + unsignierte IPA |

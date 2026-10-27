@@ -2,14 +2,14 @@
 // Phases only advance when the corresponding work has actually happened.
 import * as Crypto from "expo-crypto";
 import type { AnalysisMode, FixSession } from "../core/types.ts";
-import { carryOverStates, currentAnalysis, imagesToSend, latestRevision, updatesUsed } from "../core/session.ts";
+import { carryOverStates, currentAnalysis, imagesToSend, latestRevision } from "../core/session.ts";
 import { lang, t } from "../i18n/index.ts";
 import { encodeForAnalysis } from "./images.ts";
 import { analyze, ProxyError, recognizeText } from "./proxy.ts";
 import { getSession, logEvent, updateSession } from "./sessions.ts";
 import { isServerConfigured, serverBase, settingsStore } from "./settings.ts";
 import { createStore, useStore } from "./store.ts";
-import { analysesLeft, limits, recordAnalysis, usageStore } from "./usage.ts";
+import { limits, setQuota } from "./usage.ts";
 
 export type Phase = "preparing" | "recognizing" | "analyzing" | "checking";
 export type Job = { phase: Phase; mode: AnalysisMode; startedAt: number; controller: AbortController };
@@ -18,8 +18,8 @@ export type Failure = { code: ProxyError["code"]; message: string; retryable: bo
 export const phaseTitle = (p: Phase) =>
   ({
     preparing: t("Preparing photos and recognized text"),
-    recognizing: t("Recognizing text on your Fixify server"),
-    analyzing: t("Your Fixify server is analyzing"),
+    recognizing: t("Recognizing text"),
+    analyzing: t("The AI is analyzing"),
     checking: t("Checking the result"),
   })[p];
 
@@ -46,16 +46,14 @@ function setFailure(id: string, failure: Failure | null) {
   });
 }
 
-export type Preflight = "ready" | "needsConsent" | "needsSetup" | "off" | "monthlyLimit" | "sessionLimit";
+export type Preflight = "ready" | "needsConsent" | "needsSetup" | "off";
 
 /** What has to happen before an analysis may run. Screens handle each case (consent, setup, paywall). */
-export function preflight(session: FixSession, mode: AnalysisMode): Preflight {
+export function preflight(_session: FixSession, _mode: AnalysisMode): Preflight {
   const s = settingsStore.get();
   if (s.provider === "off") return "off";
   if (!isServerConfigured(s)) return "needsSetup";
   if (!s.consent) return "needsConsent";
-  if (analysesLeft(usageStore.get()) === 0) return "monthlyLimit";
-  if (mode !== "initial" && updatesUsed(session) >= limits.updatesPerSession) return "sessionLimit";
   return "ready";
 }
 
@@ -157,7 +155,7 @@ async function run(sessionId: string, mode: AnalysisMode, feedback: string | nul
       );
       return next;
     });
-    recordAnalysis();
+    if (result.remainingToday !== null) setQuota({ remainingToday: result.remainingToday });
   } catch (err) {
     const e = err instanceof ProxyError ? err : new ProxyError("server", String((err as Error)?.message ?? err));
     if (e.code === "cancelled") {

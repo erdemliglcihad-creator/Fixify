@@ -8,18 +8,10 @@ Zeitbedarf beim ersten Mal: ca. 10 Minuten.
 - **Expo Go** aus dem App Store (kostenlos)
 - Node.js auf dem PC (ist bei dir schon installiert)
 
-## 1. Analyse-Server starten (Fenster 1)
-```bash
-cd C:\Users\erdem\Projects\Fixify\server
-npm install
-npm start
-```
-- In `server\.env` muss `ANTHROPIC_API_KEY=sk-ant-…` stehen. Danach den Server neu starten.
-- Das Fenster zeigt **Server URL** und **App token**. Lass es offen.
-- Fragt die Windows-Firewall nach Zugriff, erlaube **„Private Netzwerke“**.
-- Beim ersten Foto lädt der Server einmalig die Daten für die Texterkennung (ca. 15 MB) herunter.
+## 1. KI einmalig einrichten
+Die Analyse läuft über **Fixify Cloud**, kostenlos und ohne dass dein PC laufen muss. Einmalig veröffentlichen: [Fixify-Cloud.md](Fixify-Cloud.md). Danach steht die Adresse in `app\.env`, und jeder Nutzer kann sofort analysieren.
 
-## 2. App starten (Fenster 2)
+## 2. App starten
 ```bash
 cd C:\Users\erdem\Projects\Fixify\app
 npm install
@@ -33,13 +25,12 @@ Im Fenster erscheint ein **QR-Code**.
 3. Das Laden dauert beim ersten Mal 20–60 Sekunden.
 4. Erlaube die Abfragen **Kamera** und **Lokales Netzwerk**.
 
-## 4. Fixify mit dem Server verbinden
-1. In Fixify unter **Einstellungen → KI-Analyse** Server-Adresse und App-Token aus Fenster 1 eintragen.
-2. Auf **Verbindung testen** tippen. Dort sollte **„Verbunden“** stehen.
+## 4. Prüfen
+Unter **Einstellungen → KI-Analyse** steht **Fixify Cloud**. Ein Tipp auf **Verbindung testen** sollte **„Verbunden“** zeigen, darunter die kostenlosen Analysen, die heute noch übrig sind.
 
 ## Gut zu wissen
-- Die App läuft nur, solange `npx expo start` in Fenster 2 läuft. Deine Sessions bleiben trotzdem auf dem iPhone gespeichert.
-- Für Texterkennung und Analyse muss der Server in Fenster 1 laufen. Ohne Server kannst du Fotos und Beschreibungen speichern und später analysieren.
+- Die App läuft nur, solange `npx expo start` läuft. Deine Sessions bleiben trotzdem auf dem iPhone gespeichert.
+- Texterkennung und Analyse laufen über Fixify Cloud, dein PC muss dafür nicht an sein. Pro Gerät gibt es 10 kostenlose Analysen am Tag.
 - Codeänderungen erscheinen sofort auf dem iPhone. Sonst in Expo Go das iPhone schütteln und **Reload** wählen.
 
 ## Wenn es hakt
@@ -47,11 +38,12 @@ Im Fenster erscheint ein **QR-Code**.
 |---|---|
 | Expo Go findet den PC nicht | Selbes WLAN? Firewall für Node erlaubt? Alternativ `npx expo start --tunnel` (fragt einmal, ob ein Zusatzpaket installiert werden soll: mit **Y** bestätigen) |
 | „Project is incompatible with this version of Expo Go“ | Expo Go im App Store aktualisieren (die App nutzt SDK 58) |
-| „Der Fixify-Server ist nicht erreichbar“ | Läuft Fenster 1? Hat sich die IP-Adresse geändert? Lokales Netzwerk erlauben: *iPhone-Einstellungen → Datenschutz & Sicherheit → Lokales Netzwerk → Expo Go* |
-| „Server hat keinen API-Schlüssel“ | Key in `server\.env` eintragen und Fenster 1 neu starten (`Strg+C`, dann `npm start`) |
+| „Diese Version hat noch keine Fixify-Cloud-Adresse“ | `EXPO_PUBLIC_CLOUD_URL` in `app\.env` eintragen und `npx expo start` neu starten |
+| „KI auf dem Server nicht eingerichtet“ | Schlüssel fehlen: `npx wrangler secret put AI_API_KEY` und `OCR_SPACE_KEY` (siehe Fixify-Cloud.md) |
+| „Kostenlose Analysen aufgebraucht“ | Tageslimit erreicht, morgen geht es weiter. Limits stehen in `worker/wrangler.jsonc` |
 | Kamera bleibt schwarz | Expo Go die Kamera erlauben: *iPhone-Einstellungen → Expo Go → Kamera* |
 
 ## Unterschiede zur nativen Swift-Version
-- Die Texterkennung läuft auf deinem PC (Tesseract), nicht auf dem iPhone. Live-Rahmen im Kamerabild gibt es deshalb nicht.
+- Die Texterkennung läuft in der Cloud (OCR.space), nicht auf dem iPhone. Live-Rahmen im Kamerabild gibt es deshalb nicht.
 - Kein automatischer Dokumentenscanner. Fotos, Video (3 Einzelbilder) und Import aus Fotos funktionieren.
 - Keine Abo-Käufe und keine On-Device-KI von Apple.

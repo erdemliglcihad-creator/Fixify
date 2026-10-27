@@ -1,0 +1,19 @@
+{
+  "name": "fixify-cloud",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fixify cloud server on Cloudflare Workers: free AI analysis (Groq) and OCR (OCR.space) for every app user, with daily limits.",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node --test test/*.test.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.153.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0",
+    "zod": "^4.6.7"
+  }
+}

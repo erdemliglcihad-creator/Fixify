@@ -63,14 +63,13 @@ function Guide({ session }: { session: FixSession }) {
   const [verifying, setVerifying] = useState(false);
   const [consentFor, setConsentFor] = useState<(() => void) | null>(null);
 
-  const aiAvailable = ["ready", "needsConsent", "monthlyLimit", "sessionLimit"].includes(preflight(session, "replan"));
+  const aiAvailable = ["ready", "needsConsent"].includes(preflight(session, "replan"));
   const located = new Set(session.images.flatMap((img) => markersFor(session, analysis, img).map((m) => m.id)));
 
   function run(mode: AnalysisMode, feedback: string | null = null) {
     const p = preflight(session, mode);
     if (p === "ready") start(session.id, mode, feedback);
     else if (p === "needsConsent") setConsentFor(() => () => start(session.id, mode, feedback));
-    else if (p === "monthlyLimit" || p === "sessionLimit") router.push({ pathname: "/paywall", params: { reason: p } });
     else router.navigate("/settings");
   }
 
@@ -165,7 +164,6 @@ function Guide({ session }: { session: FixSession }) {
                 preflight={preflight(session, "initial")}
               onAnalyze={() => run("initial")}
               onSettings={() => router.navigate("/settings")}
-                onPaywall={() => router.push({ pathname: "/paywall", params: { reason: "monthlyLimit" } })}
               />
             )}
             <RecognizedTextCard session={session} />

@@ -6,3 +6,6 @@ DerivedData/
 server/node_modules/
 server/.env
 .tesseract-cache/
+worker/.dev.vars
+worker/.wrangler/
+worker/node_modules/

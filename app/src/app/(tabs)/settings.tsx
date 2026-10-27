@@ -8,8 +8,8 @@ import { storageBytes } from "../../services/images.ts";
 import { checkServer, ProxyError } from "../../services/proxy.ts";
 import { cancelAllReminders } from "../../services/reminders.ts";
 import { deleteEverything, deletePhotos, useSessions } from "../../services/sessions.ts";
-import { serverBase, updateSettings, useSettings, type Appearance, type Provider } from "../../services/settings.ts";
-import { analysesLeft, limits, useUsage } from "../../services/usage.ts";
+import { CLOUD_URL, isServerConfigured, serverBase, updateSettings, useSettings, type Appearance, type Provider } from "../../services/settings.ts";
+import { setQuota, useQuota } from "../../services/usage.ts";
 import { isOpen } from "../../core/session.ts";
 import { Caption, Divider } from "../../ui/components.tsx";
 import { confirmDestructive } from "../../ui/confirm.ts";
@@ -62,10 +62,16 @@ function Section({ title, footer, children }: { title: string; footer?: string; 
   );
 }
 
+function providerFooter(p: Provider) {
+  if (p === "cloud") return t("Free for everyone, no setup. Photos and text go to Fixify Cloud, which uses Groq (AI) and OCR.space (text recognition). Each device has a daily limit.");
+  if (p === "proxy") return t("For your own Fixify server (server/ folder), e.g. with Claude. Enter the address and token it shows.");
+  return t("Fixify only saves photos and your notes. No text recognition, diagnosis or plan.");
+}
+
 export default function Settings() {
   const { c } = useTheme();
   const s = useSettings();
-  const usage = useUsage();
+  const quota = useQuota();
   const sessions = useSessions();
   const [connection, setConnection] = useState<Connection>({ state: "idle" });
   const [bytes, setBytes] = useState(() => storageBytes());
@@ -75,8 +81,9 @@ export default function Settings() {
     if (!base) return;
     setConnection({ state: "checking" });
     try {
-      const h = await checkServer(base, s.appToken.trim());
+      const h = await checkServer(base, s.provider === "proxy" ? s.appToken.trim() : "");
       setConnection({ state: "ok", configured: h.configured, ocr: h.ocr });
+      if (h.remainingToday !== undefined) setQuota({ remainingToday: h.remainingToday, deviceDaily: h.deviceDaily ?? null });
     } catch (e) {
       setConnection({ state: "failed", message: e instanceof ProxyError ? e.message : t("Not reachable") });
     }
@@ -94,17 +101,10 @@ export default function Settings() {
         />
       </Section>
 
-      <Section
-        title={t("AI analysis")}
-        footer={
-          s.provider === "proxy"
-            ? t("Your Fixify server holds the Claude API key, so no key is stored in the app. Start it on your computer and copy the address and token it shows.")
-            : t("Fixify only saves photos and your notes. No text recognition, diagnosis or plan.")
-        }
-      >
+      <Section title={t("AI analysis")} footer={providerFooter(s.provider)}>
         <Segmented<Provider>
           value={s.provider}
-          options={[["proxy", t("Fixify server (Claude)")], ["off", t("Off")]]}
+          options={[["cloud", t("Fixify Cloud")], ["proxy", t("Own server")], ["off", t("Off")]]}
           onChange={(provider) => {
             updateSettings({ provider });
             setConnection({ state: "idle" });
@@ -138,21 +138,30 @@ export default function Settings() {
               secureTextEntry
               style={input}
             />
-            <Pressable onPress={test} disabled={!serverBase(s) || !s.appToken.trim()} style={styles.row} accessibilityRole="button">
-              <Text style={[type.body, { color: c.accent, flex: 1, opacity: serverBase(s) && s.appToken.trim() ? 1 : 0.4 }]}>{t("Test connection")}</Text>
+          </>
+        )}
+        {s.provider === "cloud" && !CLOUD_URL && <Caption color={c.caution}>{t("This build has no Fixify Cloud address yet.")}</Caption>}
+        {s.provider !== "off" && (
+          <>
+            <Pressable onPress={test} disabled={!isServerConfigured(s)} style={styles.row} accessibilityRole="button">
+              <Text style={[type.body, { color: c.accent, flex: 1, opacity: isServerConfigured(s) ? 1 : 0.4 }]}>{t("Test connection")}</Text>
               {connection.state === "checking" && <ActivityIndicator />}
               {connection.state === "ok" && (
                 <Text style={{ color: connection.configured ? c.success : c.caution, fontSize: 14, fontWeight: "600" }}>
-                  {connection.configured ? t("Connected") : t("Server has no API key")}
+                  {connection.configured ? t("Connected") : t("AI not set up on the server")}
                 </Text>
               )}
             </Pressable>
             {connection.state === "failed" && <Caption color={c.danger}>{connection.message}</Caption>}
-            {connection.state === "ok" && !connection.ocr && <Caption color={c.caution}>{t("This server version has no text recognition. Update the server folder.")}</Caption>}
+            {connection.state === "ok" && !connection.ocr && <Caption color={c.caution}>{t("This server has no text recognition.")}</Caption>}
+          </>
+        )}
+        {s.provider === "cloud" && quota.remainingToday !== null && (
+          <>
             <Divider />
             <Row>
-              <Label>{t("Analyses left this month")}</Label>
-              <Caption>{`${analysesLeft(usage)} / ${limits.analysesPerMonth}`}</Caption>
+              <Label>{t("Free analyses left today")}</Label>
+              <Caption>{quota.deviceDaily ? `${quota.remainingToday} / ${quota.deviceDaily}` : String(quota.remainingToday)}</Caption>
             </Row>
           </>
         )}
@@ -160,7 +169,7 @@ export default function Settings() {
 
       <Section title={t("Privacy")} footer={t("When off, nothing leaves this iPhone, and Fixify asks before the next analysis.")}>
         <Row>
-          <Label>{t("Allow sending to my Fixify server")}</Label>
+          <Label>{t("Allow sending photos for analysis")}</Label>
           <Switch value={s.consent} onValueChange={(consent) => updateSettings({ consent })} />
         </Row>
         <Divider />
@@ -219,13 +228,9 @@ export default function Settings() {
         </Row>
       </Section>
 
-      <Section title="Fixify Pro">
-        <Link icon="sparkles-outline" title={t("See Fixify Pro")} onPress={() => router.push({ pathname: "/paywall", params: { reason: "browse" } })} />
-      </Section>
-
       <Section title={t("Help & feedback")}>
         <Link icon="help-circle-outline" title={t("How Fixify works")} onPress={() => router.push("/help")} />
-        <Link icon="server-outline" title={t("Set up the Fixify server")} onPress={() => router.push("/server-help")} />
+        <Link icon="server-outline" title={t("Use your own server")} onPress={() => router.push("/server-help")} />
         <Link
           icon="mail-outline"
           title={t("Send feedback")}

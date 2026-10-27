@@ -1,4 +1,6 @@
-// Client for the Fixify proxy (server/). The Anthropic key stays on the server; the app only holds an app token.
+// Client for Fixify Cloud (worker/) and the self-hosted proxy (server/). Both speak the same API.
+// AI keys stay on the server; the app only sends a random device id (and an app token for a self-hosted server).
+import { deviceId } from "./settings.ts";
 import type { AnalysisMode, AnsweredQuestion, ProblemAnalysis, ProblemCategory, TextBlock } from "../core/types.ts";
 import { InvalidAnalysisError, validateAnalysis } from "../core/analysis.ts";
 import { t } from "../i18n/index.ts";
@@ -29,7 +31,7 @@ export class ProxyError extends Error {
 }
 
 const messages = {
-  unreachable: () => t("The Fixify server can't be reached. Check that it is running and that your iPhone is on the same network."),
+  unreachable: () => t("The Fixify server can't be reached. Check your internet connection and try again."),
   unauthorized: () => t("The server rejected the app token. Copy the token from the server window into Settings."),
   refused: () => t("The AI declined to analyze this. Try a different photo or description."),
   timeout: () => t("The analysis took too long. Try again."),
@@ -44,13 +46,22 @@ async function request(base: string, token: string, path: string, init: RequestI
     const res = await fetch(`${base}${path}`, {
       ...init,
       signal: controller.signal,
-      headers: { "content-type": "application/json", authorization: `Bearer ${token}`, ...(init.headers ?? {}) },
+      headers: {
+        "content-type": "application/json",
+        "x-fixify-device": deviceId,
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
+        ...(init.headers ?? {}),
+      },
     });
     const body = await res.json().catch(() => null);
     if (res.ok) return body;
     const code: string | undefined = body?.error?.code;
     const message: string | undefined = body?.error?.message;
     if (res.status === 401) throw new ProxyError("unauthorized", messages.unauthorized());
+    if (code === "daily_limit") throw new ProxyError("rateLimited", t("You've used today's free analyses on this device. They renew tomorrow."));
+    if (code === "global_limit") throw new ProxyError("rateLimited", t("Today's free analyses for all Fixify users are used up. They renew tomorrow."));
+    if (code === "ocr_limit") throw new ProxyError("rateLimited", t("Today's free text recognition is used up. It renews tomorrow."));
+    if (code === "upstream_rate_limited") throw new ProxyError("rateLimited", t("The free AI quota is used up for the moment. Try again in a few minutes."));
     if (res.status === 429) {
       const after = Number(res.headers.get("retry-after"));
       throw new ProxyError(
@@ -58,7 +69,7 @@ async function request(base: string, token: string, path: string, init: RequestI
         after ? t("The server is limiting requests. Try again in %lld seconds.", after) : t("The server is limiting requests. Try again later."),
       );
     }
-    if (code === "not_configured") throw new ProxyError("notConfigured", t("Your Fixify server has no Anthropic API key. Add it to server/.env and restart the server."));
+    if (code === "not_configured") throw new ProxyError("notConfigured", t("The AI service is not set up on the server yet."));
     if (code === "refused") throw new ProxyError("refused", messages.refused());
     if (code === "upstream_timeout") throw new ProxyError("timeout", messages.timeout());
     if (code === "invalid_model_output") throw new ProxyError("invalidResponse", t("The analysis came back in an unexpected format, so it is not shown. (%@)", message ?? ""));
@@ -75,14 +86,22 @@ async function request(base: string, token: string, path: string, init: RequestI
   }
 }
 
-export type Health = { reachable: true; configured: boolean; ocr: boolean; model?: string };
+export type Health = { reachable: true; configured: boolean; ocr: boolean; model?: string; provider?: string; remainingToday?: number; deviceDaily?: number };
 
 /** Checks reachability (public /health) and the token (/v1/ping). */
 export async function checkServer(base: string, token: string): Promise<Health> {
   const health = await fetch(`${base}/health`).then((r) => r.json()).catch(() => null);
   if (!health?.ok) throw new ProxyError("unreachable", messages.unreachable());
   const ping = await request(base, token, "/v1/ping", { method: "GET", timeoutMs: 8000 });
-  return { reachable: true, configured: Boolean(ping.configured), ocr: Boolean(ping.ocr), model: ping.model };
+  return {
+    reachable: true,
+    configured: Boolean(ping.configured),
+    ocr: Boolean(ping.ocr),
+    model: ping.model,
+    provider: ping.provider,
+    remainingToday: typeof ping.remainingToday === "number" ? ping.remainingToday : undefined,
+    deviceDaily: typeof ping.deviceDaily === "number" ? ping.deviceDaily : undefined,
+  };
 }
 
 export async function recognizeText(
@@ -135,7 +154,11 @@ export async function analyze(base: string, token: string, input: AnalyzeInput, 
     }),
   });
   try {
-    return { analysis: validateAnalysis(body?.analysis, input.images.length), model: String(body?.model ?? "claude") };
+    return {
+      analysis: validateAnalysis(body?.analysis, input.images.length),
+      model: String(body?.model ?? "ai"),
+      remainingToday: typeof body?.remainingToday === "number" ? (body.remainingToday as number) : null,
+    };
   } catch (err) {
     if (err instanceof InvalidAnalysisError) {
       throw new ProxyError("invalidResponse", t("The analysis came back in an unexpected format, so it is not shown. (%@)", err.message));

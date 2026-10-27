@@ -18,7 +18,7 @@ export function ConsentModal({ visible, onDecision }: { visible: boolean; onDeci
           <InfoRow icon="chatbubble-ellipses-outline" title={t("Your description, answers and the steps you tried")} />
         </View>
         <Caption style={{ fontSize: 16 }}>
-          {t("They go to the Fixify server you configured. It recognizes text on your computer and sends photos and text to Anthropic's Claude to create the analysis. Nothing is sent in the background. Avoid photographing passwords, IDs or other people.")}
+          {t("With Fixify Cloud they go to OCR.space for text recognition and to Groq for the AI analysis (servers in the USA). With your own server they go there instead. Nothing is sent in the background. Avoid photographing passwords, IDs or other people.")}
         </Caption>
         <Caption>{t("You can change this anytime in Settings → Privacy.")}</Caption>
         <Button title={t("Allow and analyze")} onPress={() => onDecision(true)} />

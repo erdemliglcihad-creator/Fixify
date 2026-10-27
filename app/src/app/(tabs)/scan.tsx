@@ -210,7 +210,7 @@ export default function Scan() {
             <View style={{ flex: 1, gap: 4 }}>
               <Text style={{ color: "#fff", fontSize: 15 }}>{categoryInfo[category].tip()}</Text>
               <Text style={{ color: "#FFFFFFB0", fontSize: 12 }}>
-                {t("Text recognition and the analysis run after you take the photo, on your Fixify server.")}
+                {t("Text recognition and the analysis start after you take the photo.")}
               </Text>
             </View>
             <Pressable

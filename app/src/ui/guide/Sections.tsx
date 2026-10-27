@@ -9,13 +9,16 @@ import { categoryInfo, type IconName } from "../categories.ts";
 import { Body, Button, Caption, Card, Chip, Divider, MarkerBadge, SectionTitle } from "../components.tsx";
 import { mono, radius, space, type, useTheme } from "../theme.ts";
 
+/** Short, honest label for the model that wrote this analysis, e.g. "qwen3.8-27b" or "Claude". */
+const modelLabel = (provider: string) => (provider.startsWith("claude") ? "Claude" : (provider.split("/").pop() ?? provider));
+
 export function AnalysisHeader({ analysis, revision }: { analysis: ProblemAnalysis; revision: AnalysisRevision | null }) {
   const { c } = useTheme();
   return (
     <View style={{ gap: space.s }}>
       <View style={{ flexDirection: "row", gap: space.s, flexWrap: "wrap" }}>
         <Chip text={categoryInfo[analysis.category].title()} icon={categoryInfo[analysis.category].icon} />
-        <Chip text="Claude" color={c.secondary} icon="server-outline" />
+        {revision && <Chip text={modelLabel(revision.provider)} color={c.secondary} icon="sparkles-outline" />}
         {revision && revision.number > 1 && <Chip text={t("Plan v%lld", revision.number)} color={c.secondary} icon="git-branch-outline" />}
       </View>
       <Text style={[type.title, { color: c.text }]}>{analysis.title}</Text>
@@ -326,13 +329,11 @@ export function GateCard({
   hasPhotos,
   onAnalyze,
   onSettings,
-  onPaywall,
 }: {
   preflight: Preflight;
   hasPhotos: boolean;
   onAnalyze: () => void;
   onSettings: () => void;
-  onPaywall: () => void;
 }) {
   const saved = hasPhotos ? t("Your photos are saved on this iPhone.") : t("Your description is saved on this iPhone.");
   const content: Record<Preflight, { icon: IconName; title: string; text: string; action: [string, () => void] }> = {
@@ -341,17 +342,10 @@ export function GateCard({
     needsSetup: {
       icon: "server-outline",
       title: t("AI analysis is not set up"),
-      text: t("Connect your Fixify server in Settings to get text recognition, a diagnosis and a guided plan."),
+      text: t("Choose an AI service in Settings to get text recognition, a diagnosis and a guided plan."),
       action: [t("Open Settings"), onSettings],
     },
-    off: { icon: "phone-portrait-outline", title: t("AI analysis is off"), text: t("Turn on the Fixify server in Settings to get a guided plan."), action: [t("Open Settings"), onSettings] },
-    monthlyLimit: {
-      icon: "speedometer-outline",
-      title: t("Monthly analyses used up"),
-      text: `${saved} ${t("Analyze when your quota renews next month.")}`,
-      action: [t("See Fixify Pro"), onPaywall],
-    },
-    sessionLimit: { icon: "speedometer-outline", title: t("Monthly analyses used up"), text: "", action: [t("See Fixify Pro"), onPaywall] },
+    off: { icon: "phone-portrait-outline", title: t("AI analysis is off"), text: t("Turn on an AI service in Settings to get a guided plan."), action: [t("Open Settings"), onSettings] },
   };
   const g = content[preflight];
   return (

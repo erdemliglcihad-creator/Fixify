@@ -65,7 +65,7 @@ export default function Home() {
             <Ionicons name="server-outline" size={26} color={c.caution} />
             <View style={{ flex: 1, gap: 2 }}>
               <Text style={[type.headline, { color: c.text }]}>{t("AI analysis is not set up")}</Text>
-              <Caption>{t("Connect your Fixify server in Settings. It recognizes text and creates the analysis.")}</Caption>
+              <Caption>{t("Choose an AI service in Settings to get a diagnosis and a guided plan.")}</Caption>
             </View>
             <Ionicons name="chevron-forward" size={18} color={c.secondary} />
           </Card>

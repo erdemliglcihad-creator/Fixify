@@ -1,0 +1,29 @@
+{
+  // Fixify cloud server. Deploy: npx wrangler deploy
+  // Secrets (never in this file): npx wrangler secret put AI_API_KEY / OCR_SPACE_KEY
+  "name": "fixify-cloud",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "durable_objects": {
+    "bindings": [{ "name": "LIMITER", "class_name": "Limiter" }]
+  },
+  "exports": {
+    "Limiter": { "type": "durable-object", "storage": "sqlite" }
+  },
+  "vars": {
+    // Free AI provider (OpenAI-compatible). Switch to Mistral or others by changing these three values.
+    "AI_PROVIDER_NAME": "groq",
+    "AI_BASE_URL": "https://api.groq.com/openai/v1",
+    "AI_MODEL": "qwen/qwen3.8-27b",
+    // Claude later: set "AI_PROVIDER": "anthropic" and the ANTHROPIC_API_KEY secret.
+    "AI_PROVIDER": "openai-compatible",
+    // Daily limits. Groq's free vision quota (~200k tokens/day) covers roughly 30 analyses for everyone together.
+    "DEVICE_DAILY": "10",
+    "IP_DAILY": "30",
+    "GLOBAL_ANALYZE_DAILY": "30",
+    "GLOBAL_OCR_DAILY": "450",
+    "MAX_IMAGES": "2"
+  },
+  "observability": { "enabled": true }
+}

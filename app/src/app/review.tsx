@@ -9,9 +9,8 @@ import { t } from "../i18n/index.ts";
 import { preflight, recognizeMissingText, start } from "../services/analysis.ts";
 import { MAX_CAPTURES, removeCapture, resetDraft, useDraft } from "../services/draft.ts";
 import { openSession } from "../services/nav.ts";
-import { addImages, createSession, sessionsStore } from "../services/sessions.ts";
+import { addImages, createSession } from "../services/sessions.ts";
 import { isServerConfigured, updateSettings, useSettings } from "../services/settings.ts";
-import { limits } from "../services/usage.ts";
 import { categoryInfo } from "../ui/categories.ts";
 import { Button, Card, Caption, InfoRow } from "../ui/components.tsx";
 import { ConsentModal } from "../ui/ConsentModal.tsx";
@@ -60,10 +59,6 @@ export default function Review() {
   }
 
   function submit() {
-    if (!adding && limits.storedSessions !== null && sessionsStore.get().length >= limits.storedSessions) {
-      router.push({ pathname: "/paywall", params: { reason: "storedSessions" } });
-      return;
-    }
     if (!adding && server && !settings.consent) setAskConsent(true);
     else save(true);
   }
@@ -130,13 +125,13 @@ export default function Review() {
             <InfoRow
               icon="lock-closed-outline"
               title={t("Nothing is sent before you tap Analyze.")}
-              detail={t("Then the photos (reduced in size) and your description go to your Fixify server. It recognizes text on your computer and asks Claude for the analysis.")}
+              detail={t("Then the photos (reduced in size) and your description are sent for text recognition and AI analysis.")}
             />
           ) : (
             <InfoRow
               icon="phone-portrait-outline"
               title={t("Saved on this iPhone only.")}
-              detail={t("No Fixify server is set up, so there is no text recognition or analysis yet. You can analyze the session later.")}
+              detail={t("No AI service is active, so there is no text recognition or analysis yet. You can analyze the session later.")}
             />
           )}
         </Card>

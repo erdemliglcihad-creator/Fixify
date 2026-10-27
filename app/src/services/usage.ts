@@ -1,22 +1,12 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FREE, recorded, remaining, type UsageState } from "../core/usage.ts";
+// Daily quota as reported by Fixify Cloud. The server enforces it; the app only shows it.
 import { createStore, useStore } from "./store.ts";
 
-// No purchases in Expo Go, so everyone uses the free limits here.
-export const limits = FREE;
+export const limits = { imagesPerAnalysis: 2 };
 
-const KEY = "usage.v1";
-export const usageStore = createStore<UsageState>({ month: "", count: 0, lifetime: 0 });
-export const useUsage = () => useStore(usageStore);
+export type Quota = { remainingToday: number | null; deviceDaily: number | null };
+export const quotaStore = createStore<Quota>({ remainingToday: null, deviceDaily: null });
+export const useQuota = () => useStore(quotaStore);
 
-export async function loadUsage() {
-  const raw = await AsyncStorage.getItem(KEY);
-  if (raw) usageStore.set(JSON.parse(raw) as UsageState);
+export function setQuota(patch: Partial<Quota>) {
+  quotaStore.set((q) => ({ ...q, ...patch }));
 }
-
-export function recordAnalysis() {
-  usageStore.set((u) => recorded(u, new Date()));
-  AsyncStorage.setItem(KEY, JSON.stringify(usageStore.get()));
-}
-
-export const analysesLeft = (u: UsageState) => remaining(u, limits, new Date());
