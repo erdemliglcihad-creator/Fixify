@@ -59,7 +59,7 @@ export function Glass({ children, style, variant = "regular", tint, interactive,
 
   if (nativeGlass) {
     return (
-      <GlassView style={[{ overflow: "hidden" }, style]} glassEffectStyle={variant} tintColor={tint} isInteractive={interactive} colorScheme={dark ? "dark" : "auto"}>
+      <GlassView style={[{ overflow: "hidden" }, style]} glassEffectStyle={variant} tintColor={tint} isInteractive={interactive} colorScheme={scheme}>
         {children}
       </GlassView>
     );

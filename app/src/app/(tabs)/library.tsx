@@ -97,7 +97,7 @@ export default function Library() {
             {filtered.map((s, i) => (
               <View key={s.id}>
                 {i > 0 && <Divider />}
-                <SessionRow session={s} onPress={() => openSession(s.id)} onLongPress={() => askDelete(s)} />
+                <SessionRow session={s} thumbnail={false} onPress={() => openSession(s.id)} onLongPress={() => askDelete(s)} />
               </View>
             ))}
           </Card>

@@ -40,7 +40,8 @@ export function TabBar({ state, descriptors, emitter, navigateToTab }: TabBarPro
   const { c, dark } = useTheme();
   const insets = useSafeAreaInsets();
   const area = useCurrentArea();
-  const accent = areaColors[area].accent;
+  // Ice blue glows on black; on the light bar the deeper accent keeps icons and the pill readable.
+  const accent = dark ? areaColors[area].accent : c.accent;
   const glow = areaColors[area].glow;
   const [width, setWidth] = useState(0);
 
@@ -146,7 +147,7 @@ export function TabBar({ state, descriptors, emitter, navigateToTab }: TabBarPro
                     haptic="medium"
                     scaleTo={0.9}
                     accessibilityLabel={label}
-                    style={[styles.center, { boxShadow: `0 8px 24px ${glow[0]}88, 0 0 0 4px ${dark ? "#06070B" : "#F4F5F7"}` }]}
+                    style={[styles.center, { boxShadow: `0 8px 24px ${glow[0]}88, 0 0 0 4px ${c.background}` }]}
                   >
                     <LinearGradient colors={[glow[2], glow[0], glow[1]]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
                     <Ionicons name="scan" size={26} color="#fff" />

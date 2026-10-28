@@ -2,11 +2,11 @@ import { useFonts } from "expo-font";
 import { DarkTheme, DefaultTheme, router, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Platform, View } from "react-native";
+import { ActivityIndicator, Appearance, Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { t } from "../i18n/index.ts";
 import { applyRetention, loadSessions } from "../services/sessions.ts";
-import { isServerConfigured, loadSettings, serverBase, settingsStore } from "../services/settings.ts";
+import { isServerConfigured, loadSettings, serverBase, settingsStore, useSettings } from "../services/settings.ts";
 import { loadChat } from "../services/chat.ts";
 import { refreshQuota } from "../services/proxy.ts";
 import { Aurora } from "../ui/Aurora";
@@ -18,6 +18,12 @@ const IOS_26 = Platform.OS === "ios" && parseInt(String(Platform.Version), 10) >
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
   const { c, dark } = useTheme();
+  const { appearance } = useSettings();
+
+  useEffect(() => {
+    // Native parts (Liquid Glass, keyboard, alerts) follow the app's choice, not only the iPhone's.
+    if (Platform.OS !== "web") Appearance.setColorScheme(appearance === "system" ? "unspecified" : appearance);
+  }, [appearance]);
   const [fontsLoaded, fontError] = useFonts({
     "Montserrat-Light": require("../../assets/fonts/Montserrat-Light.ttf"),
     "Montserrat-Regular": require("../../assets/fonts/Montserrat-Regular.ttf"),

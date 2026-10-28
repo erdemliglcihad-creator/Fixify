@@ -38,7 +38,18 @@ export function relativeTime(ms: number) {
   }
 }
 
-export function SessionRow({ session, onPress, onLongPress }: { session: FixSession; onPress: () => void; onLongPress?: () => void }) {
+/** `thumbnail: false` keeps photos out of the list (the Library shows them only inside the session). */
+export function SessionRow({
+  session,
+  onPress,
+  onLongPress,
+  thumbnail = true,
+}: {
+  session: FixSession;
+  onPress: () => void;
+  onLongPress?: () => void;
+  thumbnail?: boolean;
+}) {
   const { c } = useTheme();
   const analysis = currentAnalysis(session);
   return (
@@ -50,7 +61,7 @@ export function SessionRow({ session, onPress, onLongPress }: { session: FixSess
       accessibilityRole="button"
       accessibilityHint={onLongPress ? t("Press and hold to delete") : undefined}
     >
-      <Thumb session={session} size={52} />
+      {thumbnail && <Thumb session={session} size={52} />}
       <View style={{ flex: 1, gap: 6 }}>
         <Text style={[type.headline, { color: c.text }]} numberOfLines={1}>
           {analysis?.title ?? session.title}
