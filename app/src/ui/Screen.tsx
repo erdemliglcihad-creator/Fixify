@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollEdge } from "./Glass.tsx";
+import { RevealWords } from "./reveal.tsx";
 import { space, type, useTheme } from "./theme.ts";
 
 /** Room for the floating glass tab bar, so the last content can scroll above it. */
@@ -30,9 +31,9 @@ export function Screen({
       >
         {title ? (
           <View style={styles.titleRow}>
-            <Text style={[type.display, { color: c.text, flex: 1 }]} accessibilityRole="header">
-              {title}
-            </Text>
+            <View style={{ flex: 1 }} accessibilityRole="header">
+              <RevealWords text={title} style={[type.display, { color: c.text }]} stagger={60} />
+            </View>
             {accessory}
           </View>
         ) : null}

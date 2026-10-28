@@ -11,6 +11,7 @@ import { cancelReminder, scheduleReminder } from "../../services/reminders.ts";
 import { deletePhotos, deleteSession, logEvent, updateSession, useSession } from "../../services/sessions.ts";
 import { settingsStore, updateSettings } from "../../services/settings.ts";
 import { Body, Button, Card, Caption, SafetyBanner, SectionTitle } from "../../ui/components.tsx";
+import { Reveal } from "../../ui/reveal.tsx";
 import { confirmDestructive, notify } from "../../ui/confirm.ts";
 import { ConsentModal } from "../../ui/ConsentModal.tsx";
 import { EvidenceGallery, markersFor } from "../../ui/guide/Evidence.tsx";
@@ -179,7 +180,9 @@ function Guide({ session }: { session: FixSession }) {
 
         {analysis && (
           <>
-            <AnalysisHeader analysis={analysis} revision={revision} />
+            <Reveal kind="build">
+              <AnalysisHeader analysis={analysis} revision={revision} />
+            </Reveal>
             <SafetyBanner safety={analysis.safety} />
             {hasNewObservation(session) && <UpdateSuggestion enabled={!job} onUpdate={() => run("replan", "The user added a new photo as an observation.")} />}
             {!analysis.canHelp && (
@@ -188,9 +191,14 @@ function Guide({ session }: { session: FixSession }) {
                 <Body>{analysis.cannotHelpReason ?? analysis.confidenceNote}</Body>
               </Card>
             )}
-            {!isOpen(session.status) && <SummaryCard session={session} />}
-            {analysis.nextDiagnostic && isOpen(session.status) && <NextDiagnosticCard d={analysis.nextDiagnostic} />}
+            {!isOpen(session.status) && (
+              <Reveal><SummaryCard session={session} /></Reveal>
+            )}
+            {analysis.nextDiagnostic && isOpen(session.status) && (
+              <Reveal><NextDiagnosticCard d={analysis.nextDiagnostic} /></Reveal>
+            )}
             {analysis.questions.length > 0 && isOpen(session.status) && (
+              <Reveal>
               <QuestionsSection
                 questions={analysis.questions}
                 canUpdate={aiAvailable}
@@ -201,8 +209,10 @@ function Guide({ session }: { session: FixSession }) {
                   if (aiAvailable) run("replan");
                 }}
               />
+              </Reveal>
             )}
             {analysis.steps.length > 0 && (
+              <Reveal>
               <StepsSection
                 session={session}
                 analysis={analysis}
@@ -214,6 +224,7 @@ function Guide({ session }: { session: FixSession }) {
                 onAddPhoto={() => startScan({ category: session.category, targetSessionId: session.id })}
                 onShowFinding={showFinding}
               />
+              </Reveal>
             )}
             {isOpen(session.status) && analysis.steps.length > 0 && (
               <Button title={step ? t("I'm done – check the result") : t("Check the result")} icon="ribbon-outline" kind={step ? "secondary" : "primary"} onPress={() => setVerifying(true)} />
@@ -226,14 +237,23 @@ function Guide({ session }: { session: FixSession }) {
                 onPress={() => updateSession(session.id, (cur) => logEvent({ ...cur, status: "active" }, "note", t("Session reopened")))}
               />
             )}
-            {analysis.findings.length > 0 && <FindingsSection analysis={analysis} located={located} onSelect={(f) => (located.has(f.id) ? showFinding(f.id) : setDetail(f))} />}
-            {analysis.causes.length > 0 && <CausesSection causes={analysis.causes} />}
-            {analysis.unknowns.length > 0 && <UnknownsSection unknowns={analysis.unknowns} />}
+            {analysis.findings.length > 0 && (
+              <Reveal><FindingsSection analysis={analysis} located={located} onSelect={(f) => (located.has(f.id) ? showFinding(f.id) : setDetail(f))} /></Reveal>
+            )}
+            {analysis.causes.length > 0 && (
+              <Reveal><CausesSection causes={analysis.causes} /></Reveal>
+            )}
+            {analysis.unknowns.length > 0 && (
+              <Reveal><UnknownsSection unknowns={analysis.unknowns} /></Reveal>
+            )}
           </>
         )}
 
-        {session.events.length > 0 && <HistoryCard events={session.events} />}
+        {session.events.length > 0 && (
+              <Reveal><HistoryCard events={session.events} /></Reveal>
+            )}
 
+        <Reveal kind="build">
         <Card style={{ gap: space.s }}>
           <SectionTitle title={t("More")} icon="ellipsis-horizontal-circle-outline" />
           <Button
@@ -265,6 +285,7 @@ function Guide({ session }: { session: FixSession }) {
             }
           />
         </Card>
+        </Reveal>
       </ScrollView>
 
       <FindingSheet

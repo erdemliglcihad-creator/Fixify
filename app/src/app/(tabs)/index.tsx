@@ -10,7 +10,8 @@ import { isServerConfigured, useSettings } from "../../services/settings.ts";
 import { useQuota } from "../../services/usage.ts";
 import { Caption, Divider, GlassCard } from "../../ui/components.tsx";
 import { Glass } from "../../ui/Glass.tsx";
-import { GradientText, PressScale, Rise } from "../../ui/motion.tsx";
+import { PressScale } from "../../ui/motion.tsx";
+import { FlowingGradientText, Reveal, RevealWords } from "../../ui/reveal.tsx";
 import { RainbowBorder } from "../../ui/RainbowBorder";
 import { Screen } from "../../ui/Screen.tsx";
 import { SessionRow } from "../../ui/SessionRow.tsx";
@@ -31,7 +32,7 @@ export default function Home() {
 
   return (
     <Screen contentStyle={{ gap: space.xxl + space.s }}>
-      <Rise index={0} style={styles.topRow}>
+      <Reveal kind="fade" style={styles.topRow}>
         <Text style={[styles.wordmark, { color: c.text }]}>Fixify</Text>
         {quota.uploadsLeft !== null && quota.uploadsDaily ? (
           <View
@@ -45,17 +46,21 @@ export default function Home() {
             </Text>
           </View>
         ) : null}
-      </Rise>
+      </Reveal>
 
-      <Rise index={1} style={{ gap: space.m, marginTop: space.xl }}>
-        <Text style={[type.eyebrow, { color: c.secondary }]}>{greeting()}</Text>
-        <GradientText colors={dark ? ["#FFFFFF", "#DCE8FF", "#8DB8FF"] : ["#070B14", "#16357F", "#1E5BFF"]} style={type.hero}>
-          {t("What are we fixing today?")}
-        </GradientText>
-      </Rise>
+      {/* Greeting word by word, then the headline rises with a slowly flowing gradient. */}
+      <View style={{ gap: space.m, marginTop: space.xl }}>
+        <RevealWords text={greeting()} style={[type.eyebrow, { color: c.secondary }]} delay={100} />
+        <Reveal kind="slideUp" delay={260}>
+          <FlowingGradientText colors={dark ? ["#FFFFFF", "#DCE8FF", "#8DB8FF", "#FFFFFF"] : ["#070B14", "#16357F", "#1E5BFF", "#070B14"]} style={type.hero}>
+            {t("What are we fixing today?")}
+          </FlowingGradientText>
+        </Reveal>
+      </View>
 
-      <Rise index={2} style={{ gap: space.l }}>
-        {/* Live Fix: the one primary action, a clean glass card with a faint blue light from below. */}
+      <View style={{ gap: space.l }}>
+        {/* Live Fix: the one primary action. It emerges out of film grain, the only "noise build up" on the screen. */}
+        <Reveal kind="noise" radius={24} delay={420}>
         <GlassCard style={styles.hero}>
           <LinearGradient pointerEvents="none" colors={["#1E5BFF00", "#1E5BFF26"]} start={{ x: 0, y: 0.2 }} end={{ x: 0.6, y: 1 }} style={StyleSheet.absoluteFill} />
           <View style={{ gap: space.m }}>
@@ -81,7 +86,9 @@ export default function Home() {
             </PressScale>
           </View>
         </GlassCard>
+        </Reveal>
 
+        <Reveal kind="pop" delay={560}>
         <PressScale onPress={() => router.navigate("/fixvoice")}>
           <Glass interactive style={styles.row}>
             <View style={[styles.rowIcon, { borderColor: c.hairline }]}>
@@ -94,6 +101,7 @@ export default function Home() {
             <Ionicons name="chevron-forward" size={18} color={c.secondary} />
           </Glass>
         </PressScale>
+        </Reveal>
 
         {!isServerConfigured(settings) && settings.provider === "proxy" && (
           <PressScale onPress={() => router.navigate("/settings")}>
@@ -107,11 +115,12 @@ export default function Home() {
             </Glass>
           </PressScale>
         )}
-      </Rise>
+      </View>
 
       {solved.length > 0 && (
         <View style={{ gap: space.m }}>
-          <Label text={t("Recently solved")} />
+          <RevealWords text={t("Recently solved").toUpperCase()} style={[type.eyebrow, { color: c.secondary, fontSize: 13, letterSpacing: 1 }]} />
+          <Reveal kind="build" delay={100}>
           <GlassCard style={{ gap: 0, paddingVertical: space.xs, paddingHorizontal: 0 }}>
             {solved.map((s, i) => (
               <View key={s.id} style={{ paddingHorizontal: space.l }}>
@@ -120,19 +129,10 @@ export default function Home() {
               </View>
             ))}
           </GlassCard>
+          </Reveal>
         </View>
       )}
     </Screen>
-  );
-}
-
-/** Quiet section label (Neue Montreal), instead of icon headers. */
-function Label({ text }: { text: string }) {
-  const { c } = useTheme();
-  return (
-    <Text style={[type.eyebrow, { color: c.secondary, fontSize: 13, letterSpacing: 1, textTransform: "uppercase" }]} accessibilityRole="header">
-      {text}
-    </Text>
   );
 }
 

@@ -1,9 +1,10 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Haptics from "expo-haptics";
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from "react-native";
 import type { ProblemAnalysis, SessionStatus } from "../core/types.ts";
 import { t } from "../i18n/index.ts";
+import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from "react-native-reanimated";
 import { statusInfo, type IconName } from "./categories.ts";
 import { Glass } from "./Glass.tsx";
 import { radius, space, type, useTheme, type Palette, font } from "./theme.ts";
@@ -18,31 +19,77 @@ export function GlassCard({ children, style }: { children: ReactNode; style?: St
   return <Glass style={[styles.glassCard, style]}>{children}</Glass>;
 }
 
-/** Pill-shaped glass switcher; the chosen option sits on a brighter inner pill. */
+/** Pill-shaped glass switcher. The bright inner pill glides to the chosen option on a spring; the label pops. */
 export function Segmented<T extends string>({ value, options, onChange }: { value: T; options: [T, string][]; onChange: (v: T) => void }) {
   const { c, dark } = useTheme();
+  const [width, setWidth] = useState(0);
+  const index = Math.max(options.findIndex(([v]) => v === value), 0);
+  const slot = width / Math.max(options.length, 1);
+  const x = useSharedValue(0);
+  const ready = useSharedValue(false);
+
+  useEffect(() => {
+    if (!slot) return;
+    // First layout: jump into place; afterwards glide (critically damped, no overshoot).
+    x.value = ready.value ? withSpring(index * slot, { duration: 380, dampingRatio: 0.9 }) : index * slot;
+    ready.value = true;
+  }, [index, slot]);
+
+  const pill = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
+
   return (
     <Glass style={styles.segment}>
-      {options.map(([v, label]) => {
-        const on = value === v;
-        return (
-          <Pressable
+      <View style={{ flex: 1, flexDirection: "row" }} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+        {slot > 0 && (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.segmentPill,
+              { width: slot, backgroundColor: dark ? "#FFFFFF24" : "#FFFFFFF2", boxShadow: dark ? undefined : "0 1px 6px rgba(16, 24, 48, 0.12)" },
+              pill,
+            ]}
+          />
+        )}
+        {options.map(([v, label]) => (
+          <SegmentLabel
             key={v}
+            label={label}
+            on={value === v}
             onPress={() => {
-              if (!on && Platform.OS !== "web") Haptics.selectionAsync();
+              if (value !== v && Platform.OS !== "web") Haptics.selectionAsync();
               onChange(v);
             }}
-            style={[styles.segmentItem, on && { backgroundColor: dark ? "#FFFFFF24" : "#FFFFFFF2", boxShadow: dark ? undefined : "0 1px 6px rgba(16, 24, 48, 0.12)" }]}
-            aria-selected={on}
-            accessibilityRole="button"
-          >
-            <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} style={{ color: on ? c.text : c.secondary, fontSize: 14, fontFamily: on ? font.semibold : font.medium }}>
-              {label}
-            </Text>
-          </Pressable>
-        );
-      })}
+            color={value === v ? c.text : c.secondary}
+          />
+        ))}
+      </View>
     </Glass>
+  );
+}
+
+function SegmentLabel({ label, on, onPress, color }: { label: string; on: boolean; onPress: () => void; color: string }) {
+  const scale = useSharedValue(1);
+  const mounted = useRef(false);
+  useEffect(() => {
+    // A small pop when this option becomes the chosen one (not on first appearance).
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    if (on) scale.value = withSequence(withTiming(1.08, { duration: 120 }), withSpring(1, { duration: 300, dampingRatio: 0.8 }));
+  }, [on]);
+  const animated = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+  return (
+    <Pressable onPress={onPress} style={styles.segmentItem} aria-selected={on} accessibilityRole="button">
+      <Animated.Text
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.85}
+        style={[{ color, fontSize: 14, fontFamily: on ? font.semibold : font.medium }, animated]}
+      >
+        {label}
+      </Animated.Text>
+    </Pressable>
   );
 }
 
@@ -209,6 +256,7 @@ const styles = StyleSheet.create({
   glassCard: { borderRadius: radius.card, padding: space.l, gap: space.m, borderCurve: "continuous" },
   segment: { flexDirection: "row", borderRadius: 999, padding: 4 },
   segmentItem: { flex: 1, alignItems: "center", paddingVertical: 9, paddingHorizontal: 6, borderRadius: 999 },
+  segmentPill: { position: "absolute", top: 0, bottom: 0, left: 0, borderRadius: 999 },
   card: { borderRadius: radius.card, padding: space.l, gap: space.m, borderWidth: StyleSheet.hairlineWidth, borderCurve: "continuous" },
   // Content cards are solid; a soft shadow separates them from the gradient behind.
   lift: { boxShadow: "0 1px 2px rgba(16, 24, 48, 0.06), 0 8px 24px rgba(16, 24, 48, 0.06)" },

@@ -15,7 +15,9 @@ import { Caption, Divider, GlassCard, Segmented } from "../../ui/components.tsx"
 import { confirmDestructive } from "../../ui/confirm.ts";
 import type { IconName } from "../../ui/categories.ts";
 import { radius, space, type, useTheme, font } from "../../ui/theme.ts";
+import { Reveal, RevealWords } from "../../ui/reveal.tsx";
 import { Screen } from "../../ui/Screen.tsx";
+import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { useArea } from "../../services/area.ts";
 
 type Connection = { state: "idle" } | { state: "checking" } | { state: "ok"; configured: boolean; ocr: boolean } | { state: "failed"; message: string };
@@ -40,14 +42,35 @@ function Link({ icon, title, onPress, danger }: { icon: IconName; title: string;
   );
 }
 
+/** One settings group. Builds up as it scrolls into view: title word by word, then the card, then the note. */
 function Section({ title, footer, children }: { title: string; footer?: string; children: ReactNode }) {
   const { c } = useTheme();
   return (
     <View style={{ gap: space.s }}>
-      <Caption style={{ textTransform: "uppercase", fontFamily: font.semibold, marginLeft: space.s }}>{title}</Caption>
-      <GlassCard style={styles.group}>{children}</GlassCard>
-      {footer ? <Caption style={{ marginHorizontal: space.s }}>{footer}</Caption> : null}
+      <View style={{ marginLeft: space.s }}>
+        <RevealWords text={title.toUpperCase()} style={[type.caption, { color: c.secondary, fontFamily: font.semibold, letterSpacing: 0.6 }]} />
+      </View>
+      <Reveal kind="build" delay={80}>
+        <GlassCard style={styles.group}>{children}</GlassCard>
+      </Reveal>
+      {footer ? (
+        <Reveal kind="fade" delay={180}>
+          {/* Keyed by the text, so a changed note cross-fades instead of jumping. */}
+          <Animated.View key={footer} entering={FadeIn.duration(260)}>
+            <Caption style={{ marginHorizontal: space.s }}>{footer}</Caption>
+          </Animated.View>
+        </Reveal>
+      ) : null}
     </View>
+  );
+}
+
+/** Content that appears when a setting changes: fades and slides in softly instead of popping. */
+function Appear({ children }: { children: ReactNode }) {
+  return (
+    <Animated.View entering={FadeInDown.duration(280)} style={{ gap: space.m }}>
+      {children}
+    </Animated.View>
   );
 }
 
@@ -108,7 +131,7 @@ export default function Settings() {
           }}
         />
         {s.provider === "proxy" && (
-          <>
+          <Appear>
             <TextInput
               value={s.serverURL}
               onChangeText={(serverURL) => {
@@ -135,11 +158,11 @@ export default function Settings() {
               secureTextEntry
               style={input}
             />
-          </>
+          </Appear>
         )}
         {s.provider === "cloud" && !CLOUD_URL && <Caption color={c.caution}>{t("This build has no Fixify Cloud address yet.")}</Caption>}
         {s.provider !== "off" && (
-          <>
+          <Appear>
             <Pressable onPress={test} disabled={!isServerConfigured(s)} style={styles.row} accessibilityRole="button">
               <Text style={[type.body, { color: c.accent, flex: 1, opacity: isServerConfigured(s) ? 1 : 0.4 }]}>{t("Test connection")}</Text>
               {connection.state === "checking" && <ActivityIndicator />}
@@ -151,16 +174,16 @@ export default function Settings() {
             </Pressable>
             {connection.state === "failed" && <Caption color={c.danger}>{connection.message}</Caption>}
             {connection.state === "ok" && !connection.ocr && <Caption color={c.caution}>{t("This server has no text recognition.")}</Caption>}
-          </>
+          </Appear>
         )}
         {s.provider === "cloud" && quota.uploadsLeft !== null && (
-          <>
+          <Appear>
             <Divider />
             <Row>
               <Label>{t("Photo uploads left today")}</Label>
               <Caption>{quota.uploadsDaily ? `${quota.uploadsLeft} / ${quota.uploadsDaily}` : String(quota.uploadsLeft)}</Caption>
             </Row>
-          </>
+          </Appear>
         )}
       </Section>
 
