@@ -14,12 +14,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "Fixify"
+EXTRA_SOURCES = [ROOT / "Shared", ROOT / "FixifyControls", ROOT / "FixifyBroadcast"]
 OUT = SRC / "Resources" / "Localizable.xcstrings"
 DE = ROOT / "tools" / "de.json"
 
 CALLS = ["Text", "Label", "Button", "Section", "Toggle", "TextField", "SecureField", "Picker", "NavigationLink",
-         "LabeledContent", "Tab", "ContentUnavailableView", "Menu", "navigationTitle", "confirmationDialog", "alert"]
-START = re.compile(r"(?:\b(?:%s)\(\s*|String\(localized:\s*|prompt:\s*Text\(\s*)\"" % "|".join(CALLS))
+         "LabeledContent", "Tab", "ContentUnavailableView", "Menu", "navigationTitle", "confirmationDialog", "alert",
+         "IntentDialog", "IntentDescription", "displayName", "description"]
+START = re.compile(r"(?:\b(?:%s)\(\s*|String\(localized:\s*|prompt:\s*Text\(\s*|LocalizedStringResource = )\"" % "|".join(CALLS))
 INT_HINT = re.compile(r"count|number|minutes|index|total|seconds|Int\(|statusCode|analysesPerMonth|updatesPerSession|"
                       r"storedSessions|\.value\b|remaining|imagesPerAnalysis|maxCaptures|- 3")
 
@@ -72,7 +74,8 @@ def to_key(parts):
 
 def extract():
     keys = {}
-    for path in sorted(SRC.rglob("*.swift")):
+    paths = [p for root in [SRC, *EXTRA_SOURCES] if root.exists() for p in root.rglob("*.swift")]
+    for path in sorted(paths):
         src = path.read_text(encoding="utf-8")
         for m in START.finditer(src):
             parts, _ = read_literal(src, m.end())

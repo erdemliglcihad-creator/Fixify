@@ -2,7 +2,7 @@ import SwiftUI
 import Observation
 
 enum AppTab: Hashable {
-    case home, scan, sessions, library, settings
+    case home, fixVoice, scan, sessions, library, settings
 }
 
 /// What the camera is opened for.

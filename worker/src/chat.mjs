@@ -25,8 +25,16 @@ export const ChatRequestSchema = z.object({
   /** Short summary of a Fix session the user is asking about. */
   context: z.string().max(3000).nullable().optional(),
   /** "voice": a spoken phone-style call (FixVoice), answers are read aloud. */
-  mode: z.enum(["chat", "voice"]).default("chat"),
+  mode: z.enum(["chat", "voice", "screen"]).default("chat"),
 });
+
+const SCREEN_RULES = `
+
+This is a quick question about what is on the user's iPhone screen right now (a screenshot is attached). They may be in any app: a video, a social feed, a website, a game, a chat.
+- Answer exactly what they ask about the screen: who or what is shown, the name of a show, anime, film, song, product, place or app, what a text means, a translation, a quick explanation.
+- Answer directly in 1 to 3 short sentences that sound natural when read aloud. Lead with the answer itself. No markdown, no lists, no emojis.
+- Give your best identification plainly. Only if the screen really gives nothing to go on, say so in one short sentence and suggest what would help.
+- Do not describe the whole screen unless asked. Never read out private data like passwords or codes.`;
 
 const VOICE_RULES = `
 
@@ -41,7 +49,7 @@ export function buildChatMessages(req) {
   const lastImageIndex = req.messages[last].role === "user" && req.messages[last].image ? last : -1;
   const system =
     FIXBOT_PROMPT +
-    (req.mode === "voice" ? VOICE_RULES : "") +
+    (req.mode === "voice" ? VOICE_RULES : req.mode === "screen" ? SCREEN_RULES : "") +
     `\n\nReply in: ${req.locale === "de" ? "German" : "English"}.` +
     (req.context ? `\n\nThe user is asking about this Fixify session:\n${req.context}` : "");
   const messages = [{ role: "system", content: system }];

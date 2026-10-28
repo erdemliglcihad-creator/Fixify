@@ -105,6 +105,11 @@ jobs:
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" | tail -20
           mkdir -p Payload
           cp -R build/Build/Products/Release-iphoneos/Fixify.app Payload/
+          # Ad-hoc sign with the entitlements (App Group), extensions first, so Sideloadly can carry them over.
+          codesign --force --sign - --entitlements FixifyControls/FixifyControls.entitlements Payload/Fixify.app/PlugIns/FixifyControls.appex
+          codesign --force --sign - --entitlements FixifyBroadcast/FixifyBroadcast.entitlements Payload/Fixify.app/PlugIns/FixifyBroadcast.appex
+          codesign --force --sign - --entitlements Fixify/Fixify.entitlements Payload/Fixify.app
+          codesign -d --entitlements - Payload/Fixify.app/PlugIns/FixifyBroadcast.appex
           zip -qry Fixify-unsigned.ipa Payload
 
       - uses: actions/upload-artifact@v4

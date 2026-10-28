@@ -16,6 +16,9 @@ struct RootView: View {
             Tab("Home", systemImage: "house", value: AppTab.home) {
                 NavigationStack { HomeView() }
             }
+            Tab("FixVoice", systemImage: "waveform", value: AppTab.fixVoice) {
+                NavigationStack { FixVoiceView() }
+            }
             Tab("Scan", systemImage: "viewfinder", value: AppTab.scan) {
                 // Selecting this tab opens the camera full screen; the tab itself never stays selected.
                 Color.fxBackground
@@ -24,10 +27,12 @@ struct RootView: View {
                 NavigationStack(path: $router.sessionPath) {
                     SessionsListView()
                         .navigationDestination(for: UUID.self) { id in SessionScreen(sessionID: id) }
+                        .toolbar {
+                            ToolbarItem(placement: .topBarTrailing) {
+                                NavigationLink { LibraryView() } label: { Label("Library", systemImage: "books.vertical") }
+                            }
+                        }
                 }
-            }
-            Tab("Library", systemImage: "books.vertical", value: AppTab.library) {
-                NavigationStack { LibraryView() }
             }
             Tab("Settings", systemImage: "gearshape", value: AppTab.settings) {
                 NavigationStack { SettingsView() }

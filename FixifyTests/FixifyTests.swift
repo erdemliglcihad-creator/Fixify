@@ -217,3 +217,49 @@ func sampleAnalysis() throws -> ProblemAnalysis {
         #expect(session.searchText.contains("print test page"))
     }
 }
+
+// MARK: FixVoice turn detection (same cases as app/test/voice.test.ts)
+
+private func runDetector(_ samples: [Double], options: TurnDetector.Options = .init()) -> (TurnDetector.Event, TimeInterval) {
+    var detector = TurnDetector(options: options, now: 0)
+    for (i, db) in samples.enumerated() {
+        let now = Double(i) * 0.08
+        let event = detector.step(db: db, now: now)
+        if event != .none { return (event, now) }
+    }
+    return (.none, -1)
+}
+
+private func repeated(_ db: Double, _ seconds: Double) -> [Double] {
+    Array(repeating: db, count: Int((seconds / 0.08).rounded()))
+}
+
+@Test func turnEndsAfterSpeechAndSilence() {
+    let (event, at) = runDetector(repeated(-50, 0.8) + repeated(-22, 1.5) + repeated(-50, 2))
+    #expect(event == .end)
+    #expect(at >= 3.3 && at <= 3.6)
+}
+
+@Test func clicksAreNotSpeech() {
+    let (event, _) = runDetector(repeated(-50, 0.8) + [-15, -50, -50, -50, -15] + repeated(-50, 2))
+    #expect(event == .none)
+}
+
+@Test func longSpeechHitsTheCapAndSilenceTimesOut() {
+    #expect(runDetector(repeated(-50, 16)).0 == .noSpeech)
+    #expect(runDetector(repeated(-50, 0.4) + repeated(-20, 31)).0 == .cap)
+}
+
+@Test func bargeInNeedsClearlyLouderSpeech() {
+    // Echo of FixVoice's own voice around -30 dB over a -50 dB room does not interrupt; a real voice at -12 does.
+    #expect(runDetector(repeated(-50, 0.8) + repeated(-38, 2), options: .bargeIn).0 == .none)
+    #expect(runDetector(repeated(-50, 0.8) + repeated(-12, 1) + repeated(-50, 1.5), options: .bargeIn).0 == .end)
+}
+
+@Test func wavHeaderDescribesSixteenKilohertzMono() {
+    let wav = WAV.encode(pcm: Data(count: 32_000), sampleRate: 16_000)
+    #expect(wav.count == 44 + 32_000)
+    #expect(String(decoding: wav.prefix(4), as: UTF8.self) == "RIFF")
+    #expect(wav[22] == 1) // mono
+    #expect(wav[24] == 0x80 && wav[25] == 0x3E) // 16000
+}

@@ -34,6 +34,17 @@
         }
       }
     },
+    "%lld of %lld photo uploads left today": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch %lld von %lld Foto-Uploads heute"
+          }
+        }
+      }
+    },
     "%lld of %lld photos": {
       "extractionState": "manual",
       "localizations": {
@@ -309,6 +320,28 @@
         }
       }
     },
+    "Allow": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erlauben"
+          }
+        }
+      }
+    },
+    "Allow FixVoice?": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FixVoice erlauben?"
+          }
+        }
+      }
+    },
     "Allow and analyze": {
       "extractionState": "manual",
       "localizations": {
@@ -529,6 +562,50 @@
         }
       }
     },
+    "Ask Fixify": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frag Fixify"
+          }
+        }
+      }
+    },
+    "Ask about what is on your screen.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frag zu dem, was auf deinem Bildschirm ist."
+          }
+        }
+      }
+    },
+    "Ask about what is on your screen. Fixify answers in a small card and reads the answer aloud.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frag zu dem, was auf deinem Bildschirm ist. Fixify antwortet in einer kleinen Karte und liest die Antwort vor."
+          }
+        }
+      }
+    },
+    "Ask about your screen": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frag zu deinem Bildschirm"
+          }
+        }
+      }
+    },
     "Available on this iPhone": {
       "extractionState": "manual",
       "localizations": {
@@ -569,6 +646,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rahmen zeigen Text, den dieses iPhone erkennt. Die KI-Analyse startet erst nach der Aufnahme."
+          }
+        }
+      }
+    },
+    "Call": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anruf"
           }
         }
       }
@@ -734,6 +822,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Verbunden"
+          }
+        }
+      }
+    },
+    "Connecting…": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbinde…"
           }
         }
       }
@@ -991,6 +1090,17 @@
         }
       }
     },
+    "Double-tap the back of your iPhone in any app and ask.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe in jeder App zweimal auf die Rückseite deines iPhones und frag."
+          }
+        }
+      }
+    },
     "Each problem you scan becomes a session with its analysis, steps and result.": {
       "extractionState": "manual",
       "localizations": {
@@ -1068,6 +1178,17 @@
         }
       }
     },
+    "Female voice": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frauenstimme"
+          }
+        }
+      }
+    },
     "Fill the frame with the error message or the setting you are stuck on.": {
       "extractionState": "manual",
       "localizations": {
@@ -1134,6 +1255,17 @@
         }
       }
     },
+    "FixVoice": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FixVoice"
+          }
+        }
+      }
+    },
     "Fixify Pro": {
       "extractionState": "manual",
       "localizations": {
@@ -1178,6 +1310,17 @@
         }
       }
     },
+    "Fixify answered. The screen recording has ended.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify hat geantwortet. Die Bildschirmaufnahme wurde beendet."
+          }
+        }
+      }
+    },
     "Fixify can be wrong. It cannot read things a photo doesn't show, like whether Bluetooth is on or a wire is live. When it needs that, it asks you.": {
       "extractionState": "manual",
       "localizations": {
@@ -1196,6 +1339,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fixify kann das nicht zuverlässig lösen"
+          }
+        }
+      }
+    },
+    "Fixify could not answer. Try again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify konnte nicht antworten. Versuch es nochmal."
           }
         }
       }
@@ -1240,6 +1394,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fixify hat keine Telemetrie, keine Werbung und keine Drittanbieter-SDKs."
+          }
+        }
+      }
+    },
+    "Fixify is very busy right now. Try again in a minute.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify ist gerade sehr ausgelastet. Versuch es in einer Minute nochmal."
+          }
+        }
+      }
+    },
+    "Fixify needs the microphone to hear you. You can allow it in the iPhone settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixify braucht das Mikrofon, um dich zu hören. Du kannst es in den iPhone-Einstellungen erlauben."
           }
         }
       }
@@ -1464,6 +1640,39 @@
         }
       }
     },
+    "How can I help you today?": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wie kann ich dir heute helfen?"
+          }
+        }
+      }
+    },
+    "How screen questions work": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "So funktionieren Bildschirm-Fragen"
+          }
+        }
+      }
+    },
+    "I can't see your screen. Start the Fixify screen recording in Control Center, or use the Fixify shortcut with a screenshot.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ich sehe deinen Bildschirm nicht. Starte die Fixify-Bildschirmaufnahme im Kontrollzentrum oder nutze den Fixify-Kurzbefehl mit Bildschirmfoto."
+          }
+        }
+      }
+    },
     "I couldn't do this step": {
       "extractionState": "manual",
       "localizations": {
@@ -1530,6 +1739,17 @@
         }
       }
     },
+    "In the Shortcuts app, create a shortcut with \"Take Screenshot\" followed by \"Ask Fixify\" (use the screenshot as input).": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erstelle in der Kurzbefehle-App einen Kurzbefehl mit „Bildschirmfoto aufnehmen“ und danach „Frag Fixify“ (Bildschirmfoto als Eingabe)."
+          }
+        }
+      }
+    },
     "In the project's server folder, run npm install.": {
       "extractionState": "manual",
       "localizations": {
@@ -1559,6 +1779,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sie wurde möglicherweise gelöscht."
+          }
+        }
+      }
+    },
+    "Just talk. I'm listening.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprich einfach. Ich höre zu."
           }
         }
       }
@@ -1618,6 +1849,28 @@
         }
       }
     },
+    "Listening…": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ich höre zu…"
+          }
+        }
+      }
+    },
+    "Live": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live"
+          }
+        }
+      }
+    },
     "Live Fix": {
       "extractionState": "manual",
       "localizations": {
@@ -1629,6 +1882,17 @@
         }
       }
     },
+    "Long-press Screen Recording in Control Center, choose Fixify and tap Start Broadcast.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drücke im Kontrollzentrum lange auf Bildschirmaufnahme, wähle Fixify und tippe auf Übertragung starten."
+          }
+        }
+      }
+    },
     "Look at": {
       "extractionState": "manual",
       "localizations": {
@@ -1636,6 +1900,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Schau auf"
+          }
+        }
+      }
+    },
+    "Male voice": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Männerstimme"
           }
         }
       }
@@ -1937,6 +2212,17 @@
         }
       }
     },
+    "No internet connection.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Internetverbindung."
+          }
+        }
+      }
+    },
     "No steps were recorded.": {
       "extractionState": "manual",
       "localizations": {
@@ -2113,6 +2399,17 @@
         }
       }
     },
+    "On": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An"
+          }
+        }
+      }
+    },
     "On device": {
       "extractionState": "manual",
       "localizations": {
@@ -2230,6 +2527,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Offen"
+          }
+        }
+      }
+    },
+    "Open Control Center, tap Edit (top left), Add a Control, search for Fixify and add \"Ask Fixify\".": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffne das Kontrollzentrum, tippe oben links auf Bearbeiten, dann Steuerelement hinzufügen, suche nach Fixify und füge „Frag Fixify“ hinzu."
+          }
+        }
+      }
+    },
+    "Open Fixify once and allow FixVoice. Then screenshots and questions can be sent to Fixify Cloud.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffne Fixify einmal und erlaube FixVoice. Dann können Bildschirmfotos und Fragen an Fixify Cloud gehen."
           }
         }
       }
@@ -2817,6 +3136,17 @@
         }
       }
     },
+    "Screen": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bildschirm"
+          }
+        }
+      }
+    },
     "Search problems, steps and recognized text": {
       "extractionState": "manual",
       "localizations": {
@@ -2978,6 +3308,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Einstellungen"
+          }
+        }
+      }
+    },
+    "Settings → Accessibility → Touch → Back Tap → Double Tap → choose that shortcut. You can also add the shortcut to Control Center.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen → Bedienungshilfen → Tippen → Auf Rückseite tippen → Doppeltippen → diesen Kurzbefehl wählen. Du kannst ihn auch ins Kontrollzentrum legen."
           }
         }
       }
@@ -3147,6 +3488,17 @@
         }
       }
     },
+    "Speaking": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spricht"
+          }
+        }
+      }
+    },
     "Start Live Fix": {
       "extractionState": "manual",
       "localizations": {
@@ -3154,6 +3506,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Live Fix starten"
+          }
+        }
+      }
+    },
+    "Start call": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gespräch starten"
           }
         }
       }
@@ -3297,6 +3660,50 @@
           "stringUnit": {
             "state": "translated",
             "value": "Einzelbilder werden aus dem Video entnommen"
+          }
+        }
+      }
+    },
+    "Tap or talk to interrupt": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippen oder reinreden zum Unterbrechen"
+          }
+        }
+      }
+    },
+    "Tap the Fixify button, ask your question by voice or tap to type. Fixify answers in a small card and reads it aloud. The recording ends after the answer.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe auf den Fixify-Button und stell deine Frage per Stimme oder tippe sie ein. Fixify antwortet in einer kleinen Karte und liest vor. Die Aufnahme endet nach der Antwort."
+          }
+        }
+      }
+    },
+    "Tap to talk…": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippen zum Sprechen…"
+          }
+        }
+      }
+    },
+    "Tap when you are done": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippen, wenn du fertig bist"
           }
         }
       }
@@ -3499,6 +3906,17 @@
         }
       }
     },
+    "The microphone could not be started.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Mikrofon konnte nicht gestartet werden."
+          }
+        }
+      }
+    },
     "The on-device model could not complete this analysis. Try a shorter description or use the Fixify server.": {
       "extractionState": "manual",
       "localizations": {
@@ -3631,6 +4049,17 @@
         }
       }
     },
+    "Thinking…": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Denke nach…"
+          }
+        }
+      }
+    },
     "This iPhone does not support Apple Intelligence.": {
       "extractionState": "manual",
       "localizations": {
@@ -3660,6 +4089,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hake nur ab, was du wirklich getestet hast."
+          }
+        }
+      }
+    },
+    "Today's photo uploads are used up. They renew tomorrow.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Foto-Uploads für heute sind aufgebraucht. Morgen gibt es neue."
           }
         }
       }
@@ -3726,6 +4166,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aktiviere zuerst Erinnerungen unter Einstellungen → Mitteilungen."
+          }
+        }
+      }
+    },
+    "Understanding…": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verstehe…"
           }
         }
       }
@@ -3840,6 +4291,17 @@
         }
       }
     },
+    "Voice": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stimme"
+          }
+        }
+      }
+    },
     "Watch out": {
       "extractionState": "manual",
       "localizations": {
@@ -3891,6 +4353,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Was hat sich geändert? (optional)"
+          }
+        }
+      }
+    },
+    "What do you want to know?": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was möchtest du wissen?"
           }
         }
       }
@@ -3950,6 +4423,17 @@
         }
       }
     },
+    "With the Control Center button": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit dem Kontrollzentrum-Button"
+          }
+        }
+      }
+    },
     "Without a photo, Fixify works from your description only.": {
       "extractionState": "manual",
       "localizations": {
@@ -3957,6 +4441,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ohne Foto arbeitet Fixify nur mit deiner Beschreibung."
+          }
+        }
+      }
+    },
+    "Without recording: screenshot shortcut": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ohne Aufnahme: Bildschirmfoto-Kurzbefehl"
           }
         }
       }
@@ -4159,6 +4654,17 @@
         }
       }
     },
+    "Your speech, questions and, for screen questions, a screenshot are sent to Fixify Cloud (Groq) to answer. Nothing is stored there.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Sprache, Fragen und bei Bildschirm-Fragen ein Bildschirmfoto gehen zur Beantwortung an Fixify Cloud (Groq). Dort wird nichts gespeichert."
+          }
+        }
+      }
+    },
     "every %lld months": {
       "extractionState": "manual",
       "localizations": {
@@ -4166,6 +4672,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "alle %lld Monate"
+          }
+        }
+      }
+    },
+    "iOS does not allow apps to record or overlay other apps on their own, so the recording always needs your confirmation. Each question uses one of today's photo uploads.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS erlaubt Apps nicht, andere Apps von selbst aufzunehmen oder zu überlagern. Die Aufnahme braucht deshalb immer deine Bestätigung. Jede Frage zählt als einer der heutigen Foto-Uploads."
           }
         }
       }

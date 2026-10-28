@@ -20,6 +20,14 @@ targets:
     platform: iOS
     sources:
       - path: Fixify
+      - path: Shared
+    dependencies:
+      - target: FixifyControls
+      - target: FixifyBroadcast
+    entitlements:
+      path: Fixify/Fixify.entitlements
+      properties:
+        com.apple.security.application-groups: [group.app.fixify.ios]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.fixify.ios
@@ -33,6 +41,7 @@ targets:
         INFOPLIST_KEY_NSCameraUsageDescription: "Fixify uses the camera to photograph the problem you want help with."
         INFOPLIST_KEY_NSPhotoLibraryUsageDescription: "Fixify lets you pick photos or screenshots of a problem."
         INFOPLIST_KEY_NSLocalNetworkUsageDescription: "Fixify connects to your own analysis server on this network."
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: "FixVoice uses the microphone so you can talk to Fixify like on the phone."
         CODE_SIGN_STYLE: Automatic
     info:
       path: Fixify/Info.plist
@@ -43,6 +52,61 @@ targets:
           NSAllowsLocalNetworking: true
         UILaunchScreen:
           UIColorName: LaunchBackground
+        UIAppFonts: [Montserrat-Light.ttf, Montserrat-Regular.ttf, Montserrat-Medium.ttf, Montserrat-SemiBold.ttf, Montserrat-Bold.ttf]
+        # Lets a screen question finish reading its answer aloud after the card appears.
+        UIBackgroundModes: [audio]
+  FixifyControls:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: FixifyControls
+      - path: Shared
+      - path: Fixify/Resources/Localizable.xcstrings
+      - path: Fixify/Resources/Fonts
+    entitlements:
+      path: FixifyControls/FixifyControls.entitlements
+      properties:
+        com.apple.security.application-groups: [group.app.fixify.ios]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.fixify.ios.controls
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Fixify
+        CODE_SIGN_STYLE: Automatic
+    info:
+      path: FixifyControls/Info.plist
+      properties:
+        CFBundleLocalizations: [en, de]
+        UIAppFonts: [Montserrat-Regular.ttf, Montserrat-Medium.ttf]
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+  FixifyBroadcast:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: FixifyBroadcast
+      - path: Shared/Core
+      - path: Fixify/Resources/Localizable.xcstrings
+    entitlements:
+      path: FixifyBroadcast/FixifyBroadcast.entitlements
+      properties:
+        com.apple.security.application-groups: [group.app.fixify.ios]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.fixify.ios.broadcast
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Fixify
+        CODE_SIGN_STYLE: Automatic
+    info:
+      path: FixifyBroadcast/Info.plist
+      properties:
+        CFBundleLocalizations: [en, de]
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.broadcast-services-upload
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).SampleHandler
+          RPBroadcastProcessMode: RPBroadcastProcessModeSampleBuffer
   FixifyTests:
     type: bundle.unit-test
     platform: iOS

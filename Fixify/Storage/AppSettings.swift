@@ -40,7 +40,8 @@ final class AppSettings {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        appearance = Appearance(rawValue: defaults.string(forKey: Keys.appearance) ?? "") ?? .system
+        // Dark-first: the black and blue design is made for a dark base. Light stays available.
+        appearance = Appearance(rawValue: defaults.string(forKey: Keys.appearance) ?? "") ?? .dark
         provider = AnalysisProviderKind(rawValue: defaults.string(forKey: Keys.provider) ?? "") ?? .proxy
         serverURL = defaults.string(forKey: Keys.serverURL) ?? ""
         appToken = Keychain.get(Keys.appToken) ?? ""

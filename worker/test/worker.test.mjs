@@ -239,3 +239,10 @@ test("FixVoice: voice mode adds spoken-answer rules, Fish TTS sends the voice id
   assert.equal(sent.auth, "Bearer k");
   assert.equal(audio.byteLength, 3);
 });
+
+test("Screen questions get the short, direct screen rules", async () => {
+  const { buildChatMessages } = await import("../src/chat.mjs");
+  const out = buildChatMessages({ locale: "de", mode: "screen", messages: [{ role: "user", text: "Wie heißt dieser Anime?", image: { mediaType: "image/jpeg", data: "AAAA" } }] });
+  assert.match(out.messages[0].content, /what is on the user's iPhone screen/);
+  assert.equal(out.hasImage, true);
+});
