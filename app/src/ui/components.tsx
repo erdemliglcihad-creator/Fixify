@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from "react-native";
 import type { ProblemAnalysis, SessionStatus } from "../core/types.ts";
@@ -16,7 +17,41 @@ export function Card({ children, style }: { children: ReactNode; style?: StylePr
 
 /** Clean rounded Liquid Glass card for grouped content (not for safety warnings, those stay solid). */
 export function GlassCard({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
-  return <Glass style={[styles.glassCard, style]}>{children}</Glass>;
+  const { dark } = useTheme();
+  return (
+    // Soft glow under the glass: a wide, faint blue light plus a tight dark shadow for contrast.
+    <View style={[styles.glassGlow, { boxShadow: dark ? GLOW_DARK : GLOW_LIGHT }]}>
+      <Glass style={[styles.glassCard, style]}>
+        <LightCatch dark={dark} />
+        {children}
+      </Glass>
+    </View>
+  );
+}
+
+const GLOW_DARK = "0 18px 44px rgba(30, 91, 255, 0.16), 0 2px 12px rgba(0, 0, 0, 0.5)";
+const GLOW_LIGHT = "0 14px 34px rgba(30, 91, 255, 0.12), 0 1px 4px rgba(16, 24, 48, 0.08)";
+
+/** Light catching the top of the glass: a faint sheen and a bright rim that fades out to both sides. */
+export function LightCatch({ dark }: { dark: boolean }) {
+  return (
+    <>
+      <LinearGradient
+        pointerEvents="none"
+        colors={[dark ? "#FFFFFF12" : "#FFFFFF99", "#FFFFFF00"]}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 0.45 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <LinearGradient
+        pointerEvents="none"
+        colors={["#FFFFFF00", dark ? "#FFFFFF59" : "#FFFFFFFF", "#FFFFFF00"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.rim}
+      />
+    </>
+  );
 }
 
 /** Pill-shaped glass switcher. The bright inner pill glides to the chosen option on a spring; the label pops. */
@@ -204,7 +239,11 @@ export function Button({ title, onPress, icon, kind = "primary", disabled, loadi
       style={({ pressed }) => [{ opacity: disabled ? 0.45 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] }, style]}
     >
       {glass ? (
-        <Glass interactive tint={kind === "primary" ? c.accent : undefined} style={[inner, { borderRadius: radius.control }]}>
+        <Glass
+          interactive
+          tint={kind === "primary" ? c.accent : undefined}
+          style={[inner, { borderRadius: radius.control }, kind === "primary" && { boxShadow: `0 8px 26px ${c.accent}55` }]}
+        >
           {label}
         </Glass>
       ) : (
@@ -254,6 +293,8 @@ export function Divider() {
 
 const styles = StyleSheet.create({
   glassCard: { borderRadius: radius.card, padding: space.l, gap: space.m, borderCurve: "continuous" },
+  glassGlow: { borderRadius: radius.card, borderCurve: "continuous" },
+  rim: { position: "absolute", top: 0, left: 24, right: 24, height: StyleSheet.hairlineWidth * 2 },
   segment: { flexDirection: "row", borderRadius: 999, padding: 4 },
   segmentItem: { flex: 1, alignItems: "center", paddingVertical: 9, paddingHorizontal: 6, borderRadius: 999 },
   segmentPill: { position: "absolute", top: 0, bottom: 0, left: 0, borderRadius: 999 },

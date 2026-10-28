@@ -2,12 +2,14 @@
 // tap the pill and the call runs hands-free until you hang up.
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import Animated, { FadeIn, FadeOut, useAnimatedReaction, useAnimatedStyle, useFrameCallback, useSharedValue, withSpring, type SharedValue } from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut, useAnimatedReaction, useAnimatedStyle, useFrameCallback, useSharedValue, withSpring, withTiming, type SharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { t } from "../../i18n/index.ts";
 import { useArea } from "../../services/area.ts";
+import { parallaxY } from "../../services/parallax.ts";
 import { useCall, type CallPhase } from "../../services/call.ts";
 import { setChatContext, useChat } from "../../services/chat.ts";
 import { useSession } from "../../services/sessions.ts";
@@ -39,6 +41,12 @@ const STATUS: Record<CallPhase, () => string> = {
 
 export default function FixVoice() {
   useArea("fixbot");
+  // No scrolling here: the backdrop's depth offset goes back to rest.
+  useFocusEffect(
+    useCallback(() => {
+      parallaxY.value = withTiming(0, { duration: 300 });
+    }, []),
+  );
   const { c } = useTheme();
   const insets = useSafeAreaInsets();
   const tabSpace = useTabBarSpace();

@@ -25,8 +25,9 @@ const dark: typeof light = {
   surface: "#0A0F1A",
   raised: "#111827",
   hairline: "#FFFFFF14",
-  text: "#F2F5FA",
-  secondary: "#8A94A8",
+  // More contrast: pure white headlines, quieter secondary text.
+  text: "#FFFFFF",
+  secondary: "#7D879B",
   accent: "#5B9BFF",
   accentSoft: "#0D1A33",
   onAccent: "#FFFFFF",
@@ -85,5 +86,9 @@ export const type = {
   /** Small accent labels (Neue Montreal), e.g. "Hello" above a headline. */
   eyebrow: { fontSize: 15, fontFamily: font.accent, letterSpacing: 0.2 },
 };
+
+/** Soft glow behind headlines in dark mode (more presence, still readable). */
+export const textGlow = (dark: boolean) =>
+  dark ? { textShadowColor: "rgba(110, 160, 255, 0.45)", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 18 } : {};
 
 export const mono = Platform.select({ ios: "Menlo", default: "monospace" });

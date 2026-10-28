@@ -20,7 +20,7 @@ export function VoiceOrb({ level, size = 300, colors }: { level: SharedValue<num
   const blob = (s: number) => ({ position: "absolute" as const, width: size * s, height: size * s, borderRadius: size, left: (size - size * s) / 2, top: (size - size * s) / 2 });
   return (
     <View style={{ width: size, height: size }} pointerEvents="none">
-      <Animated.View style={[blob(0.9), { backgroundColor: colors[0], opacity: 0.4, filter: "blur(48px)" } as object, glow]} />
+      <Animated.View style={[blob(1.05), { backgroundColor: colors[0], opacity: 0.6, filter: "blur(52px)" } as object, glow]} />
       <Animated.View style={[blob(0.62), { borderWidth: 2, borderColor: colors[2], borderTopLeftRadius: size * 0.4, borderBottomRightRadius: size * 0.3, filter: "blur(1.5px)" } as object, a]} />
       <Animated.View style={[blob(0.66), { borderWidth: 1.5, borderColor: colors[1], borderTopRightRadius: size * 0.42, borderBottomLeftRadius: size * 0.28, filter: "blur(2px)" } as object, b]} />
       <Animated.View

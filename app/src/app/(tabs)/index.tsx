@@ -8,7 +8,7 @@ import { openSession, startScan } from "../../services/nav.ts";
 import { useSessions } from "../../services/sessions.ts";
 import { isServerConfigured, useSettings } from "../../services/settings.ts";
 import { useQuota } from "../../services/usage.ts";
-import { Caption, Divider, GlassCard } from "../../ui/components.tsx";
+import { Caption, Divider, GlassCard, LightCatch } from "../../ui/components.tsx";
 import { Glass } from "../../ui/Glass.tsx";
 import { PressScale } from "../../ui/motion.tsx";
 import { FlowingGradientText, Reveal, RevealWords } from "../../ui/reveal.tsx";
@@ -73,7 +73,7 @@ export default function Home() {
           <View style={{ flexDirection: "row", gap: space.s }}>
             <PressScale style={{ flex: 1 }} haptic="medium" onPress={() => startScan()}>
               <RainbowBorder radius={26} width={1.25} glow={0.25} intensity={0.55}>
-                <View style={[styles.primary, { backgroundColor: c.text }]}>
+                <View style={[styles.primary, { backgroundColor: c.text, boxShadow: dark ? "0 8px 28px rgba(255, 255, 255, 0.16)" : "0 8px 22px rgba(7, 11, 20, 0.22)" }]}>
                   <Ionicons name="scan-outline" size={18} color={c.background} />
                   <Text style={[type.headline, { color: c.background }]}>{t("Open camera")}</Text>
                 </View>
@@ -90,8 +90,9 @@ export default function Home() {
 
         <Reveal kind="pop" delay={560}>
         <PressScale onPress={() => router.navigate("/fixvoice")}>
-          <Glass interactive style={styles.row}>
-            <View style={[styles.rowIcon, { borderColor: c.hairline }]}>
+          <Glass interactive style={[styles.row, { boxShadow: dark ? GLOW_ROW_DARK : GLOW_ROW_LIGHT }]}>
+            <LightCatch dark={dark} />
+            <View style={[styles.rowIcon, { borderColor: c.hairline, boxShadow: `0 0 18px ${c.accent}33` }]}>
               <Ionicons name="mic-outline" size={20} color={c.accent} />
             </View>
             <View style={{ flex: 1, gap: 2 }}>
@@ -135,6 +136,9 @@ export default function Home() {
     </Screen>
   );
 }
+
+const GLOW_ROW_DARK = "0 14px 36px rgba(30, 91, 255, 0.14), 0 2px 10px rgba(0, 0, 0, 0.45)";
+const GLOW_ROW_LIGHT = "0 10px 28px rgba(30, 91, 255, 0.10), 0 1px 4px rgba(16, 24, 48, 0.08)";
 
 const styles = StyleSheet.create({
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },

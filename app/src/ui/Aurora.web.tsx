@@ -1,13 +1,17 @@
 // Web fallback for the Skia aurora (the preview has no CanvasKit): CSS radial gradients with a cross-fade.
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { useCurrentArea } from "../services/area.ts";
+import { parallaxY } from "../services/parallax.ts";
 import { areaColors, useTheme } from "./theme.ts";
 
 export function Aurora() {
   const { dark, c } = useTheme();
   const area = useCurrentArea();
   const [layers, setLayers] = useState([{ area, key: 0 }]);
+  // Depth: the glow follows scrolling at a third of the speed.
+  const depth = useAnimatedStyle(() => ({ transform: [{ translateY: -Math.min(Math.max(parallaxY.value, 0), 600) * 0.33 }] }));
 
   useEffect(() => {
     setLayers((l) => [...l.slice(-1), { area, key: (l.at(-1)?.key ?? 0) + 1 }]);
@@ -15,6 +19,7 @@ export function Aurora() {
 
   return (
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: c.background, overflow: "hidden" }]}>
+      <Animated.View style={[StyleSheet.absoluteFill, depth]}>
       {layers.map((layer, i) => {
         const [a, b, d] = areaColors[layer.area].glow;
         const alpha = dark ? "88" : "44";
@@ -33,6 +38,7 @@ export function Aurora() {
           />
         );
       })}
+      </Animated.View>
     </View>
   );
 }

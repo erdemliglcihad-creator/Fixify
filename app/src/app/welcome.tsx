@@ -6,13 +6,13 @@ import { t } from "../i18n/index.ts";
 import { updateSettings } from "../services/settings.ts";
 import { Button, Caption, Card, InfoRow } from "../ui/components.tsx";
 import { Reveal, RevealWords } from "../ui/reveal.tsx";
-import { space, type, useTheme } from "../ui/theme.ts";
+import { space, textGlow, type, useTheme } from "../ui/theme.ts";
 import { useArea } from "../services/area.ts";
 
 /** Shown once on first launch: what Fixify does, the free daily limits, and what is sent where. */
 export default function Welcome() {
   useArea("home");
-  const { c } = useTheme();
+  const { c, dark } = useTheme();
   const insets = useSafeAreaInsets();
   const done = () => {
     updateSettings({ seenWelcome: true });
@@ -26,7 +26,7 @@ export default function Welcome() {
           <Reveal kind="pop">
             <Image source={require("../../assets/icon.png")} style={styles.icon} accessibilityIgnoresInvertColors />
           </Reveal>
-          <RevealWords text={t("Welcome to Fixify")} style={[type.display, { color: c.text }]} align="center" delay={180} stagger={70} />
+          <RevealWords text={t("Welcome to Fixify")} style={[type.display, { color: c.text }, textGlow(dark)]} align="center" delay={180} stagger={70} />
           <Reveal kind="fade" delay={520}>
             <Caption style={{ textAlign: "center", fontSize: 16 }}>{t("See the problem. Understand it. Fix it.")}</Caption>
           </Reveal>

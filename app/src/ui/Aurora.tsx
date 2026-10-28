@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { StyleSheet, useWindowDimensions } from "react-native";
 import { Easing, interpolateColor, useDerivedValue, useFrameCallback, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
 import { useCurrentArea } from "../services/area.ts";
+import { parallaxY } from "../services/parallax.ts";
 import { areaColors, useTheme } from "./theme.ts";
 
 export function Aurora() {
@@ -38,6 +39,9 @@ export function Aurora() {
   const c1 = blend(1);
   const c2 = blend(2);
 
+  // Depth: the glow follows scrolling at a third of the speed, so it feels further away than the content.
+  const depth = useDerivedValue(() => [{ translateY: -Math.min(Math.max(parallaxY.value, 0), 600) * 0.33 }]);
+
   const r = Math.max(width, height) * 0.42;
   const x0 = useDerivedValue(() => width * 0.15 + Math.sin(time.value * 0.21) * width * 0.12);
   const y0 = useDerivedValue(() => height * 0.08 + Math.cos(time.value * 0.17) * height * 0.04);
@@ -49,7 +53,7 @@ export function Aurora() {
   return (
     <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
       <Fill color={c.background} />
-      <Group opacity={dark ? 0.6 : 0.35}>
+      <Group opacity={dark ? 0.6 : 0.35} transform={depth}>
         <Circle cx={x0} cy={y0} r={r} color={c0}>
           <BlurMask blur={120} style="normal" />
         </Circle>
