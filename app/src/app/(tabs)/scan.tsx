@@ -209,6 +209,9 @@ export default function Scan() {
           mode={mode === "video" ? "video" : "picture"}
           mute
           enableTorch={torch}
+          // No system shutter flash: the live object layer takes small stills in the background. The real
+          // photo still gets Fixify's own flash (only when the photo button is pressed).
+          animateShutter={false}
           // "off" = keep refocusing automatically. ("on" focuses once and then locks, which felt slow.)
           autofocus="off"
           zoom={zoom}
