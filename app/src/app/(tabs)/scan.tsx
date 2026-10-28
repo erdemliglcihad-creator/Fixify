@@ -12,8 +12,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { t } from "../../i18n/index.ts";
 import { addCaptures, draftStore, MAX_CAPTURES, removeCapture, useDraft } from "../../services/draft.ts";
 import type { Capture } from "../../services/sessions.ts";
-import { updateSettings, useSettings } from "../../services/settings.ts";
-import { categoryInfo } from "../../ui/categories.ts";
 import { space, type, font } from "../../ui/theme.ts";
 import { Glass as GlassSurface } from "../../ui/Glass.tsx";
 
@@ -36,7 +34,6 @@ export default function Scan() {
   const focused = useIsFocused();
   const params = useLocalSearchParams<{ library?: string; n?: string }>();
   const draft = useDraft();
-  const settings = useSettings();
   const [permission, requestPermission] = useCameraPermissions();
   const camera = useRef<CameraView>(null);
   const [mode, setMode] = useState<Mode>("photo");
@@ -46,7 +43,6 @@ export default function Scan() {
   const [error, setError] = useState<string | null>(null);
   const [recordStart, setRecordStart] = useState(0);
   const [now, setNow] = useState(Date.now());
-  const [showTip, setShowTip] = useState(true);
   const handledLibrary = useRef<string | undefined>(undefined);
 
   const full = draft.captures.length >= MAX_CAPTURES;
@@ -70,10 +66,6 @@ export default function Scan() {
     return () => clearInterval(id);
   }, [state]);
 
-  useEffect(() => {
-    setShowTip(!settings.seenCameraTip || draft.category !== null);
-  }, [focused]);
-
   function close() {
     setTorch(false);
     if (router.canGoBack()) router.back();
@@ -83,7 +75,6 @@ export default function Scan() {
   function add(captures: Capture[]) {
     if (!captures.length) return;
     addCaptures(captures);
-    setShowTip(false);
     if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }
 
@@ -205,28 +196,6 @@ export default function Scan() {
           <RoundButton icon={torch ? "flashlight" : "flashlight-outline"} label={torch ? t("Turn light off") : t("Turn light on")} onPress={() => setTorch((v) => !v)} />
         </View>
 
-        {showTip && (
-          <Glass style={styles.tip}>
-            <Ionicons name="bulb-outline" size={18} color={MARKER} />
-            <View style={{ flex: 1, gap: 4 }}>
-              <Text style={{ color: "#fff", fontSize: 15 }}>{categoryInfo[category].tip()}</Text>
-              <Text style={{ color: "#FFFFFFB0", fontSize: 12 }}>
-                {t("Text recognition and the analysis start after you take the photo.")}
-              </Text>
-            </View>
-            <Pressable
-              onPress={() => {
-                setShowTip(false);
-                updateSettings({ seenCameraTip: true });
-              }}
-              accessibilityLabel={t("Hide tip")}
-              hitSlop={10}
-            >
-              <Ionicons name="close-circle" size={20} color="#FFFFFFAA" />
-            </Pressable>
-          </Glass>
-        )}
-
         <View style={{ flex: 1 }} pointerEvents="none" />
 
         {draft.captures.length > 0 && (
@@ -324,7 +293,6 @@ const styles = StyleSheet.create({
   statusPill: { flexDirection: "row", alignItems: "center", gap: 6, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 8 },
   statusText: { color: "#fff", fontSize: 13, fontFamily: font.semibold },
   dot: { width: 8, height: 8, borderRadius: 4 },
-  tip: { flexDirection: "row", gap: space.m, padding: space.m, borderRadius: 18, alignItems: "flex-start" },
   stripRow: { flexDirection: "row", alignItems: "center", gap: space.s },
   thumb: { width: 48, height: 48, borderRadius: 10 },
   remove: { position: "absolute", top: -8, right: -8 },
