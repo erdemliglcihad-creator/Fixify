@@ -4,7 +4,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import Animated, { FadeIn, FadeOut, useAnimatedStyle, useFrameCallback, useSharedValue, type SharedValue } from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut, useAnimatedReaction, useAnimatedStyle, useFrameCallback, useSharedValue, withSpring, type SharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { t } from "../../i18n/index.ts";
 import { useArea } from "../../services/area.ts";
@@ -57,7 +57,7 @@ export default function FixVoice() {
   return (
     <View style={{ flex: 1, paddingTop: insets.top + space.xl }}>
       {/* Blue light rising from the bottom, like the reference screen. */}
-      <LinearGradient pointerEvents="none" colors={["#02040900", "#0B2A6B88", "#1E5BFFAA"]} locations={[0, 0.6, 1]} style={styles.bottomGlow} />
+      <VoiceGlow level={call.level} active={call.inCall} />
 
       <View style={styles.orbArea}>
         {/* The orb is the on/off switch: tap to start talking, tap again to hang up. */}
@@ -155,6 +155,30 @@ function Live({ call }: { call: ReturnType<typeof useCall> }) {
   return <Text style={[styles.live, { color: c.secondary }]}>{t("Just talk. I'm listening.")}</Text>;
 }
 
+/**
+ * Blue light rising from the bottom. While talking it breathes with the voice (yours or FixVoice's):
+ * a little taller and brighter, and it drifts sideways a touch. Springs keep it smooth, never jumpy.
+ */
+function VoiceGlow({ level, active }: { level: SharedValue<number>; active: boolean }) {
+  const energy = useSharedValue(0);
+  useAnimatedReaction(
+    () => (active ? level.value : 0),
+    (target) => {
+      energy.value = withSpring(target, { duration: 500, dampingRatio: 1 });
+    },
+    [active],
+  );
+  const style = useAnimatedStyle(() => ({
+    opacity: 0.8 + energy.value * 0.2,
+    transform: [{ translateY: -energy.value * 40 }, { translateX: (energy.value - 0.3) * 24 }, { scaleY: 1 + energy.value * 0.25 }],
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[styles.bottomGlow, style]}>
+      <LinearGradient colors={["#02040900", "#0B2A6B88", "#1E5BFFAA", "#5AA8FFAA"]} locations={[0, 0.55, 0.85, 1]} style={StyleSheet.absoluteFill} />
+    </Animated.View>
+  );
+}
+
 /** Five thin bars, like a sound wave. They move with the voice during a call. */
 function Bars({ level, active }: { level: SharedValue<number>; active: boolean }) {
   const { c } = useTheme();
@@ -182,7 +206,7 @@ function Bar({ index, scale, level, time, active, color }: { index: number; scal
 }
 
 const styles = StyleSheet.create({
-  bottomGlow: { position: "absolute", left: 0, right: 0, bottom: 0, height: "45%" },
+  bottomGlow: { position: "absolute", left: -30, right: -30, bottom: -60, height: "55%", transformOrigin: "bottom" },
   orbArea: { alignItems: "center", justifyContent: "center", marginTop: space.l },
   textArea: { flex: 1, alignItems: "center", paddingHorizontal: space.xl, gap: space.l, paddingTop: space.l },
   headline: { fontFamily: font.medium, fontSize: 34, lineHeight: 40, letterSpacing: -1, textAlign: "center" },
