@@ -100,7 +100,7 @@ export default function FixVoice() {
         <RainbowBorder radius={32} width={1.25} glow={0.6} intensity={call.inCall ? 1 : 0.85}>
           <Glass style={styles.pill}>
             <LinearGradient pointerEvents="none" colors={["#5AA8FF33", "#1E5BFF14"]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
-            <Grain opacity={0.14} />
+            <Grain opacity={0.3} />
             <PressScale
               onPress={call.inCall ? call.tap : start}
               haptic={false}

@@ -13,7 +13,7 @@ export function Grain({ opacity = 0.12 }: { opacity?: number }) {
       {size.w > 0 && (
         <Canvas style={StyleSheet.absoluteFill}>
           <Rect x={0} y={0} width={size.w} height={size.h} opacity={opacity} blendMode="overlay">
-            <FractalNoise freqX={0.9} freqY={0.9} octaves={3} seed={7} />
+            <FractalNoise freqX={0.45} freqY={0.45} octaves={3} seed={7} />
             <ColorMatrix matrix={GRAY} />
           </Rect>
         </Canvas>
