@@ -38,11 +38,18 @@ export function relativeTime(ms: number) {
   }
 }
 
-export function SessionRow({ session, onPress }: { session: FixSession; onPress: () => void }) {
+export function SessionRow({ session, onPress, onLongPress }: { session: FixSession; onPress: () => void; onLongPress?: () => void }) {
   const { c } = useTheme();
   const analysis = currentAnalysis(session);
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.row, { opacity: pressed ? 0.7 : 1 }]} accessibilityRole="button">
+    <Pressable
+      onPress={onPress}
+      onLongPress={onLongPress}
+      delayLongPress={450}
+      style={({ pressed }) => [styles.row, { opacity: pressed ? 0.7 : 1 }]}
+      accessibilityRole="button"
+      accessibilityHint={onLongPress ? t("Press and hold to delete") : undefined}
+    >
       <Thumb session={session} size={52} />
       <View style={{ flex: 1, gap: 6 }}>
         <Text style={[type.headline, { color: c.text }]} numberOfLines={1}>

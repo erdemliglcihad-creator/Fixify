@@ -1,20 +1,33 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
+import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { currentAnalysis, searchText } from "../../core/session.ts";
-import { CATEGORIES, type ProblemCategory } from "../../core/types.ts";
+import { CATEGORIES, type FixSession, type ProblemCategory } from "../../core/types.ts";
 import { t } from "../../i18n/index.ts";
 import { openSession } from "../../services/nav.ts";
-import { useSessions } from "../../services/sessions.ts";
+import { deleteSession, useSessions } from "../../services/sessions.ts";
 import { categoryInfo } from "../../ui/categories.ts";
 import { Caption, Card, Chip, Divider, StatusBadge } from "../../ui/components.tsx";
+import { confirmDestructive } from "../../ui/confirm.ts";
 import { SessionRow } from "../../ui/SessionRow.tsx";
 import { radius, space, type, useTheme, font } from "../../ui/theme.ts";
 import { Screen } from "../../ui/Screen.tsx";
 import { useArea } from "../../services/area.ts";
 
 type Scope = "sessions" | "photos" | "guides";
+
+/** Long press on a session: delete it after a confirmation (same wording as on the session screen). */
+function askDelete(session: FixSession) {
+  if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  confirmDestructive(
+    t("Delete this session?"),
+    t("The analysis, steps, history and photos of this session are removed from this iPhone."),
+    t("Delete session and photos"),
+    () => deleteSession(session.id),
+  );
+}
 
 export default function Library() {
   useArea("library");
@@ -84,7 +97,7 @@ export default function Library() {
             {filtered.map((s, i) => (
               <View key={s.id}>
                 {i > 0 && <Divider />}
-                <SessionRow session={s} onPress={() => openSession(s.id)} />
+                <SessionRow session={s} onPress={() => openSession(s.id)} onLongPress={() => askDelete(s)} />
               </View>
             ))}
           </Card>

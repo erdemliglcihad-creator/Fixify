@@ -19,7 +19,11 @@ export function VoiceOrb({ level, mode, size = 300, colors }: Props) {
     if (!reduceMotion) time.value = (frame.timeSinceFirstFrame ?? 0) / 1000;
   });
 
-  const c = size / 2;
+  // The glow reaches past the orb, so the canvas gets extra room around it (negative margin keeps the layout).
+  // Otherwise the blur hits the canvas edge and is cut off square.
+  const pad = size * 0.3;
+  const full = size + pad * 2;
+  const c = full / 2;
   const R = size * 0.27;
   // Energy: a calm minimum so the orb always breathes a little, plus the live level.
   const energy = useDerivedValue(() => 0.14 + level.value * 0.86 + thinking.value * 0.18 * (0.5 + 0.5 * Math.sin(time.value * 3)));
@@ -46,13 +50,14 @@ export function VoiceOrb({ level, mode, size = 300, colors }: Props) {
   const r2 = ring(5, -1.3, 2.4, 0.2, 1.16);
   const r3 = ring(2, 0.9, 3.9, 0.24, 1.26);
 
-  const glowR = useDerivedValue(() => R * (1.55 + energy.value * 0.45));
+  const glowR = useDerivedValue(() => R * (1.7 + energy.value * 0.5));
   const coreR = useDerivedValue(() => R * (0.62 + energy.value * 0.12));
 
   return (
-    <Canvas style={{ width: size, height: size }} pointerEvents="none">
-      <Circle cx={c} cy={c} r={glowR} color={colors[0]} opacity={0.45}>
-        <BlurMask blur={size * 0.16} style="normal" />
+    <Canvas style={{ width: full, height: full, margin: -pad }} pointerEvents="none">
+      {/* Soft glow: a radial gradient that fades to fully transparent, no hard edge anywhere. */}
+      <Circle cx={c} cy={c} r={glowR} opacity={0.6}>
+        <RadialGradient c={vec(c, c)} r={glowR} colors={[`${colors[0]}CC`, `${colors[0]}55`, `${colors[1]}22`, `${colors[1]}00`]} positions={[0, 0.35, 0.7, 1]} />
       </Circle>
       <Group blendMode="screen">
         <Path path={fill} opacity={0.55}>
