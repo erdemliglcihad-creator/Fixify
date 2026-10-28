@@ -96,7 +96,7 @@ export default function FixVoice() {
 
       <View style={{ paddingHorizontal: space.l, paddingBottom: tabSpace }}>
         {/* Soft rainbow edge, a little stronger while the call is live. */}
-        <RainbowBorder radius={32} intensity={call.inCall ? 0.95 : 0.55}>
+        <RainbowBorder radius={32} intensity={call.inCall ? 1 : 0.8}>
           <Glass style={styles.pill}>
             <LinearGradient pointerEvents="none" colors={["#5AA8FF33", "#1E5BFF14"]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
             <PressScale
