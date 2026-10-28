@@ -21,7 +21,7 @@ export default function Review() {
   const insets = useSafeAreaInsets();
   const draft = useDraft();
   const settings = useSettings();
-  const [text, setText] = useState("");
+  const [text, setText] = useState(draft.note);
   const [category, setCategory] = useState<ProblemCategory | null>(draft.category);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

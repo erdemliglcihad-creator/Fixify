@@ -158,3 +158,17 @@ test("an empty or skipped profile sends nothing", () => {
   assert.equal(profileSummary(emptyProfile()), null);
   assert.equal(firstName(emptyProfile()), null);
 });
+
+// --- Tap to identify: preview taps → photo spots ---
+import { photoToPreview, previewToPhoto } from "../src/core/tap.ts";
+
+test("a tap on the cropped camera preview lands on the right spot in the photo", () => {
+  const view = { width: 390, height: 844 }; // iPhone screen
+  const photo = { width: 3024, height: 4032 }; // 3:4 portrait photo, sides cut off in the preview
+  assert.deepEqual(previewToPhoto({ x: 0.5, y: 0.5 }, view, photo), { x: 0.5, y: 0.5 });
+  const left = previewToPhoto({ x: 0, y: 0.5 }, view, photo);
+  assert.ok(left.x > 0.15 && left.x < 0.2, `left edge of the screen is ${left.x} of the photo`);
+  assert.equal(left.y, 0.5);
+  const back = photoToPreview(previewToPhoto({ x: 0.3, y: 0.7 }, view, photo), view, photo);
+  assert.ok(Math.abs(back.x - 0.3) < 1e-9 && Math.abs(back.y - 0.7) < 1e-9);
+});

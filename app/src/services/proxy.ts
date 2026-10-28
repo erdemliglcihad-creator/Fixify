@@ -201,6 +201,25 @@ export async function transcribe(base: string, token: string, input: { locale: "
   return typeof body?.text === "string" ? body.text.trim() : "";
 }
 
+export type IdentifiedObject = { point: number; name: string; description: string; parts: string[] };
+
+/** Names the objects at the tapped spots (the photo comes with colored rings drawn in). */
+export async function identify(
+  base: string,
+  token: string,
+  input: { locale: "de" | "en"; image: string; points: { x: number; y: number }[]; profile: string | null },
+  signal?: AbortSignal,
+): Promise<IdentifiedObject[]> {
+  const body = await request(base, token, "/v1/identify", {
+    method: "POST",
+    signal,
+    timeoutMs: 60_000,
+    body: JSON.stringify({ locale: input.locale, image: { mediaType: "image/jpeg", data: input.image }, points: input.points, profile: input.profile }),
+  });
+  if (!Array.isArray(body?.objects)) throw new ProxyError("invalidResponse", t("The objects could not be identified. Try again."));
+  return body.objects as IdentifiedObject[];
+}
+
 /** Server voice (Fish Audio). Resolves with MP3 bytes, or null when the server has no voice set up. */
 export async function serverSpeech(base: string, token: string, input: { locale: "de" | "en"; gender: "female" | "male"; text: string }, signal?: AbortSignal) {
   const res = await fetch(`${base}/v1/tts`, {

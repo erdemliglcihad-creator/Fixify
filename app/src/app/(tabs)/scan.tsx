@@ -9,6 +9,9 @@ import * as VideoThumbnails from "expo-video-thumbnails";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { previewToPhoto } from "../../core/tap.ts";
+import { MAX_TAPS, startIdentify, type TapPoint } from "../../services/identify.ts";
+import { HoloMarker } from "../../ui/HoloMarker.tsx";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { t } from "../../i18n/index.ts";
 import { addCaptures, draftStore, MAX_CAPTURES, removeCapture, useDraft } from "../../services/draft.ts";
@@ -38,6 +41,12 @@ export default function Scan() {
   const [permission, requestPermission] = useCameraPermissions();
   const camera = useRef<CameraView>(null);
   const [mode, setMode] = useState<Mode>("photo");
+  // Tap to identify: spots tapped on the live preview (0..1 of the view), up to three.
+  const [taps, setTaps] = useState<TapPoint[]>([]);
+  const [view, setView] = useState({ width: 1, height: 1 });
+  useEffect(() => {
+    if (mode !== "photo") setTaps([]);
+  }, [mode]);
   const [state, setState] = useState<CamState>("starting");
   const [torch, setTorch] = useState(false);
   // Pinch to zoom: 0 = widest, 1 = the device's maximum. Small steps feel natural for the finger.
@@ -51,6 +60,21 @@ export default function Scan() {
     .onUpdate((e) => {
       setZoom(Math.min(Math.max(zoomStart.current + (e.scale - 1) * 0.18, 0), 1));
     });
+  const tap = Gesture.Tap()
+    .runOnJS(true)
+    .maxDistance(12)
+    .onEnd((e) => toggleTap(e.x, e.y));
+  const cameraGestures = Gesture.Simultaneous(pinch, tap);
+
+  /** Tap an object to mark it (up to three); tap a mark again to remove it. */
+  function toggleTap(px: number, py: number) {
+    if (mode !== "photo") return;
+    const near = taps.findIndex((p) => Math.hypot(p.x * view.width - px, p.y * view.height - py) < 48);
+    if (near >= 0) setTaps(taps.filter((_, i) => i !== near));
+    else if (taps.length < MAX_TAPS) setTaps([...taps, { x: px / view.width, y: py / view.height }]);
+    else return;
+    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }
   const [flash, setFlash] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recordStart, setRecordStart] = useState(0);
@@ -96,7 +120,15 @@ export default function Scan() {
     setFlash(true);
     try {
       const pic = await camera.current.takePictureAsync({ quality: 0.9, shutterSound: false });
-      add([{ id: Crypto.randomUUID(), uri: pic.uri, width: pic.width, height: pic.height, source: "camera" }]);
+      const capture: Capture = { id: Crypto.randomUUID(), uri: pic.uri, width: pic.width, height: pic.height, source: "camera" };
+      if (taps.length) {
+        // Marked objects: identify them right away and show the labels.
+        startIdentify(capture, taps.map((p) => previewToPhoto(p, view, { width: pic.width, height: pic.height })));
+        setTaps([]);
+        router.push("/identify");
+      } else {
+        add([capture]);
+      }
     } catch {
       setError(t("The photo could not be taken. Try again."));
     } finally {
@@ -160,13 +192,15 @@ export default function Scan() {
             ? t("Taking frames from the video")
             : mode === "video"
               ? t("Ready · up to 10 s")
-              : t("Ready");
+              : taps.length
+                ? t("%lld of %lld marked · take the photo", taps.length, MAX_TAPS)
+                : t("Tap objects to identify them");
 
 
   return (
-    <View style={styles.root}>
+    <View style={styles.root} onLayout={(e) => setView({ width: e.nativeEvent.layout.width, height: e.nativeEvent.layout.height })}>
       {focused && permission?.granted ? (
-        <GestureDetector gesture={pinch}>
+        <GestureDetector gesture={cameraGestures}>
         <CameraView
           ref={camera}
           style={StyleSheet.absoluteFill}
@@ -199,6 +233,10 @@ export default function Scan() {
           )}
         </View>
       )}
+
+      {taps.map((p, i) => (
+        <HoloMarker key={`${p.x}-${p.y}`} x={p.x * view.width} y={p.y * view.height} n={i + 1} />
+      ))}
 
       {flash && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: "#ffffff88" }]} />}
 

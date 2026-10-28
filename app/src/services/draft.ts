@@ -9,11 +9,13 @@ export type Draft = {
   /** When set, captures are added to this session as a new observation. */
   targetSessionId: string | null;
   describeOnly: boolean;
+  /** Starts the description on the review screen (e.g. the objects tapped in the camera). */
+  note: string;
 };
 
 export const MAX_CAPTURES = 4;
 
-const empty: Draft = { captures: [], category: null, targetSessionId: null, describeOnly: false };
+const empty: Draft = { captures: [], category: null, targetSessionId: null, describeOnly: false, note: "" };
 export const draftStore = createStore<Draft>(empty);
 export const useDraft = () => useStore(draftStore);
 
