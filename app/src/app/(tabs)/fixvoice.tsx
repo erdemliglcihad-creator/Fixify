@@ -59,7 +59,8 @@ export default function FixVoice() {
       <LinearGradient pointerEvents="none" colors={["#02040900", "#0B2A6B88", "#1E5BFFAA"]} locations={[0, 0.6, 1]} style={styles.bottomGlow} />
 
       <View style={styles.orbArea}>
-        <Pressable onPress={call.inCall ? call.tap : start} accessibilityRole="button" accessibilityLabel={call.inCall ? STATUS[call.phase]() : t("Start call")}>
+        {/* The orb is the on/off switch: tap to start talking, tap again to hang up. */}
+        <Pressable onPress={call.inCall ? call.endCall : start} accessibilityRole="button" accessibilityLabel={call.inCall ? t("End call") : t("Start call")}>
           <VoiceOrb level={call.level} mode={orbMode} size={240} colors={glow} />
         </Pressable>
       </View>

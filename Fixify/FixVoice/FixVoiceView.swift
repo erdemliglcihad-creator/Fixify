@@ -18,11 +18,14 @@ struct FixVoiceView: View {
                 .allowsHitTesting(false)
 
             VStack(spacing: 0) {
-                Button(action: primary) {
+                // The orb is the on/off switch: tap to start talking, tap again to hang up.
+                Button {
+                    if call.inCall { call.end() } else { primary() }
+                } label: {
                     VoiceOrb(level: call.level, thinking: call.phase == .thinking || call.phase == .transcribing || call.phase == .connecting)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(call.inCall ? status : String(localized: "Start call"))
+                .accessibilityLabel(call.inCall ? String(localized: "End call") : String(localized: "Start call"))
                 .padding(.top, FXSpacing.xl)
 
                 VStack(spacing: FXSpacing.m) {

@@ -1123,6 +1123,17 @@
         }
       }
     },
+    "End call": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auflegen"
+          }
+        }
+      }
+    },
     "Enter both in Settings → AI analysis and tap Test connection.": {
       "extractionState": "manual",
       "localizations": {
