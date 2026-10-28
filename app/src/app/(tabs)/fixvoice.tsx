@@ -15,6 +15,7 @@ import { settingsStore, updateSettings } from "../../services/settings.ts";
 import { ConsentModal } from "../../ui/ConsentModal.tsx";
 import { Glass } from "../../ui/Glass.tsx";
 import { PressScale } from "../../ui/motion.tsx";
+import { RainbowBorder } from "../../ui/RainbowBorder";
 import { useTabBarSpace } from "../../ui/Screen.tsx";
 import { areaColors, font, space, type, useTheme } from "../../ui/theme.ts";
 import { VoiceOrb } from "../../ui/VoiceOrb";
@@ -94,26 +95,29 @@ export default function FixVoice() {
       </View>
 
       <View style={{ paddingHorizontal: space.l, paddingBottom: tabSpace }}>
-        <Glass style={styles.pill}>
-          <LinearGradient pointerEvents="none" colors={["#5AA8FF33", "#1E5BFF14"]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
-          <PressScale
-            onPress={call.inCall ? call.tap : start}
-            haptic={false}
-            scaleTo={0.98}
-            accessibilityLabel={call.inCall ? STATUS[call.phase]() : t("Start call")}
-            style={styles.pillMain}
-          >
-            <Text style={[styles.pillText, { color: call.inCall ? c.text : c.secondary }]} numberOfLines={1}>
-              {call.inCall ? (call.phase === "speaking" ? t("Tap or talk to interrupt") : call.phase === "listening" ? t("Tap when you are done") : STATUS[call.phase]()) : t("Tap to talk…")}
-            </Text>
-            <Bars level={call.level} active={call.inCall} />
-          </PressScale>
-          {call.inCall && (
-            <PressScale onPress={call.endCall} haptic="medium" accessibilityLabel={t("End call")} style={[styles.hangUp, { backgroundColor: c.danger }]}>
-              <Ionicons name="close" size={20} color="#fff" />
+        {/* Soft rainbow edge, a little stronger while the call is live. */}
+        <RainbowBorder radius={32} intensity={call.inCall ? 0.95 : 0.55}>
+          <Glass style={styles.pill}>
+            <LinearGradient pointerEvents="none" colors={["#5AA8FF33", "#1E5BFF14"]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
+            <PressScale
+              onPress={call.inCall ? call.tap : start}
+              haptic={false}
+              scaleTo={0.98}
+              accessibilityLabel={call.inCall ? STATUS[call.phase]() : t("Start call")}
+              style={styles.pillMain}
+            >
+              <Text style={[styles.pillText, { color: call.inCall ? c.text : c.secondary }]} numberOfLines={1}>
+                {call.inCall ? (call.phase === "speaking" ? t("Tap or talk to interrupt") : call.phase === "listening" ? t("Tap when you are done") : STATUS[call.phase]()) : t("Tap to talk…")}
+              </Text>
+              <Bars level={call.level} active={call.inCall} />
             </PressScale>
-          )}
-        </Glass>
+            {call.inCall && (
+              <PressScale onPress={call.endCall} haptic="medium" accessibilityLabel={t("End call")} style={[styles.hangUp, { backgroundColor: c.danger }]}>
+                <Ionicons name="close" size={20} color="#fff" />
+              </PressScale>
+            )}
+          </Glass>
+        </RainbowBorder>
       </View>
 
       <ConsentModal

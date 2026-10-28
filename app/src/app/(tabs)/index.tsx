@@ -11,6 +11,7 @@ import { useQuota } from "../../services/usage.ts";
 import { Caption, Divider, GlassCard } from "../../ui/components.tsx";
 import { Glass } from "../../ui/Glass.tsx";
 import { GradientText, PressScale, Rise } from "../../ui/motion.tsx";
+import { RainbowBorder } from "../../ui/RainbowBorder";
 import { Screen } from "../../ui/Screen.tsx";
 import { SessionRow } from "../../ui/SessionRow.tsx";
 import { font, radius, space, type, useTheme } from "../../ui/theme.ts";
@@ -66,10 +67,12 @@ export default function Home() {
           </View>
           <View style={{ flexDirection: "row", gap: space.s }}>
             <PressScale style={{ flex: 1 }} haptic="medium" onPress={() => startScan()}>
-              <View style={[styles.primary, { backgroundColor: c.text }]}>
-                <Ionicons name="scan-outline" size={18} color={c.background} />
-                <Text style={[type.headline, { color: c.background }]}>{t("Open camera")}</Text>
-              </View>
+              <RainbowBorder radius={26} intensity={0.7}>
+                <View style={[styles.primary, { backgroundColor: c.text }]}>
+                  <Ionicons name="scan-outline" size={18} color={c.background} />
+                  <Text style={[type.headline, { color: c.background }]}>{t("Open camera")}</Text>
+                </View>
+              </RainbowBorder>
             </PressScale>
             <PressScale onPress={() => startScan({ library: true })} accessibilityHint={t("Pick a photo or screenshot of the problem")}>
               <Glass style={styles.secondary}>
