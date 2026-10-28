@@ -172,3 +172,79 @@ test("a tap on the cropped camera preview lands on the right spot in the photo",
   const back = photoToPreview(previewToPhoto({ x: 0.3, y: 0.7 }, view, photo), view, photo);
   assert.ok(Math.abs(back.x - 0.3) < 1e-9 && Math.abs(back.y - 0.7) < 1e-9);
 });
+
+// --- Tap to cut out an object (no ML) ---
+import { maskRuns, segmentAt } from "../src/core/segment.ts";
+
+/** 120×160 frame: grey gradient background with a red "device" (30..70 × 40..110) and a bright glare spot inside. */
+function frame() {
+  const w = 120, h = 160;
+  const px = new Uint8Array(w * h * 4);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      const inside = x >= 30 && x < 70 && y >= 40 && y < 110;
+      const glare = x >= 45 && x < 50 && y >= 60 && y < 65;
+      const bg = 90 + Math.round((x + y) / 6);
+      px[i] = glare ? 250 : inside ? 200 + ((x * 7 + y) % 9) : bg;
+      px[i + 1] = glare ? 250 : inside ? 40 + ((x + y * 3) % 7) : bg;
+      px[i + 2] = glare ? 250 : inside ? 35 : bg;
+      px[i + 3] = 255;
+    }
+  }
+  return { px, w, h };
+}
+
+test("tapping the object cuts out its shape, fills glare holes and gives its center for tracking", () => {
+  const { px, w, h } = frame();
+  const s = segmentAt(px, w, h, { x: 50 / 119, y: 75 / 159 })!;
+  assert.ok(s, "found an object");
+  assert.equal(s.area, 40 * 70); // the whole red rectangle, glare hole filled
+  assert.ok(Math.abs(s.box.x - 30 / 120) < 0.01 && Math.abs(s.box.w - 40 / 120) < 0.01);
+  assert.ok(Math.abs(s.cx - 49.5 / 119) < 0.01 && Math.abs(s.cy - 74.5 / 159) < 0.01);
+  assert.equal(maskRuns(s).length, 70); // one run per row
+});
+
+test("tapping plain background is not treated as an object", () => {
+  const w = 60, h = 80;
+  const px = new Uint8Array(w * h * 4).fill(128);
+  assert.equal(segmentAt(px, w, h, { x: 0.5, y: 0.5 }), null);
+});
+
+test("the outline of a cut-out object goes all the way around it", async () => {
+  const { maskOutline } = await import("../src/core/segment.ts");
+  const { px, w, h } = frame();
+  const s = segmentAt(px, w, h, { x: 50 / 119, y: 75 / 159 })!;
+  const outline = maskOutline(s, 1);
+  // Perimeter of a 40×70 block traced pixel by pixel.
+  assert.ok(outline.length >= 2 * (40 + 70) - 8 && outline.length <= 2 * (40 + 70), `outline has ${outline.length} points`);
+  const xs = outline.map((p) => p.x);
+  const ys = outline.map((p) => p.y);
+  assert.equal(Math.min(...xs), 30.5);
+  assert.equal(Math.max(...xs), 69.5);
+  assert.equal(Math.min(...ys), 40.5);
+  assert.equal(Math.max(...ys), 109.5);
+});
+
+test("the layer shape is one calm area with only a few corners", async () => {
+  const { objectShape } = await import("../src/core/segment.ts");
+  // A ragged blob: a block with jagged teeth along its top edge.
+  const w = 100, h = 100;
+  const px = new Uint8Array(w * h * 4);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      const tooth = y >= 25 && y < 30 && x % 6 < 3;
+      const inside = x >= 20 && x < 80 && ((y >= 30 && y < 80) || tooth);
+      px[i] = inside ? 30 : 230;
+      px[i + 1] = inside ? 90 : 230;
+      px[i + 2] = inside ? 220 : 230;
+      px[i + 3] = 255;
+    }
+  }
+  const s = segmentAt(px, w, h, { x: 0.5, y: 0.55 })!;
+  const shape = objectShape(s);
+  assert.ok(shape.length >= 3 && shape.length <= 8, `${shape.length} corners`);
+  const xs = shape.map((p) => p.x);
+  assert.ok(Math.min(...xs) <= 21 && Math.max(...xs) >= 79, "still covers the whole width");
+});

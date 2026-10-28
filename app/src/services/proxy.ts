@@ -201,23 +201,15 @@ export async function transcribe(base: string, token: string, input: { locale: "
   return typeof body?.text === "string" ? body.text.trim() : "";
 }
 
-export type IdentifiedObject = { point: number; name: string; description: string; parts: string[] };
-
-/** Names the objects at the tapped spots (the photo comes with colored rings drawn in). */
-export async function identify(
-  base: string,
-  token: string,
-  input: { locale: "de" | "en"; image: string; points: { x: number; y: number }[]; profile: string | null },
-  signal?: AbortSignal,
-): Promise<IdentifiedObject[]> {
-  const body = await request(base, token, "/v1/identify", {
+/** Just the name of the object in a small crop, for the live label in the camera (null when unclear). */
+export async function nameObject(base: string, token: string, input: { locale: "de" | "en"; image: string }, signal?: AbortSignal): Promise<string | null> {
+  const body = await request(base, token, "/v1/name", {
     method: "POST",
     signal,
-    timeoutMs: 60_000,
-    body: JSON.stringify({ locale: input.locale, image: { mediaType: "image/jpeg", data: input.image }, points: input.points, profile: input.profile }),
+    timeoutMs: 20_000,
+    body: JSON.stringify({ locale: input.locale, image: { mediaType: "image/jpeg", data: input.image } }),
   });
-  if (!Array.isArray(body?.objects)) throw new ProxyError("invalidResponse", t("The objects could not be identified. Try again."));
-  return body.objects as IdentifiedObject[];
+  return typeof body?.name === "string" && body.name.trim() ? body.name.trim() : null;
 }
 
 /** Server voice (Fish Audio). Resolves with MP3 bytes, or null when the server has no voice set up. */

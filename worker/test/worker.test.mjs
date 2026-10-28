@@ -273,3 +273,11 @@ test("Tap to identify: prompt names the rings, reply is validated and limited to
   assert.equal(out.objects[0].name, "Turbolader");
   assert.deepEqual(out.objects[0].parts, ["Verdichtergehäuse", "Wastegate"]);
 });
+
+test("Live naming returns just a short name, or null when unclear", async () => {
+  const { nameObject } = await import("../src/identify.mjs");
+  const reply = (text) => async () => new Response(JSON.stringify({ choices: [{ message: { content: text } }], model: "vision" }), { status: 200 });
+  const req = { locale: "de", image: { mediaType: "image/jpeg", data: "AAAA" } };
+  assert.equal((await nameObject(req, { baseUrl: "https://ai.test/v1", apiKey: "k", models: ["v"], fetchImpl: reply('"Monitor."\nmore') })).name, "Monitor");
+  assert.equal((await nameObject(req, { baseUrl: "https://ai.test/v1", apiKey: "k", models: ["v"], fetchImpl: reply("?") })).name, null);
+});

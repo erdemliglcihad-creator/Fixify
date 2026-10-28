@@ -9,9 +9,9 @@ import * as VideoThumbnails from "expo-video-thumbnails";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { previewToPhoto } from "../../core/tap.ts";
-import { MAX_TAPS, startIdentify, type TapPoint } from "../../services/identify.ts";
-import { HoloMarker } from "../../ui/HoloMarker.tsx";
+import { useLiveObjects } from "../../services/liveObjects";
+import { objectBoxInView, ObjectLayer } from "../../ui/ObjectLayer";
+import type { LiveObject } from "../../services/liveObjects";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { t } from "../../i18n/index.ts";
 import { addCaptures, draftStore, MAX_CAPTURES, removeCapture, useDraft } from "../../services/draft.ts";
@@ -41,13 +41,13 @@ export default function Scan() {
   const [permission, requestPermission] = useCameraPermissions();
   const camera = useRef<CameraView>(null);
   const [mode, setMode] = useState<Mode>("photo");
-  // Tap to identify: spots tapped on the live preview (0..1 of the view), up to three.
-  const [taps, setTaps] = useState<TapPoint[]>([]);
+  // Tap to identify: tapped objects are cut out and covered by a blue layer that follows them.
   const [view, setView] = useState({ width: 1, height: 1 });
-  useEffect(() => {
-    if (mode !== "photo") setTaps([]);
-  }, [mode]);
   const [state, setState] = useState<CamState>("starting");
+  const live = useLiveObjects(camera, focused && state === "ready" && mode === "photo", view);
+  useEffect(() => {
+    if (mode !== "photo") live.clear();
+  }, [mode]);
   const [torch, setTorch] = useState(false);
   // Pinch to zoom: 0 = widest, 1 = the device's maximum. Small steps feel natural for the finger.
   const [zoom, setZoom] = useState(0);
@@ -63,17 +63,19 @@ export default function Scan() {
   const tap = Gesture.Tap()
     .runOnJS(true)
     .maxDistance(12)
-    .onEnd((e) => toggleTap(e.x, e.y));
+    .onEnd((e) => toggleObject(e.x, e.y));
   const cameraGestures = Gesture.Simultaneous(pinch, tap);
 
-  /** Tap an object to mark it (up to three); tap a mark again to remove it. */
-  function toggleTap(px: number, py: number) {
-    if (mode !== "photo") return;
-    const near = taps.findIndex((p) => Math.hypot(p.x * view.width - px, p.y * view.height - py) < 48);
-    if (near >= 0) setTaps(taps.filter((_, i) => i !== near));
-    else if (taps.length < MAX_TAPS) setTaps([...taps, { x: px / view.width, y: py / view.height }]);
-    else return;
-    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  /** Tap an object to cut it out and cover it (up to three); tap it again to remove it. */
+  async function toggleObject(px: number, py: number) {
+    if (mode !== "photo" || state !== "ready") return;
+    // Only taps into the picture itself, not near the buttons at the top and bottom.
+    if (py < insets.top + 80 || py > view.height - insets.bottom - 230) return;
+    const changed = await live.tapAt(px, py);
+    if (Platform.OS !== "web") {
+      if (changed) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      else Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    }
   }
   const [flash, setFlash] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -119,20 +121,21 @@ export default function Scan() {
     setState("capturing");
     setFlash(true);
     try {
+      // The live layer grabs small stills to follow objects; let it finish before the real photo.
+      live.pause(true);
+      for (let i = 0; i < 30 && live.isWorking(); i++) await new Promise((r) => setTimeout(r, 50));
       const pic = await camera.current.takePictureAsync({ quality: 0.9, shutterSound: false });
       const capture: Capture = { id: Crypto.randomUUID(), uri: pic.uri, width: pic.width, height: pic.height, source: "camera" };
-      if (taps.length) {
-        // Marked objects: identify them right away and show the labels.
-        startIdentify(capture, taps.map((p) => previewToPhoto(p, view, { width: pic.width, height: pic.height })));
-        setTaps([]);
-        router.push("/identify");
-      } else {
-        add([capture]);
-      }
+      // Named objects go along as a note, so the Fix analysis knows what was marked.
+      const names = live.objects.map((o) => o.name).filter((n): n is string => Boolean(n));
+      if (names.length) draftStore.set((d) => ({ ...d, note: t("Marked in the photo: %@", names.join(", ")) }));
+      live.clear();
+      add([capture]);
     } catch {
       setError(t("The photo could not be taken. Try again."));
     } finally {
       setFlash(false);
+      live.pause(false);
       setState("ready");
     }
   }
@@ -192,9 +195,7 @@ export default function Scan() {
             ? t("Taking frames from the video")
             : mode === "video"
               ? t("Ready · up to 10 s")
-              : taps.length
-                ? t("%lld of %lld marked · take the photo", taps.length, MAX_TAPS)
-                : t("Tap objects to identify them");
+              : t("Ready");
 
 
   return (
@@ -234,8 +235,9 @@ export default function Scan() {
         </View>
       )}
 
-      {taps.map((p, i) => (
-        <HoloMarker key={`${p.x}-${p.y}`} x={p.x * view.width} y={p.y * view.height} n={i + 1} />
+      <ObjectLayer segments={live.objects.map((o) => o.seg)} view={view} />
+      {live.objects.map((o) => (
+        <ObjectName key={o.id} object={o} view={view} />
       ))}
 
       {flash && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: "#ffffff88" }]} />}
@@ -243,10 +245,15 @@ export default function Scan() {
       <View style={[styles.overlay, { paddingTop: insets.top + space.s, paddingBottom: insets.bottom + space.s }]} pointerEvents="box-none">
         <View style={styles.topBar}>
           <RoundButton icon="close" label={t("Close camera")} onPress={close} />
-          <Glass style={styles.statusPill}>
-            <View style={[styles.dot, { backgroundColor: state === "recording" ? "#FF3B30" : state === "ready" ? "#FFFFFFB0" : "#FFFFFF60" }]} />
-            <Text style={styles.statusText}>{status}</Text>
-          </Glass>
+          {/* Only while something is happening (recording, frames); no hints over the picture otherwise. */}
+          {state === "recording" || state === "extracting" ? (
+            <Glass style={styles.statusPill}>
+              <View style={[styles.dot, { backgroundColor: state === "recording" ? "#FF3B30" : "#FFFFFF60" }]} />
+              <Text style={styles.statusText}>{status}</Text>
+            </Glass>
+          ) : (
+            <View />
+          )}
           <RoundButton icon={torch ? "flashlight" : "flashlight-outline"} label={torch ? t("Turn light off") : t("Turn light on")} onPress={() => setTorch((v) => !v)} />
         </View>
 
@@ -348,7 +355,25 @@ function GlassButton({ label, onPress }: { label: string; onPress: () => void })
   );
 }
 
+/** The object's name, floating just above it (follows it as it is tracked). */
+function ObjectName({ object, view }: { object: LiveObject; view: { width: number; height: number } }) {
+  if (object.name === null) return null;
+  const box = objectBoxInView(object.seg, view);
+  const cx = Math.min(Math.max(box.x + box.w / 2, 70), view.width - 70);
+  const top = Math.max(box.y - 44, 90);
+  return (
+    <View pointerEvents="none" style={[styles.nameWrap, { left: cx - 120, top }]}>
+      <Glass style={styles.namePill}>
+        {object.name === undefined ? <ActivityIndicator size="small" color="#BFE3FF" /> : <Text style={styles.nameText}>{object.name}</Text>}
+      </Glass>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  nameWrap: { position: "absolute", width: 240, alignItems: "center" },
+  namePill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 999, borderWidth: 1, borderColor: "#5BB0FF99", boxShadow: "0 0 18px #3B9BFF88" },
+  nameText: { color: "#fff", fontFamily: font.semibold, fontSize: 14, letterSpacing: 0.2 },
   zoomPill: { alignSelf: "center", marginTop: space.s },
   zoomInner: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 14, paddingVertical: 7, borderRadius: 999 },
   root: { flex: 1, backgroundColor: "#000" },

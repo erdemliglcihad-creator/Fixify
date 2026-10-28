@@ -64,3 +64,36 @@ export async function identifyObjects(req, { baseUrl, apiKey, models, signal, fe
   if (!objects.length) throw new AnalysisError("invalid_model_output", "No objects were recognized.", 502);
   return { objects, model: out.model };
 }
+
+// Live naming in the camera: a crop around one tapped object, answered with just its name ("Monitor").
+export const NameRequestSchema = z.object({
+  locale: z.enum(["de", "en"]).default("en"),
+  image: z.object({ mediaType: z.enum(["image/jpeg", "image/png"]), data: z.string().min(1).max(600_000) }),
+});
+
+export async function nameObject(req, { baseUrl, apiKey, models, signal, fetchImpl = fetch }) {
+  const out = await chatCompletion({
+    baseUrl,
+    apiKey,
+    models,
+    maxTokens: 30,
+    timeoutMs: 20_000,
+    signal,
+    fetchImpl,
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: `Name the main object in the middle of this photo in 1 to 3 words, as specifically as the photo allows (e.g. "Monitor", "Wi-Fi router", "Washing machine"). Reply with the name only, in ${req.locale === "de" ? "German" : "English"}, no punctuation. If nothing is recognizable, reply "?".`,
+          },
+          { type: "image_url", image_url: { url: `data:${req.image.mediaType};base64,${req.image.data}` } },
+        ],
+      },
+    ],
+  });
+  const firstLine = out.content.replace(/<think>[\s\S]*?<\/think>/g, "").trim().split(/\r?\n/)[0] ?? "";
+  const name = firstLine.replace(/["'.*]/g, "").trim().slice(0, 40);
+  return { name: name && name !== "?" ? name : null, model: out.model };
+}
