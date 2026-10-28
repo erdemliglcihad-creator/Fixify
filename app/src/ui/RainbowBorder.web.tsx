@@ -2,8 +2,9 @@
 import type { ReactNode } from "react";
 import { View, type StyleProp, type ViewStyle } from "react-native";
 
-// Like the reference: saturated blue, white-hot yellow and orange, separated by near-black gaps for contrast.
-export const RAINBOW = ["#2F7BFF", "#7CC4FF", "#0A0C14", "#FF7A1A", "#FFD84D", "#FFF6D8", "#3AA0FF", "#1A1240", "#B14DFF", "#FF5C3A", "#0A0C14", "#2F7BFF"];
+// Gemini colors (blue, red, yellow, green) in crisp bands with short, hard transitions.
+export const RAINBOW = ["#4285F4", "#4285F4", "#EA4335", "#EA4335", "#FBBC04", "#FBBC04", "#34A853", "#34A853", "#4285F4"];
+export const RAINBOW_STOPS = [0, 0.21, 0.25, 0.46, 0.5, 0.71, 0.75, 0.96, 1];
 
 let injected = false;
 function injectKeyframes() {
@@ -19,9 +20,9 @@ function injectKeyframes() {
 
 type Props = { children: ReactNode; radius: number; intensity?: number; glow?: number; width?: number; style?: StyleProp<ViewStyle> };
 
-export function RainbowBorder({ children, radius, intensity = 1, glow = 1, width = 3.5, style }: Props) {
+export function RainbowBorder({ children, radius, intensity = 1, glow = 1, width = 2, style }: Props) {
   injectKeyframes();
-  const gradient = `conic-gradient(from var(--fx-angle), ${RAINBOW.join(", ")})`;
+  const gradient = `conic-gradient(from var(--fx-angle), ${RAINBOW.map((color, i) => `${color} ${RAINBOW_STOPS[i] * 360}deg`).join(", ")})`;
   const ring = (extra: object) =>
     ({
       position: "absolute",
@@ -39,8 +40,7 @@ export function RainbowBorder({ children, radius, intensity = 1, glow = 1, width
   return (
     <View style={style}>
       {children}
-      <View {...({ dataSet: { fx: "rainbow" } } as object)} style={ring({ opacity: 0.55 * intensity * glow, filter: `blur(${16 * glow}px)`, padding: width * 4, inset: -width * 2 })} />
-      <View {...({ dataSet: { fx: "rainbow" } } as object)} style={ring({ opacity: 0.85 * intensity, filter: "blur(6px)", padding: width * 2.5, inset: -width })} />
+      <View {...({ dataSet: { fx: "rainbow" } } as object)} style={ring({ opacity: 0.55 * intensity * glow, filter: "blur(3px)", padding: width * 1.5, inset: -width / 2 })} />
       <View {...({ dataSet: { fx: "rainbow" } } as object)} style={ring({ opacity: intensity })} />
     </View>
   );
