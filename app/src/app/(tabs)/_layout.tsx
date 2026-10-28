@@ -13,7 +13,8 @@ export default function TabsLayout() {
   return (
     <NativeTabs
       tintColor={c.accent}
-      minimizeBehavior="onScrollDown"
+      // The bar always stays; iOS cannot shrink it only at the very end of a list.
+      minimizeBehavior="never"
       // The scan tab is the camera itself: full screen, no tab bar.
       hidden={pathname === "/scan"}
     >
