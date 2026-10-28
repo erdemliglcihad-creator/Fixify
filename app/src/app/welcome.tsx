@@ -16,8 +16,8 @@ export default function Welcome() {
   const insets = useSafeAreaInsets();
   const done = () => {
     updateSettings({ seenWelcome: true });
-    if (router.canGoBack()) router.back();
-    else router.replace("/");
+    // Back to the existing start screen (closes the intro screens above it).
+    router.navigate("/");
   };
   return (
     <View style={{ flex: 1 }}>

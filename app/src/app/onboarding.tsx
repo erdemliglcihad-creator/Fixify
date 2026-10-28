@@ -88,9 +88,11 @@ export default function Onboarding() {
   function finish(saved: Profile | null) {
     updateSettings({ profile: saved, onboardingDone: true });
     if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    if (!settingsStore.get().seenWelcome) router.replace("/welcome");
-    else if (router.canGoBack()) router.back();
-    else router.replace("/");
+    // First launch only: the four-page introduction follows the questions, then the welcome screen.
+    if (!settingsStore.get().introDone) router.replace("/intro");
+    else if (!settingsStore.get().seenWelcome) router.replace("/welcome");
+    // Back to the existing start screen (closes the intro screens above it).
+    else router.navigate("/");
   }
 
   function next() {

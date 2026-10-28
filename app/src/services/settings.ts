@@ -28,6 +28,8 @@ export type Settings = {
   profile: Profile | null;
   /** The first-launch questions were answered or skipped. */
   onboardingDone: boolean;
+  /** The one-time introduction (four pages after the questions) was shown. */
+  introDone: boolean;
 };
 
 export type VoiceGender = "female" | "male";
@@ -46,6 +48,7 @@ const DEFAULTS: Settings = {
   voice: "female",
   profile: null,
   onboardingDone: false,
+  introDone: false,
 };
 
 const KEY = "settings.v1";
