@@ -15,7 +15,8 @@ export default function Welcome() {
   const insets = useSafeAreaInsets();
   const done = () => {
     updateSettings({ seenWelcome: true });
-    router.back();
+    if (router.canGoBack()) router.back();
+    else router.replace("/");
   };
   return (
     <View style={{ flex: 1 }}>

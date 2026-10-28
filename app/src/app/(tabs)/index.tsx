@@ -1,20 +1,18 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { isOpen } from "../../core/session.ts";
+import { StyleSheet, Text, View } from "react-native";
 import { t } from "../../i18n/index.ts";
 import { useArea } from "../../services/area.ts";
 import { openSession, startScan } from "../../services/nav.ts";
 import { useSessions } from "../../services/sessions.ts";
 import { isServerConfigured, useSettings } from "../../services/settings.ts";
 import { useQuota } from "../../services/usage.ts";
-import { categoryInfo, suggestedCategories } from "../../ui/categories.ts";
 import { Caption, Divider } from "../../ui/components.tsx";
 import { Glass } from "../../ui/Glass.tsx";
 import { GradientText, PressScale, Rise } from "../../ui/motion.tsx";
 import { Screen } from "../../ui/Screen.tsx";
-import { ActiveCard, SessionRow } from "../../ui/SessionRow.tsx";
+import { SessionRow } from "../../ui/SessionRow.tsx";
 import { font, radius, space, type, useTheme } from "../../ui/theme.ts";
 
 function greeting() {
@@ -28,11 +26,10 @@ export default function Home() {
   const sessions = useSessions();
   const settings = useSettings();
   const quota = useQuota();
-  const open = sessions.filter((s) => isOpen(s.status)).sort((a, b) => b.updatedAt - a.updatedAt);
   const solved = sessions.filter((s) => s.status === "solved").sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 3);
 
   return (
-    <Screen contentStyle={{ gap: space.xxl }}>
+    <Screen contentStyle={{ gap: space.xxl + space.s }}>
       <Rise index={0} style={styles.topRow}>
         <Text style={[styles.wordmark, { color: c.text }]}>Fixify</Text>
         {quota.uploadsLeft !== null && quota.uploadsDaily ? (
@@ -49,18 +46,18 @@ export default function Home() {
         ) : null}
       </Rise>
 
-      <Rise index={1} style={{ gap: space.s }}>
+      <Rise index={1} style={{ gap: space.m, marginTop: space.xl }}>
         <Text style={[type.eyebrow, { color: c.secondary }]}>{greeting()}</Text>
         <GradientText colors={dark ? ["#FFFFFF", "#DCE8FF", "#8DB8FF"] : ["#070B14", "#16357F", "#1E5BFF"]} style={type.hero}>
           {t("What are we fixing today?")}
         </GradientText>
       </Rise>
 
-      <Rise index={2} style={{ gap: space.m }}>
+      <Rise index={2} style={{ gap: space.l }}>
         {/* Live Fix: the one primary action, a calm dark card lit from below. */}
         <View style={[styles.hero, { backgroundColor: c.surface, borderColor: c.hairline }]}>
           <LinearGradient pointerEvents="none" colors={["#1E5BFF00", "#1E5BFF33"]} start={{ x: 0, y: 0.2 }} end={{ x: 0.6, y: 1 }} style={StyleSheet.absoluteFill} />
-          <View style={{ gap: space.s }}>
+          <View style={{ gap: space.m }}>
             <Text style={[type.eyebrow, { color: c.accent, fontSize: 13, letterSpacing: 1.2 }]}>LIVE FIX</Text>
             <Text style={[type.title, { color: c.text }]}>{t("Show it. Fix it.")}</Text>
             <Text style={[type.body, { color: c.secondary, fontSize: 15, lineHeight: 22 }]}>
@@ -109,33 +106,6 @@ export default function Home() {
         )}
       </Rise>
 
-      {open.length > 0 && (
-        <Rise index={3} style={{ gap: space.m }}>
-          <Label text={t("In progress")} />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.m }} style={{ overflow: "visible" }}>
-            {open.slice(0, 8).map((s) => (
-              <ActiveCard key={s.id} session={s} onPress={() => openSession(s.id)} />
-            ))}
-          </ScrollView>
-        </Rise>
-      )}
-
-      <Rise index={4} style={{ gap: space.m }}>
-        <Label text={t("Start with a topic")} />
-        <View style={[styles.list, { borderColor: c.hairline }]}>
-          {suggestedCategories.map((cat, i) => (
-            <View key={cat}>
-              {i > 0 && <Divider />}
-              <PressScale onPress={() => startScan({ category: cat })} scaleTo={0.98} style={styles.topic}>
-                <Ionicons name={categoryInfo[cat].icon} size={20} color={c.secondary} />
-                <Text style={[type.body, { color: c.text, flex: 1 }]}>{categoryInfo[cat].title()}</Text>
-                <Ionicons name="arrow-forward" size={16} color={c.secondary} />
-              </PressScale>
-            </View>
-          ))}
-        </View>
-      </Rise>
-
       {solved.length > 0 && (
         <View style={{ gap: space.m }}>
           <Label text={t("Recently solved")} />
@@ -167,15 +137,15 @@ const styles = StyleSheet.create({
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   wordmark: { fontFamily: font.accentMedium, fontSize: 20, letterSpacing: -0.2 },
   quota: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: StyleSheet.hairlineWidth },
-  hero: { borderRadius: radius.card, padding: space.l, gap: space.l, overflow: "hidden", borderWidth: StyleSheet.hairlineWidth, borderCurve: "continuous" },
+  hero: { borderRadius: radius.card, padding: space.xl, gap: space.xl, overflow: "hidden", borderWidth: StyleSheet.hairlineWidth, borderCurve: "continuous" },
   primary: { flexDirection: "row", gap: space.s, alignItems: "center", justifyContent: "center", borderRadius: radius.control, height: 52 },
   secondary: { width: 52, height: 52, borderRadius: radius.control, alignItems: "center", justifyContent: "center" },
   row: {
     flexDirection: "row",
     alignItems: "center",
     gap: space.m,
-    padding: space.m,
-    paddingRight: space.l,
+    padding: space.l,
+    paddingRight: space.xl,
     borderRadius: radius.card,
     borderWidth: StyleSheet.hairlineWidth,
     borderCurve: "continuous",
