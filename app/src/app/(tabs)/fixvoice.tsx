@@ -13,7 +13,8 @@ import { parallaxY } from "../../services/parallax.ts";
 import { useCall, type CallPhase } from "../../services/call.ts";
 import { setChatContext, useChat } from "../../services/chat.ts";
 import { useSession } from "../../services/sessions.ts";
-import { settingsStore, updateSettings } from "../../services/settings.ts";
+import { firstName } from "../../core/profile.ts";
+import { settingsStore, updateSettings, useSettings } from "../../services/settings.ts";
 import { ConsentModal } from "../../ui/ConsentModal.tsx";
 import { Glass } from "../../ui/Glass.tsx";
 import { PressScale } from "../../ui/motion.tsx";
@@ -54,6 +55,7 @@ export default function FixVoice() {
   const { contextSessionId } = useChat();
   const contextSession = useSession(contextSessionId ?? "");
   const [askConsent, setAskConsent] = useState(false);
+  const name = firstName(useSettings().profile);
 
   function start() {
     // Nothing leaves the iPhone before the user agreed once.
@@ -79,7 +81,7 @@ export default function FixVoice() {
         {/* During a call the middle stays empty, like a phone call: just the orb; the status is in the pill. */}
         {!call.inCall && (
           <Animated.View key="idle" entering={FadeIn.duration(260)} exiting={FadeOut.duration(160)} style={{ gap: space.s, alignItems: "center" }}>
-            <Text style={[type.eyebrow, { color: c.secondary }]}>{greeting()}</Text>
+            <Text style={[type.eyebrow, { color: c.secondary }]}>{name ? `${greeting()}, ${name}` : greeting()}</Text>
             <Text style={[styles.headline, { color: c.text }]} accessibilityRole="header">
               {t("How can I help you today?")}
             </Text>

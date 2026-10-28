@@ -1,7 +1,7 @@
 import { useFonts } from "expo-font";
 import { DarkTheme, DefaultTheme, router, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Appearance, Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { t } from "../i18n/index.ts";
@@ -17,6 +17,7 @@ const IOS_26 = Platform.OS === "ios" && parseInt(String(Platform.Version), 10) >
 
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
+  const introShown = useRef(false);
   const { c, dark } = useTheme();
   const { appearance } = useSettings();
 
@@ -50,7 +51,12 @@ export default function RootLayout() {
 
   useEffect(() => {
     // First launch: explain what Fixify does, the daily limits and privacy, once.
-    if (ready && !settingsStore.get().seenWelcome) router.push("/welcome");
+    // Only once per launch (effects can run twice in development).
+    if (!ready || introShown.current) return;
+    introShown.current = true;
+    const { onboardingDone, seenWelcome } = settingsStore.get();
+    if (!onboardingDone) router.push("/onboarding");
+    else if (!seenWelcome) router.push("/welcome");
   }, [ready]);
 
   const base = dark ? DarkTheme : DefaultTheme;
@@ -79,6 +85,7 @@ export default function RootLayout() {
         />
         <Stack.Screen name="review" options={{ presentation: "modal", title: t("Review") }} />
         <Stack.Screen name="welcome" options={{ presentation: "fullScreenModal", headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="onboarding" options={{ presentation: "fullScreenModal", headerShown: false, gestureEnabled: false, animation: "fade" }} />
         <Stack.Screen name="privacy" options={{ title: t("What Fixify processes") }} />
         <Stack.Screen name="help" options={{ title: t("How Fixify works") }} />
         <Stack.Screen name="server-help" options={{ title: t("Server setup") }} />

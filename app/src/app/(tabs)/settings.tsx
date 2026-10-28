@@ -113,6 +113,15 @@ export default function Settings() {
         />
       </Section>
 
+      <Section title={t("About you")} footer={t("Your answers stay on this iPhone. FixVoice only gets a short summary so it can help you better.")}>
+        <Row>
+          <Label>{t("Name")}</Label>
+          <Caption>{s.profile?.name.trim() || "–"}</Caption>
+        </Row>
+        <Divider />
+        <Link icon="sparkles-outline" title={t("Answer the questions again")} onPress={() => router.push("/onboarding?again=1")} />
+      </Section>
+
       <Section title="FixVoice" footer={t("German or English follows the app language. Uses the iPhone's built-in voices for now.")}>
         <Segmented<VoiceGender>
           value={s.voice}

@@ -2,6 +2,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Crypto from "expo-crypto";
 import type { FixSession } from "../core/types.ts";
+import { profileSummary } from "../core/profile.ts";
 import { currentAnalysis, currentStep } from "../core/session.ts";
 import { lang, t } from "../i18n/index.ts";
 import { encodeForAnalysis, storeImage } from "./images.ts";
@@ -132,7 +133,7 @@ export async function sendMessage(text: string, photo: ChatPhoto | null, options
     const out = await chat(
       base,
       s.provider === "proxy" ? s.appToken : "",
-      { locale: lang, turns: cleaned, context: session ? sessionContext(session) : null, mode: options.voice ? "voice" : "chat" },
+      { locale: lang, turns: cleaned, context: session ? sessionContext(session) : null, mode: options.voice ? "voice" : "chat", profile: profileSummary(s.profile) },
       controller.signal,
     );
     const reply: ChatMessage = { id: Crypto.randomUUID(), role: "assistant", text: out.reply, createdAt: Date.now(), model: out.model, degraded: out.degraded };

@@ -6,6 +6,7 @@ import { t } from "../../i18n/index.ts";
 import { useArea } from "../../services/area.ts";
 import { openSession, startScan } from "../../services/nav.ts";
 import { useSessions } from "../../services/sessions.ts";
+import { firstName } from "../../core/profile.ts";
 import { isServerConfigured, useSettings } from "../../services/settings.ts";
 import { useQuota } from "../../services/usage.ts";
 import { Caption, Divider, GlassCard, LightCatch } from "../../ui/components.tsx";
@@ -28,6 +29,7 @@ export default function Home() {
   const sessions = useSessions();
   const settings = useSettings();
   const quota = useQuota();
+  const name = firstName(settings.profile);
   const solved = sessions.filter((s) => s.status === "solved").sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 3);
 
   return (
@@ -50,7 +52,7 @@ export default function Home() {
 
       {/* Greeting word by word, then the headline rises with a slowly flowing gradient. */}
       <View style={{ gap: space.m, marginTop: space.xl }}>
-        <RevealWords text={greeting()} style={[type.eyebrow, { color: c.secondary }]} delay={100} />
+        <RevealWords text={name ? `${greeting()}, ${name}` : greeting()} style={[type.eyebrow, { color: c.secondary }]} delay={100} />
         <Reveal kind="slideUp" delay={260}>
           <FlowingGradientText colors={dark ? ["#FFFFFF", "#DCE8FF", "#8DB8FF", "#FFFFFF"] : ["#070B14", "#16357F", "#1E5BFF", "#070B14"]} style={type.hero}>
             {t("What are we fixing today?")}

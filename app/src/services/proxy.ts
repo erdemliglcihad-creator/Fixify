@@ -170,7 +170,7 @@ export type ChatTurn = { role: "user" | "assistant"; text: string; image?: { bas
 export async function chat(
   base: string,
   token: string,
-  input: { locale: "de" | "en"; turns: ChatTurn[]; context: string | null; mode?: "chat" | "voice" },
+  input: { locale: "de" | "en"; turns: ChatTurn[]; context: string | null; mode?: "chat" | "voice"; profile?: string | null },
   signal?: AbortSignal,
 ) {
   const body = await request(base, token, "/v1/chat", {
@@ -181,6 +181,7 @@ export async function chat(
       locale: input.locale,
       context: input.context,
       mode: input.mode ?? "chat",
+      profile: input.profile ?? null,
       messages: input.turns.map((m, i) => ({
         role: m.role,
         text: m.text.slice(0, 4000),

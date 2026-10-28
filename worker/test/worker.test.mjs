@@ -246,3 +246,11 @@ test("Screen questions get the short, direct screen rules", async () => {
   assert.match(out.messages[0].content, /what is on the user's iPhone screen/);
   assert.equal(out.hasImage, true);
 });
+
+test("The user's profile goes into the system prompt only when given", async () => {
+  const { buildChatMessages } = await import("../src/chat.mjs");
+  const withProfile = buildChatMessages({ locale: "de", mode: "voice", profile: "Their devices: iPhone.", messages: [{ role: "user", text: "Hilfe" }] });
+  assert.match(withProfile.messages[0].content, /About the user .*Their devices: iPhone\./s);
+  const without = buildChatMessages({ locale: "de", mode: "voice", messages: [{ role: "user", text: "Hilfe" }] });
+  assert.doesNotMatch(without.messages[0].content, /About the user/);
+});

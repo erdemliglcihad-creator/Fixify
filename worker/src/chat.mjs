@@ -26,6 +26,8 @@ export const ChatRequestSchema = z.object({
   context: z.string().max(3000).nullable().optional(),
   /** "voice": a spoken phone-style call (FixVoice), answers are read aloud. */
   mode: z.enum(["chat", "voice", "screen"]).default("chat"),
+  /** Short description of the user from the first-launch questions (devices, preferences). */
+  profile: z.string().max(800).nullable().optional(),
 });
 
 const SCREEN_RULES = `
@@ -53,6 +55,7 @@ export function buildChatMessages(req) {
     FIXBOT_PROMPT +
     (req.mode === "voice" ? VOICE_RULES : req.mode === "screen" ? SCREEN_RULES : "") +
     `\n\nReply in: ${req.locale === "de" ? "German" : "English"}.` +
+    (req.profile ? `\n\nAbout the user (use it to tailor your answer, e.g. to their devices; do not repeat it back): ${req.profile}` : "") +
     (req.context ? `\n\nThe user is asking about this Fixify session:\n${req.context}` : "");
   const messages = [{ role: "system", content: system }];
   req.messages.forEach((m, i) => {

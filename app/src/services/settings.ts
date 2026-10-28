@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Crypto from "expo-crypto";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
+import type { Profile } from "../core/profile.ts";
 import { createStore, useStore } from "./store.ts";
 
 export type Appearance = "system" | "light" | "dark";
@@ -23,6 +24,10 @@ export type Settings = {
   autoDeleteDays: number;
   /** FixVoice speaks with this voice (German or English follows the app language). */
   voice: VoiceGender;
+  /** Answers from the first-launch questions (stay on this iPhone; a short summary goes along with FixVoice). */
+  profile: Profile | null;
+  /** The first-launch questions were answered or skipped. */
+  onboardingDone: boolean;
 };
 
 export type VoiceGender = "female" | "male";
@@ -39,6 +44,8 @@ const DEFAULTS: Settings = {
   seenWelcome: false,
   autoDeleteDays: 0,
   voice: "female",
+  profile: null,
+  onboardingDone: false,
 };
 
 const KEY = "settings.v1";

@@ -137,3 +137,24 @@ test("relative dates work without Intl", async () => {
   assert.equal(formatDate(now, "en"), "10/27/2026");
   assert.equal(formatDateTime(new Date(2026, 9, 27, 9, 5).getTime(), "de"), "27.10.2026, 09:05");
 });
+
+// --- Profile from the first-launch questions ---
+import { emptyProfile, firstName, profileSummary } from "../src/core/profile.ts";
+
+test("profile summary describes the user for the AI and leaves out the source", () => {
+  const p = { ...emptyProfile(), name: "  Cihad Erdem ", why: "family" as const, topics: ["network" as const, "tv" as const], devices: ["iphone" as const], help: "voice" as const, source: "tiktok" as const };
+  const s = profileSummary(p)!;
+  assert.match(s, /Their name is Cihad Erdem/);
+  assert.match(s, /helps family and friends/);
+  assert.match(s, /Wi-Fi and internet, TV and streaming/);
+  assert.match(s, /iPhone/);
+  assert.match(s, /talking it through/);
+  assert.doesNotMatch(s, /tiktok/i);
+  assert.equal(firstName(p), "Cihad");
+});
+
+test("an empty or skipped profile sends nothing", () => {
+  assert.equal(profileSummary(null), null);
+  assert.equal(profileSummary(emptyProfile()), null);
+  assert.equal(firstName(emptyProfile()), null);
+});
