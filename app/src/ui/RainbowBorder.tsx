@@ -5,8 +5,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import { View, type StyleProp, type ViewStyle } from "react-native";
 import { Easing, useDerivedValue, useReducedMotion, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 
-// Like the reference: saturated blue, white-hot yellow and orange, separated by near-black gaps for contrast.
-export const RAINBOW = ["#2F7BFF", "#7CC4FF", "#0A0C14", "#FF7A1A", "#FFD84D", "#FFF6D8", "#3AA0FF", "#1A1240", "#B14DFF", "#FF5C3A", "#0A0C14", "#2F7BFF"];
+// Like the reference: saturated blue, white-hot yellow and orange, purple and red, flowing into each other.
+export const RAINBOW = ["#2F7BFF", "#7CC4FF", "#FF7A1A", "#FFD84D", "#FFF6D8", "#3AA0FF", "#B14DFF", "#FF5C3A", "#2F7BFF"];
 
 type Props = {
   children: ReactNode;
@@ -29,7 +29,7 @@ export function RainbowBorder({ children, radius, intensity = 1, glow = 1, width
 
   useEffect(() => {
     if (reduceMotion) return;
-    turn.value = withRepeat(withTiming(1, { duration: 10_000, easing: Easing.linear }), -1, false);
+    turn.value = withRepeat(withTiming(1, { duration: 6_000, easing: Easing.linear }), -1, false);
   }, [reduceMotion]);
 
   const cx = size.w / 2 + GLOW;
