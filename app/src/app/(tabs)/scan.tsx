@@ -8,6 +8,7 @@ import { router, useIsFocused, useLocalSearchParams } from "expo-router";
 import * as VideoThumbnails from "expo-video-thumbnails";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { t } from "../../i18n/index.ts";
 import { addCaptures, draftStore, MAX_CAPTURES, removeCapture, useDraft } from "../../services/draft.ts";
@@ -39,6 +40,17 @@ export default function Scan() {
   const [mode, setMode] = useState<Mode>("photo");
   const [state, setState] = useState<CamState>("starting");
   const [torch, setTorch] = useState(false);
+  // Pinch to zoom: 0 = widest, 1 = the device's maximum. Small steps feel natural for the finger.
+  const [zoom, setZoom] = useState(0);
+  const zoomStart = useRef(0);
+  const pinch = Gesture.Pinch()
+    .runOnJS(true)
+    .onBegin(() => {
+      zoomStart.current = zoom;
+    })
+    .onUpdate((e) => {
+      setZoom(Math.min(Math.max(zoomStart.current + (e.scale - 1) * 0.18, 0), 1));
+    });
   const [flash, setFlash] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recordStart, setRecordStart] = useState(0);
@@ -154,6 +166,7 @@ export default function Scan() {
   return (
     <View style={styles.root}>
       {focused && permission?.granted ? (
+        <GestureDetector gesture={pinch}>
         <CameraView
           ref={camera}
           style={StyleSheet.absoluteFill}
@@ -161,10 +174,13 @@ export default function Scan() {
           mode={mode === "video" ? "video" : "picture"}
           mute
           enableTorch={torch}
-          autofocus="on"
+          // "off" = keep refocusing automatically. ("on" focuses once and then locks, which felt slow.)
+          autofocus="off"
+          zoom={zoom}
           onCameraReady={() => setState("ready")}
           onMountError={() => setError(t("No camera is available on this device."))}
         />
+        </GestureDetector>
       ) : (
         <View style={[StyleSheet.absoluteFill, styles.center, { padding: space.xxl, gap: space.l }]}>
           {denied && (
@@ -195,6 +211,15 @@ export default function Scan() {
           </Glass>
           <RoundButton icon={torch ? "flashlight" : "flashlight-outline"} label={torch ? t("Turn light off") : t("Turn light on")} onPress={() => setTorch((v) => !v)} />
         </View>
+
+        {zoom > 0.01 && (
+          <Pressable onPress={() => setZoom(0)} style={styles.zoomPill} accessibilityRole="button" accessibilityLabel={t("Reset zoom")}>
+            <Glass style={styles.zoomInner}>
+              <Ionicons name="search" size={13} color="#fff" />
+              <Text style={styles.statusText}>{`${Math.round(zoom * 100)}%`}</Text>
+            </Glass>
+          </Pressable>
+        )}
 
         <View style={{ flex: 1 }} pointerEvents="none" />
 
@@ -286,6 +311,8 @@ function GlassButton({ label, onPress }: { label: string; onPress: () => void })
 }
 
 const styles = StyleSheet.create({
+  zoomPill: { alignSelf: "center", marginTop: space.s },
+  zoomInner: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 14, paddingVertical: 7, borderRadius: 999 },
   root: { flex: 1, backgroundColor: "#000" },
   center: { alignItems: "center", justifyContent: "center" },
   overlay: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, paddingHorizontal: space.l, gap: space.m },

@@ -12,7 +12,6 @@ import { t } from "../i18n/index.ts";
 import { useArea } from "../services/area.ts";
 import { settingsStore, updateSettings } from "../services/settings.ts";
 import { Button, LightCatch } from "../ui/components.tsx";
-import { Glass } from "../ui/Glass.tsx";
 import { PressScale } from "../ui/motion.tsx";
 import { RevealWords } from "../ui/reveal.tsx";
 import { font, space, textGlow, type, useTheme } from "../ui/theme.ts";
@@ -135,18 +134,18 @@ export default function Onboarding() {
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: space.xl, paddingTop: space.xxl, gap: space.xl }} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={{ paddingHorizontal: space.xl, paddingTop: space.xl, paddingBottom: space.xxl }} keyboardShouldPersistTaps="handled">
         {/* Keyed by the step: each question slides in from the right. */}
-        <Animated.View key={index} entering={FadeInRight.duration(380)} style={{ gap: space.xl }}>
-          <View style={{ gap: space.m }}>
+        <Animated.View key={index} entering={FadeInRight.duration(380)} style={{ gap: space.xxl }}>
+          <View style={{ gap: space.s }}>
             <Text style={[type.eyebrow, { color: c.accent, fontSize: 13, letterSpacing: 1.2 }]}>{`${index + 1} / ${STEPS.length}`}</Text>
             <RevealWords text={step.question()} style={[type.display, { color: c.text }, textGlow(dark)]} stagger={55} />
-            {step.kind !== "single" || step.hint ? <Text style={[type.body, { color: c.secondary }]}>{step.hint?.()}</Text> : null}
+            {step.kind !== "single" || step.hint ? <Text style={[type.body, { color: c.secondary, marginTop: space.xs }]}>{step.hint?.()}</Text> : null}
           </View>
 
           {step.kind === "name" ? (
             <View style={{ gap: space.m }}>
-              <Glass style={styles.nameField}>
+              <View style={[styles.nameField, { backgroundColor: c.surface, borderColor: c.hairline }]}>
                 <TextInput
                   value={profile.name}
                   onChangeText={(name) => setProfile((p) => ({ ...p, name }))}
@@ -161,7 +160,7 @@ export default function Onboarding() {
                   maxLength={40}
                   style={{ color: c.text, fontSize: 20, fontFamily: font.medium, flex: 1 }}
                 />
-              </Glass>
+              </View>
               <View style={styles.privacy}>
                 <Ionicons name="lock-closed-outline" size={14} color={c.secondary} />
                 <Text style={[type.caption, { color: c.secondary, flex: 1 }]}>
@@ -215,11 +214,12 @@ function Choice({ option, on, multi, onPress }: { option: Option; on: boolean; m
   const { c, dark } = useTheme();
   return (
     <PressScale onPress={onPress} haptic={false} scaleTo={0.96} accessibilityRole={multi ? "checkbox" : "radio"} aria-checked={on} accessibilityLabel={option.label()}>
-      <Glass
-        interactive
+      {/* A solid surface, not live glass: glass that fades in renders grey on iOS, so cards looked uneven. */}
+      <View
         style={[
           styles.choice,
-          on && { borderColor: c.accent, borderWidth: 1.5, boxShadow: `0 0 0 1px ${c.accent}33, 0 10px 28px ${c.accent}40` },
+          { backgroundColor: on ? (dark ? "#0F1B33" : "#EEF3FF") : c.surface, borderColor: on ? c.accent : c.hairline },
+          on ? { boxShadow: `0 0 0 1px ${c.accent}40, 0 10px 28px ${c.accent}40` } : { boxShadow: dark ? "0 6px 18px rgba(0, 0, 0, 0.35)" : "0 4px 14px rgba(16, 24, 48, 0.06)" },
         ]}
       >
         <LightCatch dark={dark} />
@@ -229,8 +229,12 @@ function Choice({ option, on, multi, onPress }: { option: Option; on: boolean; m
         <Text style={{ color: c.text, fontSize: 15, fontFamily: on ? font.semibold : font.medium, flex: 1 }} numberOfLines={2}>
           {option.label()}
         </Text>
-        {on && <Ionicons name={multi ? "checkmark-circle" : "radio-button-on"} size={20} color={c.accent} />}
-      </Glass>
+        <Ionicons
+          name={on ? (multi ? "checkmark-circle" : "radio-button-on") : multi ? "ellipse-outline" : "radio-button-off"}
+          size={22}
+          color={on ? c.accent : c.hairline}
+        />
+      </View>
     </PressScale>
   );
 }
@@ -239,10 +243,22 @@ const styles = StyleSheet.create({
   top: { flexDirection: "row", alignItems: "center", gap: space.l, paddingHorizontal: space.l },
   progress: { flex: 1, flexDirection: "row", gap: 6 },
   segment: { flex: 1, height: 4, borderRadius: 2, overflow: "hidden" },
-  grid: { gap: space.m },
+  grid: { gap: space.m + 2 },
   cell: {},
-  choice: { flexDirection: "row", alignItems: "center", gap: space.m, padding: space.m, paddingRight: space.l, borderRadius: 22, minHeight: 64, borderCurve: "continuous" },
-  choiceIcon: { width: 40, height: 40, borderRadius: 14, alignItems: "center", justifyContent: "center", borderCurve: "continuous" },
-  nameField: { flexDirection: "row", alignItems: "center", borderRadius: 999, paddingHorizontal: space.xl, height: 60 },
+  choice: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: space.l,
+    paddingVertical: space.m,
+    paddingLeft: space.m,
+    paddingRight: space.l,
+    borderRadius: 22,
+    minHeight: 68,
+    borderWidth: 1,
+    overflow: "hidden",
+    borderCurve: "continuous",
+  },
+  choiceIcon: { width: 44, height: 44, borderRadius: 15, alignItems: "center", justifyContent: "center", borderCurve: "continuous" },
+  nameField: { flexDirection: "row", alignItems: "center", borderRadius: 999, paddingHorizontal: space.xl, height: 60, borderWidth: 1 },
   privacy: { flexDirection: "row", alignItems: "flex-start", gap: space.s, paddingHorizontal: space.s },
 });
