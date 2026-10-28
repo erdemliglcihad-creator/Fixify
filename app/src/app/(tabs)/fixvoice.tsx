@@ -15,6 +15,7 @@ import { settingsStore, updateSettings } from "../../services/settings.ts";
 import { ConsentModal } from "../../ui/ConsentModal.tsx";
 import { Glass } from "../../ui/Glass.tsx";
 import { PressScale } from "../../ui/motion.tsx";
+import { Grain } from "../../ui/Grain";
 import { RainbowBorder } from "../../ui/RainbowBorder";
 import { useTabBarSpace } from "../../ui/Screen.tsx";
 import { areaColors, font, space, type, useTheme } from "../../ui/theme.ts";
@@ -96,9 +97,10 @@ export default function FixVoice() {
 
       <View style={{ paddingHorizontal: space.l, paddingBottom: tabSpace }}>
         {/* Soft rainbow edge, a little stronger while the call is live. */}
-        <RainbowBorder radius={32} intensity={call.inCall ? 1 : 0.85}>
+        <RainbowBorder radius={32} width={1.25} glow={0.6} intensity={call.inCall ? 1 : 0.85}>
           <Glass style={styles.pill}>
             <LinearGradient pointerEvents="none" colors={["#5AA8FF33", "#1E5BFF14"]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
+            <Grain opacity={0.14} />
             <PressScale
               onPress={call.inCall ? call.tap : start}
               haptic={false}
