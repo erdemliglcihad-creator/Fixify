@@ -9,7 +9,8 @@ import { t } from "../../i18n/index.ts";
 import { openSession } from "../../services/nav.ts";
 import { deleteSession, useSessions } from "../../services/sessions.ts";
 import { categoryInfo } from "../../ui/categories.ts";
-import { Caption, Card, Chip, Divider, StatusBadge } from "../../ui/components.tsx";
+import { Caption, Chip, Divider, GlassCard, Segmented, StatusBadge } from "../../ui/components.tsx";
+import { Glass, GlassGroup } from "../../ui/Glass.tsx";
 import { confirmDestructive } from "../../ui/confirm.ts";
 import { SessionRow } from "../../ui/SessionRow.tsx";
 import { radius, space, type, useTheme, font } from "../../ui/theme.ts";
@@ -56,7 +57,7 @@ export default function Library() {
 
   return (
     <Screen title={t("Library")} contentStyle={{ gap: space.l }}>
-      <View style={[styles.search, { backgroundColor: c.surface, borderColor: c.hairline }]}>
+      <Glass style={styles.search}>
         <Ionicons name="search" size={18} color={c.secondary} />
         <TextInput
           value={query}
@@ -67,40 +68,39 @@ export default function Library() {
           clearButtonMode="while-editing"
           returnKeyType="search"
         />
-      </View>
+      </Glass>
 
-      <View style={[styles.segment, { backgroundColor: c.hairline }]}>
-        {(["sessions", "photos", "guides"] as const).map((s) => (
-          <Pressable key={s} onPress={() => setScope(s)} style={[styles.segmentItem, scope === s && { backgroundColor: c.surface }]} aria-selected={scope === s}>
-            <Text style={{ color: c.text, fontFamily: scope === s ? font.semibold : font.regular, fontSize: 14 }}>
-              {s === "sessions" ? t("Sessions") : s === "photos" ? t("Photos") : t("Guides")}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
+      <Segmented<Scope>
+        value={scope}
+        options={[["sessions", t("Sessions")], ["photos", t("Photos")], ["guides", t("Guides")]]}
+        onChange={setScope}
+      />
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.s }}>
-        {[null, ...CATEGORIES].map((cat) => (
-          <Pressable
-            key={cat ?? "all"}
-            onPress={() => setCategory(cat)}
-            style={[styles.filter, { backgroundColor: category === cat ? c.accent : c.surface, borderColor: c.hairline }]}
-          >
-            <Text style={{ color: category === cat ? "#fff" : c.text, fontSize: 13 }}>{cat ? categoryInfo[cat].title() : t("All topics")}</Text>
-          </Pressable>
-        ))}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.s, paddingVertical: 2 }} style={{ overflow: "visible" }}>
+        <GlassGroup style={{ flexDirection: "row", gap: space.s }}>
+          {[null, ...CATEGORIES].map((cat) => {
+            const on = category === cat;
+            return (
+              <Pressable key={cat ?? "all"} onPress={() => setCategory(cat)} aria-selected={on} accessibilityRole="button">
+                <Glass interactive tint={on ? c.accent : undefined} style={styles.filter}>
+                  <Text style={{ color: on ? "#fff" : c.text, fontSize: 13, fontFamily: on ? font.semibold : font.medium }}>{cat ? categoryInfo[cat].title() : t("All topics")}</Text>
+                </Glass>
+              </Pressable>
+            );
+          })}
+        </GlassGroup>
       </ScrollView>
 
       {scope === "sessions" &&
         (filtered.length ? (
-          <Card style={{ gap: 0, paddingVertical: space.s }}>
+          <GlassCard style={{ gap: 0, paddingVertical: space.s }}>
             {filtered.map((s, i) => (
               <View key={s.id}>
                 {i > 0 && <Divider />}
                 <SessionRow session={s} thumbnail={false} onPress={() => openSession(s.id)} onLongPress={() => askDelete(s)} />
               </View>
             ))}
-          </Card>
+          </GlassCard>
         ) : (
           noResults
         ))}
@@ -129,7 +129,7 @@ export default function Library() {
               const a = currentAnalysis(s)!;
               return (
                 <Pressable key={s.id} onPress={() => openSession(s.id)}>
-                  <Card>
+                  <GlassCard>
                     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                       <Chip text={categoryInfo[a.category].title()} icon={categoryInfo[a.category].icon} />
                       <StatusBadge status={s.status} />
@@ -137,7 +137,7 @@ export default function Library() {
                     <Text style={[type.headline, { color: c.text }]}>{a.title}</Text>
                     <Caption>{a.steps.slice(0, 3).map((st, i) => `${i + 1}. ${st.title}`).join("\n")}</Caption>
                     {a.steps.length > 3 && <Caption>{t("+ %lld more steps", a.steps.length - 3)}</Caption>}
-                  </Card>
+                  </GlassCard>
                 </Pressable>
               );
             })
@@ -148,11 +148,9 @@ export default function Library() {
 
 const styles = StyleSheet.create({
   empty: { flex: 1, alignItems: "center", justifyContent: "center", padding: space.xxl, gap: space.l },
-  search: { flexDirection: "row", alignItems: "center", gap: space.s, borderRadius: radius.control, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: space.m, paddingVertical: 10 },
-  segment: { flexDirection: "row", borderRadius: 10, padding: 2 },
-  segmentItem: { flex: 1, alignItems: "center", paddingVertical: 7, borderRadius: 8 },
-  filter: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 16, borderWidth: StyleSheet.hairlineWidth },
+  search: { flexDirection: "row", alignItems: "center", gap: space.s, borderRadius: 999, paddingHorizontal: space.l, paddingVertical: 12 },
+  filter: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999 },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 4 },
-  cell: { width: "32.6%", aspectRatio: 1, borderRadius: 8, overflow: "hidden" },
+  cell: { width: "32.6%", aspectRatio: 1, borderRadius: 14, overflow: "hidden" },
   badge: { position: "absolute", left: 4, bottom: 4, backgroundColor: "#00000088", borderRadius: 4, padding: 3 },
 });

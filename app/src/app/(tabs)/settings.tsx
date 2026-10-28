@@ -11,7 +11,7 @@ import { deleteEverything, deletePhotos, useSessions } from "../../services/sess
 import { CLOUD_URL, isServerConfigured, serverBase, updateSettings, useSettings, type Appearance, type Provider, type VoiceGender } from "../../services/settings.ts";
 import { useQuota } from "../../services/usage.ts";
 import { isOpen } from "../../core/session.ts";
-import { Caption, Divider } from "../../ui/components.tsx";
+import { Caption, Divider, GlassCard, Segmented } from "../../ui/components.tsx";
 import { confirmDestructive } from "../../ui/confirm.ts";
 import type { IconName } from "../../ui/categories.ts";
 import { radius, space, type, useTheme, font } from "../../ui/theme.ts";
@@ -27,19 +27,6 @@ function Row({ children }: { children: ReactNode }) {
 function Label({ children }: { children: ReactNode }) {
   const { c } = useTheme();
   return <Text style={[type.body, { color: c.text, flex: 1 }]}>{children}</Text>;
-}
-
-function Segmented<T extends string>({ value, options, onChange }: { value: T; options: [T, string][]; onChange: (v: T) => void }) {
-  const { c } = useTheme();
-  return (
-    <View style={[styles.segment, { backgroundColor: c.hairline }]}>
-      {options.map(([v, label]) => (
-        <Pressable key={v} onPress={() => onChange(v)} style={[styles.segmentItem, value === v && { backgroundColor: c.surface }]} aria-selected={value === v}>
-          <Text style={{ color: c.text, fontSize: 14, fontFamily: value === v ? font.semibold : font.regular }}>{label}</Text>
-        </Pressable>
-      ))}
-    </View>
-  );
 }
 
 function Link({ icon, title, onPress, danger }: { icon: IconName; title: string; onPress: () => void; danger?: boolean }) {
@@ -58,7 +45,7 @@ function Section({ title, footer, children }: { title: string; footer?: string; 
   return (
     <View style={{ gap: space.s }}>
       <Caption style={{ textTransform: "uppercase", fontFamily: font.semibold, marginLeft: space.s }}>{title}</Caption>
-      <View style={[styles.group, { backgroundColor: c.surface }]}>{children}</View>
+      <GlassCard style={styles.group}>{children}</GlassCard>
       {footer ? <Caption style={{ marginHorizontal: space.s }}>{footer}</Caption> : null}
     </View>
   );
@@ -91,7 +78,7 @@ export default function Settings() {
     }
   }
 
-  const input = [styles.input, { color: c.text, backgroundColor: c.background, borderColor: c.hairline }];
+  const input = [styles.input, { color: c.text, backgroundColor: "transparent", borderColor: c.hairline }];
 
   return (
     <Screen title={t("Settings")}>
@@ -258,9 +245,7 @@ export default function Settings() {
 }
 
 const styles = StyleSheet.create({
-  group: { borderRadius: radius.card, padding: space.l, gap: space.m },
+  group: { gap: space.m },
   row: { flexDirection: "row", alignItems: "center", gap: space.m, minHeight: 32 },
-  segment: { flexDirection: "row", borderRadius: 10, padding: 2 },
-  segmentItem: { flex: 1, alignItems: "center", paddingVertical: 7, borderRadius: 8 },
-  input: { borderWidth: StyleSheet.hairlineWidth, borderRadius: radius.control, paddingHorizontal: space.m, paddingVertical: 11, fontSize: 16 },
+  input: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 999, paddingHorizontal: space.m, paddingVertical: 11, fontSize: 16 },
 });

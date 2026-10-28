@@ -8,7 +8,7 @@ import { openSession, startScan } from "../../services/nav.ts";
 import { useSessions } from "../../services/sessions.ts";
 import { isServerConfigured, useSettings } from "../../services/settings.ts";
 import { useQuota } from "../../services/usage.ts";
-import { Caption, Divider } from "../../ui/components.tsx";
+import { Caption, Divider, GlassCard } from "../../ui/components.tsx";
 import { Glass } from "../../ui/Glass.tsx";
 import { GradientText, PressScale, Rise } from "../../ui/motion.tsx";
 import { Screen } from "../../ui/Screen.tsx";
@@ -54,9 +54,9 @@ export default function Home() {
       </Rise>
 
       <Rise index={2} style={{ gap: space.l }}>
-        {/* Live Fix: the one primary action, a calm dark card lit from below. */}
-        <View style={[styles.hero, { backgroundColor: c.surface, borderColor: c.hairline }]}>
-          <LinearGradient pointerEvents="none" colors={["#1E5BFF00", "#1E5BFF33"]} start={{ x: 0, y: 0.2 }} end={{ x: 0.6, y: 1 }} style={StyleSheet.absoluteFill} />
+        {/* Live Fix: the one primary action, a clean glass card with a faint blue light from below. */}
+        <GlassCard style={styles.hero}>
+          <LinearGradient pointerEvents="none" colors={["#1E5BFF00", "#1E5BFF26"]} start={{ x: 0, y: 0.2 }} end={{ x: 0.6, y: 1 }} style={StyleSheet.absoluteFill} />
           <View style={{ gap: space.m }}>
             <Text style={[type.eyebrow, { color: c.accent, fontSize: 13, letterSpacing: 1.2 }]}>LIVE FIX</Text>
             <Text style={[type.title, { color: c.text }]}>{t("Show it. Fix it.")}</Text>
@@ -77,10 +77,10 @@ export default function Home() {
               </Glass>
             </PressScale>
           </View>
-        </View>
+        </GlassCard>
 
         <PressScale onPress={() => router.navigate("/fixvoice")}>
-          <View style={[styles.row, { backgroundColor: c.surface, borderColor: c.hairline }]}>
+          <Glass interactive style={styles.row}>
             <View style={[styles.rowIcon, { borderColor: c.hairline }]}>
               <Ionicons name="mic-outline" size={20} color={c.accent} />
             </View>
@@ -89,19 +89,19 @@ export default function Home() {
               <Caption style={{ fontSize: 13 }}>{t("Hands-free, by voice")}</Caption>
             </View>
             <Ionicons name="chevron-forward" size={18} color={c.secondary} />
-          </View>
+          </Glass>
         </PressScale>
 
         {!isServerConfigured(settings) && settings.provider === "proxy" && (
           <PressScale onPress={() => router.navigate("/settings")}>
-            <View style={[styles.row, { backgroundColor: c.surface, borderColor: c.hairline }]}>
+            <Glass interactive style={styles.row}>
               <Ionicons name="server-outline" size={20} color={c.caution} />
               <View style={{ flex: 1, gap: 2 }}>
                 <Text style={[type.headline, { color: c.text }]}>{t("AI analysis is not set up")}</Text>
                 <Caption>{t("Choose an AI service in Settings to get a diagnosis and a guided plan.")}</Caption>
               </View>
               <Ionicons name="chevron-forward" size={18} color={c.secondary} />
-            </View>
+            </Glass>
           </PressScale>
         )}
       </Rise>
@@ -109,14 +109,14 @@ export default function Home() {
       {solved.length > 0 && (
         <View style={{ gap: space.m }}>
           <Label text={t("Recently solved")} />
-          <View style={[styles.list, { borderColor: c.hairline, paddingVertical: space.xs }]}>
+          <GlassCard style={{ gap: 0, paddingVertical: space.xs, paddingHorizontal: 0 }}>
             {solved.map((s, i) => (
               <View key={s.id} style={{ paddingHorizontal: space.l }}>
                 {i > 0 && <Divider />}
                 <SessionRow session={s} onPress={() => openSession(s.id)} />
               </View>
             ))}
-          </View>
+          </GlassCard>
         </View>
       )}
     </Screen>
@@ -137,9 +137,9 @@ const styles = StyleSheet.create({
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   wordmark: { fontFamily: font.accentMedium, fontSize: 20, letterSpacing: -0.2 },
   quota: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: StyleSheet.hairlineWidth },
-  hero: { borderRadius: radius.card, padding: space.xl, gap: space.xl, overflow: "hidden", borderWidth: StyleSheet.hairlineWidth, borderCurve: "continuous" },
-  primary: { flexDirection: "row", gap: space.s, alignItems: "center", justifyContent: "center", borderRadius: radius.control, height: 52 },
-  secondary: { width: 52, height: 52, borderRadius: radius.control, alignItems: "center", justifyContent: "center" },
+  hero: { padding: space.xl, gap: space.xl },
+  primary: { flexDirection: "row", gap: space.s, alignItems: "center", justifyContent: "center", borderRadius: 999, height: 52 },
+  secondary: { width: 52, height: 52, borderRadius: 999, alignItems: "center", justifyContent: "center" },
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -147,7 +147,6 @@ const styles = StyleSheet.create({
     padding: space.l,
     paddingRight: space.xl,
     borderRadius: radius.card,
-    borderWidth: StyleSheet.hairlineWidth,
     borderCurve: "continuous",
   },
   rowIcon: { width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center", borderWidth: StyleSheet.hairlineWidth },

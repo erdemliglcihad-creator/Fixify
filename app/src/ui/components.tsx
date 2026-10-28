@@ -13,6 +13,39 @@ export function Card({ children, style }: { children: ReactNode; style?: StylePr
   return <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.hairline }, !dark && styles.lift, style]}>{children}</View>;
 }
 
+/** Clean rounded Liquid Glass card for grouped content (not for safety warnings, those stay solid). */
+export function GlassCard({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
+  return <Glass style={[styles.glassCard, style]}>{children}</Glass>;
+}
+
+/** Pill-shaped glass switcher; the chosen option sits on a brighter inner pill. */
+export function Segmented<T extends string>({ value, options, onChange }: { value: T; options: [T, string][]; onChange: (v: T) => void }) {
+  const { c, dark } = useTheme();
+  return (
+    <Glass style={styles.segment}>
+      {options.map(([v, label]) => {
+        const on = value === v;
+        return (
+          <Pressable
+            key={v}
+            onPress={() => {
+              if (!on && Platform.OS !== "web") Haptics.selectionAsync();
+              onChange(v);
+            }}
+            style={[styles.segmentItem, on && { backgroundColor: dark ? "#FFFFFF24" : "#FFFFFFF2", boxShadow: dark ? undefined : "0 1px 6px rgba(16, 24, 48, 0.12)" }]}
+            aria-selected={on}
+            accessibilityRole="button"
+          >
+            <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} style={{ color: on ? c.text : c.secondary, fontSize: 14, fontFamily: on ? font.semibold : font.medium }}>
+              {label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </Glass>
+  );
+}
+
 export function SectionTitle({ title, icon }: { title: string; icon?: IconName }) {
   const { c } = useTheme();
   return (
@@ -173,6 +206,9 @@ export function Divider() {
 }
 
 const styles = StyleSheet.create({
+  glassCard: { borderRadius: radius.card, padding: space.l, gap: space.m, borderCurve: "continuous" },
+  segment: { flexDirection: "row", borderRadius: 999, padding: 4 },
+  segmentItem: { flex: 1, alignItems: "center", paddingVertical: 9, paddingHorizontal: 6, borderRadius: 999 },
   card: { borderRadius: radius.card, padding: space.l, gap: space.m, borderWidth: StyleSheet.hairlineWidth, borderCurve: "continuous" },
   // Content cards are solid; a soft shadow separates them from the gradient behind.
   lift: { boxShadow: "0 1px 2px rgba(16, 24, 48, 0.06), 0 8px 24px rgba(16, 24, 48, 0.06)" },
