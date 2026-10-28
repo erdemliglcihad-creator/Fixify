@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { levelFromDb, speakable, toBase64, vadStart, vadStep, type VadEvent, type VadState } from "../src/core/voice.ts";
+import { defaultVad, levelFromDb, speakable, toBase64, vadStart, vadStep, type VadEvent, type VadState } from "../src/core/voice.ts";
 
 /** Feeds dB samples every 80 ms and returns the first event that is not "none". */
 function run(samples: number[], every = 80): { event: VadEvent; at: number } {
@@ -60,4 +60,28 @@ test("base64 matches Node", () => {
     const bytes = Uint8Array.from({ length: n }, (_, i) => (i * 37 + 11) % 256);
     assert.equal(toBase64(bytes), Buffer.from(bytes).toString("base64"));
   }
+});
+
+const BARGE = { ...defaultVad, margin: 8, minSpeechMs: 450, noSpeechMs: 120_000, echo: true, calibrateMs: 1200 };
+
+/** FixVoice's own voice through the speaker: words around -24 dB with short gaps around -42 dB. */
+const echo = (ms: number) => Array.from({ length: Math.round(ms / 80) }, (_, i) => (i % 5 === 4 ? -42 : -24 - (i % 3) * 2));
+
+function runWith(samples: number[], options: typeof BARGE) {
+  let state: VadState = vadStart(0);
+  for (let i = 0; i < samples.length; i++) {
+    const r = vadStep(state, samples[i], i * 80, options);
+    state = r.state;
+    if (state.heard) return { heardAt: i * 80 };
+  }
+  return { heardAt: -1 };
+}
+
+test("echo mode: FixVoice's own voice does not interrupt it", () => {
+  assert.equal(runWith([...repeat(-55, 300), ...echo(8000)], BARGE).heardAt, -1);
+});
+
+test("echo mode: the user talking clearly louder interrupts", () => {
+  const r = runWith([...repeat(-55, 300), ...echo(2500), ...repeat(-10, 1000)], BARGE);
+  assert.ok(r.heardAt > 2800 && r.heardAt < 3500, `heard at ${r.heardAt}`);
 });

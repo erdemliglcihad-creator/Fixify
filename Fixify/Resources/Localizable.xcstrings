@@ -1794,17 +1794,6 @@
         }
       }
     },
-    "Just talk. I'm listening.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sprich einfach. Ich höre zu."
-          }
-        }
-      }
-    },
     "Let Fixify decide": {
       "extractionState": "manual",
       "localizations": {

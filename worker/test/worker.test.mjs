@@ -218,9 +218,9 @@ test("FixVoice: voice mode adds spoken-answer rules, Fish TTS sends the voice id
   const { buildChatMessages } = await import("../src/chat.mjs");
   const { fishSpeech, fishVoice } = await import("../src/tts.mjs");
   const voice = buildChatMessages({ locale: "de", mode: "voice", messages: [{ role: "user", text: "Drucker offline" }] });
-  assert.match(voice.messages[0].content, /live voice call/);
+  assert.match(voice.messages[0].content, /live phone call/);
   const chatOnly = buildChatMessages({ locale: "de", messages: [{ role: "user", text: "Drucker offline" }] });
-  assert.doesNotMatch(chatOnly.messages[0].content, /live voice call/);
+  assert.doesNotMatch(chatOnly.messages[0].content, /live phone call/);
 
   assert.equal(fishVoice({ FISH_VOICE_DE_FEMALE: "abc" }, "de", "female"), "abc");
   assert.equal(fishVoice({}, "en", "male"), null);

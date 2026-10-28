@@ -11,8 +11,11 @@ import { speak, stopSpeaking, transcribeRecording, useListener, type Recording }
 
 export type CallPhase = "idle" | "connecting" | "listening" | "transcribing" | "thinking" | "speaking";
 
-/** While FixVoice talks, only clearly louder speech counts (its own voice comes back through the mic). */
-const BARGE_IN = { margin: 18, minSpeechMs: 380, noSpeechMs: 120_000 };
+/**
+ * While FixVoice talks, its own voice comes back through the mic. Echo mode learns how loud that is during the
+ * first 1.2 s and then only counts a voice clearly above it, so the answer is not cut off by itself.
+ */
+const BARGE_IN = { margin: 8, minSpeechMs: 450, noSpeechMs: 120_000, echo: true, calibrateMs: 1200 };
 /** Quiet turns in a row before the call hangs up by itself. */
 const MAX_SILENT_TURNS = 2;
 

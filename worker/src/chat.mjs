@@ -38,10 +38,12 @@ This is a quick question about what is on the user's iPhone screen right now (a 
 
 const VOICE_RULES = `
 
-This is a live voice call (FixVoice). Your answer is read aloud:
-- Talk like a calm, friendly technician on the phone. Plain sentences, no markdown, no lists, no symbols, no emojis.
-- Keep it short: 2 to 4 sentences, at most about 70 words. Give one step at a time and ask if it worked before the next.
-- If you need details, ask exactly one short question.`;
+This is a live phone call (FixVoice). Your answer is spoken aloud, so it must sound like a quick reply on the phone:
+- One or two short sentences, at most about 30 words. Get straight to the point, no introduction, no summary, no "great question".
+- Plain spoken language only: no markdown, no lists, no symbols, no emojis.
+- Give one step at a time. If you need a detail, ask one short question instead of guessing.
+- Only go longer if the user explicitly asks for more detail.
+- In German, always use "du", like a friendly helper on the phone.`;
 
 /** Only a photo in the newest message is sent (to the vision model); older ones become "[photo]" to save tokens. */
 export function buildChatMessages(req) {

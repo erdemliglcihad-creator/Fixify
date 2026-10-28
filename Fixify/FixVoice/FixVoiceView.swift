@@ -29,10 +29,8 @@ struct FixVoiceView: View {
                 .padding(.top, FXSpacing.xl)
 
                 VStack(spacing: FXSpacing.m) {
-                    if call.inCall {
-                        Text(status).font(.fxEyebrow).foregroundStyle(Color.fxSecondaryText)
-                        live
-                    } else {
+                    // During a call the middle stays empty, like a phone call; the status is in the pill.
+                    if !call.inCall {
                         Text(greeting).font(.fxEyebrow).foregroundStyle(Color.fxSecondaryText)
                         Text("How can I help you today?")
                             .font(.fxHero)
@@ -94,23 +92,6 @@ struct FixVoiceView: View {
 
     private func refresh() async {
         quota = await FixifyCloud().quota()
-    }
-
-    /// What is said right now: your words while FixVoice thinks, then its reply, lit up as it is spoken.
-    @ViewBuilder private var live: some View {
-        if call.phase == .speaking, !call.reply.isEmpty {
-            let plain = Speaker.speakable(call.reply)
-            let cut = min(max(call.spokenTo, 0), plain.count)
-            let index = plain.index(plain.startIndex, offsetBy: cut)
-            (Text(plain[..<index]).foregroundStyle(Color.primary) + Text(plain[index...]).foregroundStyle(Color.fxSecondaryText))
-                .font(.fxLive)
-                .multilineTextAlignment(.center)
-                .lineLimit(7)
-        } else if !call.heard.isEmpty, call.phase != .listening {
-            Text(call.heard).font(.fxLive).multilineTextAlignment(.center).lineLimit(5)
-        } else {
-            Text("Just talk. I'm listening.").font(.fxLive).foregroundStyle(Color.fxSecondaryText).multilineTextAlignment(.center)
-        }
     }
 
     private var pill: some View {

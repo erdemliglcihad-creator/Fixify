@@ -10,9 +10,13 @@ struct TurnDetector {
         var silence: TimeInterval = 1.1
         var noSpeech: TimeInterval = 15
         var maxTurn: TimeInterval = 30
+        /// Echo mode: the floor follows the peaks of FixVoice's own voice from the loudspeaker.
+        var echo = false
+        /// At the start, only learn the level, never count anything as speech.
+        var calibrate: TimeInterval = 0
 
-        /// While FixVoice talks, only clearly louder speech counts as talking over it.
-        static let bargeIn = Options(margin: 18, minSpeech: 0.38, noSpeech: 120)
+        /// While FixVoice talks, only a voice clearly louder than its own counts as talking over it.
+        static let bargeIn = Options(margin: 8, minSpeech: 0.45, noSpeech: 120, echo: true, calibrate: 1.2)
     }
 
     enum Event: Equatable { case none, end, noSpeech, cap }
@@ -40,10 +44,17 @@ struct TurnDetector {
         if elapsed >= options.maxTurn { return heard ? .cap : .noSpeech }
         guard db.isFinite else { return .none }
 
-        // The noise floor drops quickly, rises slowly, and is frozen while someone speaks.
         let previous = floor ?? db
-        let loud = db >= max(previous + options.margin, -50)
-        floor = loud ? previous : (db < previous ? previous * 0.7 + db * 0.3 : previous * 0.98 + db * 0.02)
+        let calibrating = elapsed < options.calibrate
+        let loud = !calibrating && db >= max(previous + options.margin, -50)
+        if options.echo {
+            // Rise to the voice's peaks (fast while calibrating), fall back only very slowly between words.
+            let up = calibrating ? 0.6 : 0.1
+            floor = loud ? previous : (db > previous ? previous * (1 - up) + db * up : previous * 0.995 + db * 0.005)
+        } else {
+            // Room noise: drops quickly, rises slowly, frozen while someone speaks.
+            floor = loud ? previous : (db < previous ? previous * 0.7 + db * 0.3 : previous * 0.98 + db * 0.02)
+        }
 
         if loud {
             let since = loudSince ?? now

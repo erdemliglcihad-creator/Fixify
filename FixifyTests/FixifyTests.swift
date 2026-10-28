@@ -250,10 +250,24 @@ private func repeated(_ db: Double, _ seconds: Double) -> [Double] {
     #expect(runDetector(repeated(-50, 0.4) + repeated(-20, 31)).0 == .cap)
 }
 
-@Test func bargeInNeedsClearlyLouderSpeech() {
-    // Echo of FixVoice's own voice around -30 dB over a -50 dB room does not interrupt; a real voice at -12 does.
-    #expect(runDetector(repeated(-50, 0.8) + repeated(-38, 2), options: .bargeIn).0 == .none)
-    #expect(runDetector(repeated(-50, 0.8) + repeated(-12, 1) + repeated(-50, 1.5), options: .bargeIn).0 == .end)
+/// FixVoice's own voice through the speaker: words around -24 dB with short gaps around -42 dB.
+private func echo(_ seconds: Double) -> [Double] {
+    (0..<Int((seconds / 0.08).rounded())).map { i in i % 5 == 4 ? -42 : -24 - Double(i % 3) * 2 }
+}
+
+@Test func ownVoiceDoesNotInterrupt() {
+    #expect(runDetector(repeated(-55, 0.3) + echo(8), options: .bargeIn).0 == .none)
+}
+
+@Test func clearlyLouderVoiceInterrupts() {
+    var detector = TurnDetector(options: .bargeIn, now: 0)
+    let samples = repeated(-55, 0.3) + echo(2.5) + repeated(-10, 1)
+    var heardAt: TimeInterval = -1
+    for (i, db) in samples.enumerated() {
+        _ = detector.step(db: db, now: Double(i) * 0.08)
+        if detector.heard { heardAt = Double(i) * 0.08; break }
+    }
+    #expect(heardAt > 2.8 && heardAt < 3.5)
 }
 
 @Test func wavHeaderDescribesSixteenKilohertzMono() {

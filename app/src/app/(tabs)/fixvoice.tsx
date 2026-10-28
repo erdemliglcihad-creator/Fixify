@@ -68,12 +68,8 @@ export default function FixVoice() {
       </View>
 
       <View style={styles.textArea}>
-        {call.inCall ? (
-          <Animated.View key="call" entering={FadeIn.duration(260)} exiting={FadeOut.duration(160)} style={{ gap: space.m, alignItems: "center" }}>
-            <Text style={[type.eyebrow, { color: c.secondary }]}>{STATUS[call.phase]()}</Text>
-            <Live call={call} />
-          </Animated.View>
-        ) : (
+        {/* During a call the middle stays empty, like a phone call: just the orb; the status is in the pill. */}
+        {!call.inCall && (
           <Animated.View key="idle" entering={FadeIn.duration(260)} exiting={FadeOut.duration(160)} style={{ gap: space.s, alignItems: "center" }}>
             <Text style={[type.eyebrow, { color: c.secondary }]}>{greeting()}</Text>
             <Text style={[styles.headline, { color: c.text }]} accessibilityRole="header">
@@ -134,29 +130,6 @@ export default function FixVoice() {
   );
 }
 
-/** The words on screen: what you said while FixVoice thinks, then its reply, lit up as it is spoken. */
-function Live({ call }: { call: ReturnType<typeof useCall> }) {
-  const { c } = useTheme();
-  if (call.phase === "speaking" && call.reply) {
-    const plain = call.reply.replace(/[*_#`>]/g, "").replace(/\s+/g, " ").trim();
-    const cut = call.spokenTo > 0 ? Math.min(plain.indexOf(" ", call.spokenTo) === -1 ? plain.length : plain.indexOf(" ", call.spokenTo), plain.length) : 0;
-    return (
-      <Text style={[styles.live, { color: c.secondary }]} numberOfLines={7}>
-        <Text style={{ color: c.text }}>{plain.slice(0, cut)}</Text>
-        {plain.slice(cut)}
-      </Text>
-    );
-  }
-  if (call.heard && call.phase !== "listening") {
-    return (
-      <Text style={[styles.live, { color: c.text }]} numberOfLines={5}>
-        {call.heard}
-      </Text>
-    );
-  }
-  return <Text style={[styles.live, { color: c.secondary }]}>{t("Just talk. I'm listening.")}</Text>;
-}
-
 /**
  * Blue light rising from the bottom. While talking it breathes with the voice (yours or FixVoice's):
  * a little taller and brighter, and it drifts sideways a touch. Springs keep it smooth, never jumpy.
@@ -212,7 +185,6 @@ const styles = StyleSheet.create({
   orbArea: { alignItems: "center", justifyContent: "center", marginTop: space.l },
   textArea: { flex: 1, alignItems: "center", paddingHorizontal: space.xl, gap: space.l, paddingTop: space.l },
   headline: { fontFamily: font.medium, fontSize: 34, lineHeight: 40, letterSpacing: -1, textAlign: "center" },
-  live: { fontFamily: font.medium, fontSize: 24, lineHeight: 32, letterSpacing: -0.5, textAlign: "center" },
   context: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, maxWidth: "100%" },
   pill: { flexDirection: "row", alignItems: "center", height: 64, borderRadius: 32, paddingRight: 8, gap: space.s },
   pillMain: { flex: 1, flexDirection: "row", alignItems: "center", alignSelf: "stretch", paddingLeft: space.l, gap: space.m },

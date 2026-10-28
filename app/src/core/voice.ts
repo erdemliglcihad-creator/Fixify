@@ -11,6 +11,13 @@ export type VadOptions = {
   noSpeechMs: number;
   /** Hard cap for one turn. */
   maxMs: number;
+  /**
+   * Echo mode, for listening while FixVoice itself talks through the loudspeaker: the floor follows the
+   * loudest parts of its own voice (peaks, not the quiet gaps), so only a voice clearly above it counts.
+   */
+  echo?: boolean;
+  /** At the start, only learn the level, never count anything as speech. */
+  calibrateMs?: number;
 };
 
 export const defaultVad: VadOptions = { margin: 10, minSpeechMs: 220, silenceMs: 1100, noSpeechMs: 15_000, maxMs: 30_000 };
@@ -40,11 +47,20 @@ export function vadStep(state: VadState, db: number | undefined, now: number, o:
   if (elapsed >= o.maxMs) return { state, event: state.heard ? "cap" : "noSpeech" };
   if (db === undefined || !Number.isFinite(db)) return { state, event: "none" };
 
-  // The noise floor drops quickly, rises slowly, and is frozen while someone speaks, so speech never raises it.
   const prev = state.floor ?? db;
+  const calibrating = elapsed < (o.calibrateMs ?? 0);
   const threshold = Math.max(prev + o.margin, -50);
-  const loud = db >= threshold;
-  const floor = loud ? prev : db < prev ? prev * 0.7 + db * 0.3 : prev * 0.98 + db * 0.02;
+  const loud = !calibrating && db >= threshold;
+  let floor: number;
+  if (o.echo) {
+    // Echo: rise quickly to the voice's peaks while calibrating, then slowly; fall back only very slowly,
+    // so the pauses between FixVoice's words do not lower the bar.
+    const up = calibrating ? 0.6 : 0.1;
+    floor = loud ? prev : db > prev ? prev * (1 - up) + db * up : prev * 0.995 + db * 0.005;
+  } else {
+    // Room noise: the floor drops quickly, rises slowly, and is frozen while someone speaks.
+    floor = loud ? prev : db < prev ? prev * 0.7 + db * 0.3 : prev * 0.98 + db * 0.02;
+  }
   const next: VadState = { ...state, floor };
 
   if (loud) {
