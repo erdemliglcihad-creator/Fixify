@@ -2,14 +2,12 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Constants from "expo-constants";
 import { router } from "expo-router";
 import { useState, type ReactNode } from "react";
-import { ActivityIndicator, Platform, Pressable, ScrollView, Share, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import { Platform, Pressable, Share, StyleSheet, Switch, Text, View } from "react-native";
 import { t } from "../../i18n/index.ts";
 import { storageBytes } from "../../services/images.ts";
-import { checkServer, ProxyError } from "../../services/proxy.ts";
 import { cancelAllReminders } from "../../services/reminders.ts";
 import { deleteEverything, deletePhotos, useSessions } from "../../services/sessions.ts";
-import { CLOUD_URL, isServerConfigured, serverBase, updateSettings, useSettings, type Appearance, type Provider, type VoiceGender } from "../../services/settings.ts";
-import { useQuota } from "../../services/usage.ts";
+import { updateSettings, useSettings, type Appearance, type VoiceGender } from "../../services/settings.ts";
 import { isOpen } from "../../core/session.ts";
 import { Caption, Divider, GlassCard, Segmented } from "../../ui/components.tsx";
 import { confirmDestructive } from "../../ui/confirm.ts";
@@ -17,10 +15,8 @@ import type { IconName } from "../../ui/categories.ts";
 import { radius, space, type, useTheme, font } from "../../ui/theme.ts";
 import { Reveal, RevealWords } from "../../ui/reveal.tsx";
 import { Screen } from "../../ui/Screen.tsx";
-import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { useArea } from "../../services/area.ts";
-
-type Connection = { state: "idle" } | { state: "checking" } | { state: "ok"; configured: boolean; ocr: boolean } | { state: "failed"; message: string };
 
 function Row({ children }: { children: ReactNode }) {
   return <View style={styles.row}>{children}</View>;
@@ -65,43 +61,12 @@ function Section({ title, footer, children }: { title: string; footer?: string; 
   );
 }
 
-/** Content that appears when a setting changes: fades and slides in softly instead of popping. */
-function Appear({ children }: { children: ReactNode }) {
-  return (
-    <Animated.View entering={FadeInDown.duration(280)} style={{ gap: space.m }}>
-      {children}
-    </Animated.View>
-  );
-}
-
-function providerFooter(p: Provider) {
-  if (p === "cloud") return t("Free for everyone, no setup. Photos and text go to Fixify Cloud, which uses Groq (AI) and OCR.space (text recognition). 10 photo uploads per day; messages to FixVoice are free within fair use.");
-  if (p === "proxy") return t("For your own Fixify server (server/ folder), e.g. with Claude. Enter the address and token it shows.");
-  return t("Fixify only saves photos and your notes. No text recognition, diagnosis or plan.");
-}
-
 export default function Settings() {
   useArea("settings");
   const { c } = useTheme();
   const s = useSettings();
-  const quota = useQuota();
   const sessions = useSessions();
-  const [connection, setConnection] = useState<Connection>({ state: "idle" });
   const [bytes, setBytes] = useState(() => storageBytes());
-
-  async function test() {
-    const base = serverBase(s);
-    if (!base) return;
-    setConnection({ state: "checking" });
-    try {
-      const h = await checkServer(base, s.provider === "proxy" ? s.appToken.trim() : "");
-      setConnection({ state: "ok", configured: h.configured, ocr: h.ocr });
-    } catch (e) {
-      setConnection({ state: "failed", message: e instanceof ProxyError ? e.message : t("Not reachable") });
-    }
-  }
-
-  const input = [styles.input, { color: c.text, backgroundColor: "transparent", borderColor: c.hairline }];
 
   return (
     <Screen title={t("Settings")}>
@@ -128,72 +93,6 @@ export default function Settings() {
           options={[["female", t("Female voice")], ["male", t("Male voice")]]}
           onChange={(voice) => updateSettings({ voice })}
         />
-      </Section>
-
-      <Section title={t("AI analysis")} footer={providerFooter(s.provider)}>
-        <Segmented<Provider>
-          value={s.provider}
-          options={[["cloud", t("Fixify Cloud")], ["proxy", t("Own server")], ["off", t("Off")]]}
-          onChange={(provider) => {
-            updateSettings({ provider });
-            setConnection({ state: "idle" });
-          }}
-        />
-        {s.provider === "proxy" && (
-          <Appear>
-            <TextInput
-              value={s.serverURL}
-              onChangeText={(serverURL) => {
-                updateSettings({ serverURL });
-                setConnection({ state: "idle" });
-              }}
-              placeholder={t("Server address, e.g. 192.168.1.20:8787")}
-              placeholderTextColor={c.secondary}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="url"
-              style={input}
-            />
-            <TextInput
-              value={s.appToken}
-              onChangeText={(appToken) => {
-                updateSettings({ appToken });
-                setConnection({ state: "idle" });
-              }}
-              placeholder={t("App token")}
-              placeholderTextColor={c.secondary}
-              autoCapitalize="none"
-              autoCorrect={false}
-              secureTextEntry
-              style={input}
-            />
-          </Appear>
-        )}
-        {s.provider === "cloud" && !CLOUD_URL && <Caption color={c.caution}>{t("This build has no Fixify Cloud address yet.")}</Caption>}
-        {s.provider !== "off" && (
-          <Appear>
-            <Pressable onPress={test} disabled={!isServerConfigured(s)} style={styles.row} accessibilityRole="button">
-              <Text style={[type.body, { color: c.accent, flex: 1, opacity: isServerConfigured(s) ? 1 : 0.4 }]}>{t("Test connection")}</Text>
-              {connection.state === "checking" && <ActivityIndicator />}
-              {connection.state === "ok" && (
-                <Text style={{ color: connection.configured ? c.success : c.caution, fontSize: 14, fontFamily: font.semibold }}>
-                  {connection.configured ? t("Connected") : t("AI not set up on the server")}
-                </Text>
-              )}
-            </Pressable>
-            {connection.state === "failed" && <Caption color={c.danger}>{connection.message}</Caption>}
-            {connection.state === "ok" && !connection.ocr && <Caption color={c.caution}>{t("This server has no text recognition.")}</Caption>}
-          </Appear>
-        )}
-        {s.provider === "cloud" && quota.uploadsLeft !== null && (
-          <Appear>
-            <Divider />
-            <Row>
-              <Label>{t("Photo uploads left today")}</Label>
-              <Caption>{quota.uploadsDaily ? `${quota.uploadsLeft} / ${quota.uploadsDaily}` : String(quota.uploadsLeft)}</Caption>
-            </Row>
-          </Appear>
-        )}
       </Section>
 
       <Section title={t("Privacy")} footer={t("When off, nothing leaves this iPhone, and Fixify asks before the next analysis.")}>
@@ -279,5 +178,4 @@ export default function Settings() {
 const styles = StyleSheet.create({
   group: { gap: space.m },
   row: { flexDirection: "row", alignItems: "center", gap: space.m, minHeight: 32 },
-  input: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 999, paddingHorizontal: space.m, paddingVertical: 11, fontSize: 16 },
 });

@@ -10,6 +10,7 @@ import { OcrError, recognizeWithOcrSpace } from "./ocrspace.mjs";
 import { ChatRequestSchema, fixbotReply } from "./chat.mjs";
 import { TranscribeRequestSchema, transcribe } from "./transcribe.mjs";
 import { TtsRequestSchema, fishSpeech, fishVoice } from "./tts.mjs";
+import { IdentifyRequestSchema, identifyObjects } from "./identify.mjs";
 
 const CORS = {
   "access-control-allow-origin": "*",
@@ -152,7 +153,7 @@ export default {
     if (request.method === "GET" && url.pathname === "/health") {
       return json(200, { ok: true, service: "fixify-cloud", version: "1.3.0", configured: info.configured, ocr: Boolean(env.OCR_SPACE_KEY), chat: true, voice: true, tts: Boolean(env.FISH_API_KEY), provider: info.provider });
     }
-    if (!["/v1/ping", "/v1/ocr", "/v1/analyze", "/v1/chat", "/v1/transcribe", "/v1/tts"].includes(url.pathname)) return fail(404, "not_found", "Unknown endpoint.");
+    if (!["/v1/ping", "/v1/ocr", "/v1/analyze", "/v1/chat", "/v1/transcribe", "/v1/tts", "/v1/identify"].includes(url.pathname)) return fail(404, "not_found", "Unknown endpoint.");
 
     // Optional invite-only mode: set the APP_TOKEN secret and hand the token out.
     if (env.APP_TOKEN && request.headers.get("authorization") !== `Bearer ${env.APP_TOKEN}`) {
@@ -238,6 +239,23 @@ export default {
         await limiter.refund(day, verdict.receipt);
         if (err instanceof AnalysisError) return fail(err.status, err.code, err.message);
         return fail(502, "upstream_error", "Speech synthesis failed.");
+      }
+    }
+
+    if (url.pathname === "/v1/identify") {
+      const parsed = IdentifyRequestSchema.safeParse(body);
+      if (!parsed.success) return fail(400, "invalid_request", "Invalid identify request.");
+      // Counts as a photo upload (same photo counts once, shared with the analysis that may follow).
+      const verdict = await take({ hashes: [await sha256(parsed.data.image.data)], vision: true });
+      if (!verdict.ok) return verdict.response;
+      try {
+        const out = await identifyObjects(parsed.data, { baseUrl: env.AI_BASE_URL, apiKey: env.AI_API_KEY, models: [env.AI_MODEL], signal: request.signal });
+        return json(200, { objects: out.objects, model: out.model, ...quota(verdict.uploadsLeft) });
+      } catch (err) {
+        await limiter.refund(day, verdict.receipt);
+        if (err instanceof AnalysisError) return fail(err.status === 499 ? 400 : err.status, err.code, err.message);
+        console.error("identify failed", err);
+        return fail(502, "upstream_error", "The objects could not be identified.");
       }
     }
 

@@ -2,11 +2,14 @@ import { useFonts } from "expo-font";
 import { DarkTheme, DefaultTheme, router, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Appearance, Platform, View } from "react-native";
+import { ActivityIndicator, Appearance, Platform, StyleSheet, View } from "react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { t } from "../i18n/index.ts";
 import { applyRetention, loadSessions } from "../services/sessions.ts";
-import { isServerConfigured, loadSettings, serverBase, settingsStore, useSettings } from "../services/settings.ts";
+import { isServerConfigured, loadSettings, serverBase, settingsStore, updateSettings, useSettings } from "../services/settings.ts";
+import { IntroFlow } from "../ui/IntroFlow.tsx";
+import { OnboardingFlow } from "../ui/OnboardingFlow.tsx";
 import { loadChat } from "../services/chat.ts";
 import { refreshQuota } from "../services/proxy.ts";
 import { Aurora } from "../ui/Aurora";
@@ -19,7 +22,8 @@ export default function RootLayout() {
   const [ready, setReady] = useState(false);
   const introShown = useRef(false);
   const { c, dark } = useTheme();
-  const { appearance } = useSettings();
+  const { appearance, onboardingDone, introDone } = useSettings();
+  const firstLaunch = !onboardingDone || !introDone;
 
   useEffect(() => {
     // Native parts (Liquid Glass, keyboard, alerts) follow the app's choice, not only the iPhone's.
@@ -54,10 +58,10 @@ export default function RootLayout() {
     // Only once per launch (effects can run twice in development).
     if (!ready || introShown.current) return;
     introShown.current = true;
-    const { onboardingDone, introDone, seenWelcome } = settingsStore.get();
-    if (!onboardingDone) router.push("/onboarding");
-    else if (!introDone) router.push("/intro");
-    else if (!seenWelcome) router.push("/welcome");
+    // New installs get the questions and the introduction as a layer below (then straight into the app).
+    // Earlier installs that never saw the welcome screen still get it once.
+    const s = settingsStore.get();
+    if (s.onboardingDone && s.introDone && !s.seenWelcome) router.push("/welcome");
   }, [ready]);
 
   const base = dark ? DarkTheme : DefaultTheme;
@@ -86,12 +90,24 @@ export default function RootLayout() {
         />
         <Stack.Screen name="review" options={{ presentation: "modal", title: t("Review") }} />
         <Stack.Screen name="welcome" options={{ presentation: "fullScreenModal", headerShown: false, gestureEnabled: false }} />
-        <Stack.Screen name="onboarding" options={{ presentation: "fullScreenModal", headerShown: false, gestureEnabled: false, animation: "fade" }} />
-        <Stack.Screen name="intro" options={{ presentation: "fullScreenModal", headerShown: false, gestureEnabled: false, animation: "fade" }} />
+        <Stack.Screen name="onboarding" options={{ presentation: "fullScreenModal", headerShown: false, animation: "fade" }} />
         <Stack.Screen name="privacy" options={{ title: t("What Fixify processes") }} />
         <Stack.Screen name="help" options={{ title: t("How Fixify works") }} />
         <Stack.Screen name="server-help" options={{ title: t("Server setup") }} />
       </Stack>
+      {/* First launch: questions, then the introduction, above the app without any navigation. */}
+      {firstLaunch && (
+        <Animated.View exiting={FadeOut.duration(350)} style={[StyleSheet.absoluteFill, { backgroundColor: c.background }]}>
+          <Aurora />
+          {!onboardingDone ? (
+            <OnboardingFlow onDone={(profile) => updateSettings({ profile, onboardingDone: true })} />
+          ) : (
+            <Animated.View entering={FadeIn.duration(350)} style={{ flex: 1 }}>
+              <IntroFlow onDone={() => updateSettings({ introDone: true, seenWelcome: true })} />
+            </Animated.View>
+          )}
+        </Animated.View>
+      )}
       </GestureHandlerRootView>
     </ThemeProvider>
   );

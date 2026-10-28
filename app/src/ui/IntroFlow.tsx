@@ -1,7 +1,6 @@
 // One-time introduction after the first-launch questions: four swipeable pages, each with a small animated
-// replica of the feature. Shown once, never again.
+// replica of the feature. Rendered as a layer above the app (no navigation), shown once, never again.
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { router } from "expo-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View, type NativeScrollEvent, type NativeSyntheticEvent, type ScrollViewInstance } from "react-native";
 import Animated, {
@@ -18,12 +17,10 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { t } from "../i18n/index.ts";
-import { useArea } from "../services/area.ts";
-import { settingsStore, updateSettings } from "../services/settings.ts";
-import { Button, LightCatch } from "../ui/components.tsx";
-import { Glass } from "../ui/Glass.tsx";
-import { areaColors, font, space, textGlow, type, useTheme } from "../ui/theme.ts";
-import { VoiceOrb } from "../ui/VoiceOrb";
+import { Button, LightCatch } from "./components.tsx";
+import { Glass } from "./Glass.tsx";
+import { areaColors, font, space, textGlow, type, useTheme } from "./theme.ts";
+import { VoiceOrb } from "./VoiceOrb";
 
 type Page = { title: () => string; body: () => string; demo: (active: boolean) => ReactNode };
 
@@ -50,8 +47,7 @@ const PAGES: Page[] = [
   },
 ];
 
-export default function Intro() {
-  useArea("home");
+export function IntroFlow({ onDone }: { onDone: () => void }) {
   const { c, dark } = useTheme();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -59,12 +55,7 @@ export default function Intro() {
   const pager = useRef<ScrollViewInstance>(null);
   const last = page === PAGES.length - 1;
 
-  function finish() {
-    updateSettings({ introDone: true });
-    if (!settingsStore.get().seenWelcome) router.replace("/welcome");
-    // Back to the existing start screen (closes the intro screens above it).
-    else router.navigate("/");
-  }
+  const finish = onDone;
 
   function next() {
     if (last) return finish();
@@ -141,7 +132,7 @@ function useLoop(active: boolean, duration: number) {
   return v;
 }
 
-// --- 1. Live Fix: camera frame, scanning line, markers popping in, a step card rising ---------------------
+// --- 1. Live Fix: camera frame, scanning line, markers popping in ------------------------------------------
 
 function LiveFixDemo({ active }: { active: boolean }) {
   const { c, dark } = useTheme();
@@ -156,7 +147,6 @@ function LiveFixDemo({ active }: { active: boolean }) {
       <Animated.View style={[styles.scanLine, { backgroundColor: c.accent, boxShadow: `0 0 14px ${c.accent}` }, line]} />
       <Marker n={1} x={58} y={60} delay={400} active={active} />
       <Marker n={2} x={150} y={112} delay={800} active={active} />
-      <StepCard active={active} />
     </Glass>
   );
 }
@@ -191,22 +181,6 @@ function Marker({ n, x, y, delay, active }: { n: number; x: number; y: number; d
   return (
     <Animated.View style={[styles.marker, { left: x, top: y, backgroundColor: c.marker, boxShadow: `0 0 16px ${c.marker}AA` }, style]}>
       <Text style={{ color: "#000", fontFamily: font.bold, fontSize: 13 }}>{n}</Text>
-    </Animated.View>
-  );
-}
-
-function StepCard({ active }: { active: boolean }) {
-  const { c } = useTheme();
-  const s = useSharedValue(0);
-  useEffect(() => {
-    s.value = 0;
-    if (active) s.value = withDelay(1200, withSpring(1, { duration: 600, dampingRatio: 1 }));
-  }, [active]);
-  const style = useAnimatedStyle(() => ({ opacity: s.value, transform: [{ translateY: (1 - s.value) * 16 }] }));
-  return (
-    <Animated.View style={[styles.stepCard, { backgroundColor: c.surface, borderColor: c.hairline }, style]}>
-      <Ionicons name="checkmark-circle" size={18} color={c.success} />
-      <Text style={{ color: c.text, fontFamily: font.semibold, fontSize: 13 }}>{t("1. Restart the router")}</Text>
     </Animated.View>
   );
 }
@@ -309,7 +283,6 @@ const styles = StyleSheet.create({
   corner: { position: "absolute", width: 28, height: 28 },
   scanLine: { position: "absolute", left: 24, right: 24, top: 36, height: 2, borderRadius: 1 },
   marker: { position: "absolute", width: 26, height: 26, borderRadius: 13, alignItems: "center", justifyContent: "center", borderWidth: 1.5, borderColor: "#FFFFFFE6" },
-  stepCard: { position: "absolute", left: 18, right: 18, bottom: 18, flexDirection: "row", alignItems: "center", gap: 8, padding: 10, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth },
   ripple: { position: "absolute", width: 120, height: 120, borderRadius: 60, borderWidth: 2 },
   limit: { width: 220, height: 220, alignItems: "center", justifyContent: "center" },
   limitDot: { position: "absolute", left: 110 - 14, top: 110 - 14, width: 28, height: 28 },
