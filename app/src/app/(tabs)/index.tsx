@@ -67,7 +67,7 @@ export default function Home() {
           </View>
           <View style={{ flexDirection: "row", gap: space.s }}>
             <PressScale style={{ flex: 1 }} haptic="medium" onPress={() => startScan()}>
-              <RainbowBorder radius={26}>
+              <RainbowBorder radius={26} glow={0.8}>
                 <View style={[styles.primary, { backgroundColor: c.text }]}>
                   <Ionicons name="scan-outline" size={18} color={c.background} />
                   <Text style={[type.headline, { color: c.background }]}>{t("Open camera")}</Text>
