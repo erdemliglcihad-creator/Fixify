@@ -1,10 +1,11 @@
-// Live object layer for the camera: tap an object, Fixify grabs a small still from the preview, cuts the
-// object out (core/segment.ts) and keeps following it by cutting it out again from a fresh still about once
-// a second, seeded at its last center. Expo Go has no per-frame camera access, so this is "slow tracking".
+// Live object layer for the camera: tap an object, Fixify grabs a small still from the preview and cuts the
+// object out once (core/segment.ts). Then it follows it with a fixed shape: in a fresh still every 0.7 s, the
+// object's remembered look is found again (core/track.ts). Expo Go has no per-frame camera access.
 import { AlphaType, ColorType, Skia, type SkImage } from "@shopify/react-native-skia";
 import type { CameraView } from "expo-camera";
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { segmentAt, type Segment } from "../core/segment.ts";
+import { makeTemplate, restPose, track, type Pose, type Template } from "../core/track.ts";
 import { previewToPhoto } from "../core/tap.ts";
 import { lang } from "../i18n/index.ts";
 import { nameObject } from "./proxy.ts";
@@ -12,14 +13,17 @@ import { serverBase, settingsStore } from "./settings.ts";
 
 export type LiveObject = {
   id: number;
+  /** The shape found at the tap. It never changes; tracking only moves and scales it (pose). */
   seg: Segment;
+  template: Template;
+  pose: Pose;
   lost: number;
   /** Name from Fixify Cloud for the live label; undefined while asking, null when unclear. */
   name?: string | null;
 };
 export const MAX_OBJECTS = 3;
 const FRAME_WIDTH = 144;
-const TRACK_EVERY = 900;
+const TRACK_EVERY = 700;
 
 type Frame = { px: Uint8Array; w: number; h: number; image: SkImage };
 
@@ -69,7 +73,7 @@ export function useLiveObjects(camera: RefObject<CameraView | null>, enabled: bo
   /** Tap on the preview (view pixels): remove the object there, or cut out a new one. */
   async function tapAt(px: number, py: number) {
     if (!camera.current || working.current) return false;
-    const hit = latest.current.find((o) => hitTest(o.seg, px, py, view));
+    const hit = latest.current.find((o) => hitTest(o, px, py, view));
     if (hit) {
       setObjects(latest.current.filter((o) => o.id !== hit.id));
       return true;
@@ -84,7 +88,7 @@ export function useLiveObjects(camera: RefObject<CameraView | null>, enabled: bo
       const seg = segmentAt(frame.px, frame.w, frame.h, seed);
       if (!seg) return false;
       const id = nextId.current++;
-      setObjects([...latest.current, { id, seg, lost: 0 }]);
+      setObjects([...latest.current, { id, seg, template: makeTemplate(frame.px, seg), pose: restPose, lost: 0 }]);
       askName(id, frame, seg);
       return true;
     } catch {
@@ -109,7 +113,7 @@ export function useLiveObjects(camera: RefObject<CameraView | null>, enabled: bo
     setObjects(latest.current.map((o) => (o.id === id ? { ...o, name } : o)));
   }
 
-  // Follow the objects: a fresh still, each one cut out again from its last center.
+  // Follow the objects: in a fresh still, find each one's remembered look again (same shape, new place).
   useEffect(() => {
     if (!enabled || !objects.length) return;
     const timer = setInterval(async () => {
@@ -118,13 +122,14 @@ export function useLiveObjects(camera: RefObject<CameraView | null>, enabled: bo
       try {
         const frame = await grabFrame(camera.current);
         if (!frame) return;
+        if (frame.w !== latest.current[0]?.seg.width) return;
         const updated = latest.current
           .map((o) => {
-            const seg = segmentAt(frame.px, frame.w, frame.h, { x: o.seg.cx, y: o.seg.cy });
-            // Keep the old shape for a moment when it is briefly lost (motion blur), then let it go.
-            return seg ? { ...o, seg, lost: 0 } : { ...o, lost: o.lost + 1 };
+            const found = track(o.template, frame.px, frame.w, frame.h, o.pose);
+            // Stay in place for a moment when it is briefly lost (motion blur), then let it go.
+            return found ? { ...o, pose: found.pose, lost: 0 } : { ...o, lost: o.lost + 1 };
           })
-          .filter((o) => o.lost < 3);
+          .filter((o) => o.lost < 4);
         setObjects(updated);
       } catch {
         // Next round.
@@ -140,6 +145,7 @@ export function useLiveObjects(camera: RefObject<CameraView | null>, enabled: bo
     busy,
     tapAt,
     clear: () => setObjects([]),
+    remove: (id: number) => setObjects(latest.current.filter((o) => o.id !== id)),
     /** Stop grabbing stills while the real photo is taken. */
     pause: (on: boolean) => {
       paused.current = on;
@@ -148,9 +154,13 @@ export function useLiveObjects(camera: RefObject<CameraView | null>, enabled: bo
   };
 }
 
-function hitTest(seg: Segment, px: number, py: number, view: { width: number; height: number }) {
+/** Is the tap on this object, where it is now? (Undo the pose, then look in the original shape.) */
+function hitTest(o: LiveObject, px: number, py: number, view: { width: number; height: number }) {
+  const { seg, template: t, pose } = o;
   const p = previewToPhoto({ x: px / view.width, y: py / view.height }, view, { width: seg.width, height: seg.height });
-  const x = Math.round(p.x * (seg.width - 1));
-  const y = Math.round(p.y * (seg.height - 1));
-  return seg.mask[y * seg.width + x] === 1;
+  const fx = p.x * (seg.width - 1);
+  const fy = p.y * (seg.height - 1);
+  const x = Math.round(t.cx + (fx - t.cx - pose.dx) / pose.s);
+  const y = Math.round(t.cy + (fy - t.cy - pose.dy) / pose.s);
+  return x >= 0 && y >= 0 && x < seg.width && y < seg.height && seg.mask[y * seg.width + x] === 1;
 }

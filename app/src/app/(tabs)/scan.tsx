@@ -238,9 +238,9 @@ export default function Scan() {
         </View>
       )}
 
-      <ObjectLayer segments={live.objects.map((o) => o.seg)} view={view} />
+      <ObjectLayer items={live.objects} view={view} />
       {live.objects.map((o) => (
-        <ObjectName key={o.id} object={o} view={view} />
+        <ObjectName key={o.id} object={o} view={view} onRemove={() => live.remove(o.id)} />
       ))}
 
       {flash && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: "#ffffff88" }]} />}
@@ -358,17 +358,19 @@ function GlassButton({ label, onPress }: { label: string; onPress: () => void })
   );
 }
 
-/** The object's name, floating just above it (follows it as it is tracked). */
-function ObjectName({ object, view }: { object: LiveObject; view: { width: number; height: number } }) {
+/** The object's name, floating just above it (follows it). Tapping the name removes the object's area. */
+function ObjectName({ object, view, onRemove }: { object: LiveObject; view: { width: number; height: number }; onRemove: () => void }) {
   if (object.name === null) return null;
-  const box = objectBoxInView(object.seg, view);
+  const box = objectBoxInView(object, view);
   const cx = Math.min(Math.max(box.x + box.w / 2, 70), view.width - 70);
   const top = Math.max(box.y - 44, 90);
   return (
-    <View pointerEvents="none" style={[styles.nameWrap, { left: cx - 120, top }]}>
-      <Glass style={styles.namePill}>
-        {object.name === undefined ? <ActivityIndicator size="small" color="#BFE3FF" /> : <Text style={styles.nameText}>{object.name}</Text>}
-      </Glass>
+    <View pointerEvents="box-none" style={[styles.nameWrap, { left: cx - 120, top }]}>
+      <Pressable onPress={onRemove} hitSlop={10} accessibilityRole="button" accessibilityLabel={t("Remove %@", object.name ?? "")}>
+        <Glass style={styles.namePill}>
+          {object.name === undefined ? <ActivityIndicator size="small" color="#BFE3FF" /> : <Text style={styles.nameText}>{object.name}</Text>}
+        </Glass>
+      </Pressable>
     </View>
   );
 }

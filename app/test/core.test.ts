@@ -248,3 +248,59 @@ test("the layer shape is one calm area with only a few corners", async () => {
   const xs = shape.map((p) => p.x);
   assert.ok(Math.min(...xs) <= 21 && Math.max(...xs) >= 79, "still covers the whole width");
 });
+
+// --- Tracking a tapped object with a fixed shape ---
+import { makeTemplate, restPose, track } from "../src/core/track.ts";
+
+/** A textured object (stripes) on a noisy background, moved by (ox, oy) and scaled by k, with brighter light. */
+function scene(ox: number, oy: number, k = 1, light = 0) {
+  const w = 144, h = 192;
+  const px = new Uint8Array(w * h * 4);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      // Object space coordinates (inverse of the move and scale around 72, 96).
+      const u = (x - 72 - ox) / k + 72;
+      const v = (y - 96 - oy) / k + 96;
+      const inside = u >= 50 && u < 95 && v >= 70 && v < 125;
+      const noise = (x * 31 + y * 17) % 23;
+      const val = inside ? (Math.floor(u / 5) % 2 ? 170 : 90) + ((Math.floor(v / 7) % 2) * 30) : 200 + noise;
+      const c = Math.min(255, val + light);
+      px[i] = inside ? Math.min(255, 40 + light) : c;
+      px[i + 1] = inside ? c : c;
+      px[i + 2] = inside ? Math.min(255, 220 + light) : c;
+      px[i + 3] = 255;
+    }
+  }
+  return { px, w, h };
+}
+
+test("the tracker finds the moved object again and keeps its shape, even in brighter light", () => {
+  const a = scene(0, 0);
+  const seg = segmentAt(a.px, a.w, a.h, { x: 72 / 143, y: 97 / 191 }, { tolerance: 400, edge: 200, maxShare: 0.3 })!;
+  assert.ok(seg, "object found at the tap");
+  const template = makeTemplate(a.px, seg);
+  const b = scene(9, -6, 1, 25);
+  const moved = track(template, b.px, b.w, b.h, restPose)!;
+  assert.ok(moved, "found again");
+  assert.ok(Math.abs(moved.pose.dx - 9) <= 1 && Math.abs(moved.pose.dy + 6) <= 1, `moved by ${moved.pose.dx}, ${moved.pose.dy}`);
+  assert.ok(Math.abs(moved.pose.s - 1) < 0.06);
+});
+
+test("the tracker follows the object when you come closer (larger)", () => {
+  const a = scene(0, 0);
+  const seg = segmentAt(a.px, a.w, a.h, { x: 72 / 143, y: 97 / 191 }, { tolerance: 400, edge: 200, maxShare: 0.3 })!;
+  const template = makeTemplate(a.px, seg);
+  const c = scene(4, 3, 1.15);
+  const r = track(template, c.px, c.w, c.h, restPose)!;
+  assert.ok(r, "found again");
+  assert.ok(r.pose.s > 1.06 && r.pose.s < 1.22, `scale ${r.pose.s}`);
+});
+
+test("when the object is gone, the tracker says so instead of jumping", () => {
+  const a = scene(0, 0);
+  const seg = segmentAt(a.px, a.w, a.h, { x: 72 / 143, y: 97 / 191 }, { tolerance: 400, edge: 200, maxShare: 0.3 })!;
+  const template = makeTemplate(a.px, seg);
+  const empty = { w: 144, h: 192, px: new Uint8Array(144 * 192 * 4).fill(210) };
+  assert.equal(track(template, empty.px, empty.w, empty.h, restPose), null);
+});
