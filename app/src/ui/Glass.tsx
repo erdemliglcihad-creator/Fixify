@@ -97,7 +97,7 @@ export function GlassGroup({ children, style, spacing = 8 }: { children: ReactNo
   return <View style={style}>{children}</View>;
 }
 
-/** Kept for old call sites: the global Aurora (ui/Aurora) now glows behind every screen. */
+/** Kept for old call sites; screens sit on the plain background. */
 export function Backdrop() {
   return null;
 }

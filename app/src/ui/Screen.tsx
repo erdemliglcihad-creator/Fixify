@@ -1,8 +1,5 @@
-import { useFocusEffect } from "expo-router";
-import { useCallback, type ReactNode } from "react";
-import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
-import Animated, { useAnimatedScrollHandler, useSharedValue, withTiming } from "react-native-reanimated";
-import { parallaxY } from "../services/parallax.ts";
+import type { ReactNode } from "react";
+import { ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollEdge } from "./Glass.tsx";
 import { RevealWords } from "./reveal.tsx";
@@ -26,22 +23,9 @@ export function Screen({
   const { c, dark } = useTheme();
   const insets = useSafeAreaInsets();
   const bottom = useTabBarSpace();
-  const offset = useSharedValue(0);
-  const onScroll = useAnimatedScrollHandler((e) => {
-    offset.value = e.contentOffset.y;
-    parallaxY.value = e.contentOffset.y;
-  });
-  // Coming back to this tab: the backdrop picks up this screen's own scroll position.
-  useFocusEffect(
-    useCallback(() => {
-      parallaxY.value = withTiming(offset.value, { duration: 300 });
-    }, []),
-  );
   return (
     <View style={styles.root}>
-      <Animated.ScrollView
-        onScroll={onScroll}
-        scrollEventThrottle={16}
+      <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={[{ paddingTop: insets.top + space.l, paddingBottom: bottom, paddingHorizontal: space.l, gap: space.xl }, contentStyle]}
       >
@@ -54,7 +38,7 @@ export function Screen({
           </View>
         ) : null}
         {children}
-      </Animated.ScrollView>
+      </ScrollView>
       <ScrollEdge />
     </View>
   );
