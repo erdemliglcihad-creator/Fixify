@@ -254,30 +254,3 @@ test("The user's profile goes into the system prompt only when given", async () 
   const without = buildChatMessages({ locale: "de", mode: "voice", messages: [{ role: "user", text: "Hilfe" }] });
   assert.doesNotMatch(without.messages[0].content, /About the user/);
 });
-
-test("Tap to identify: prompt names the rings, reply is validated and limited to the tapped spots", async () => {
-  const { identifyPrompt, identifyObjects } = await import("../src/identify.mjs");
-  const req = { locale: "de", image: { mediaType: "image/jpeg", data: "AAAA" }, points: [{ x: 0.4, y: 0.6 }, { x: 0.7, y: 0.2 }] };
-  const prompt = identifyPrompt(req);
-  assert.match(prompt, /1: the red ring at x=0\.40, y=0\.60/);
-  assert.match(prompt, /2: the green ring/);
-  assert.match(prompt, /German/);
-  const reply = { objects: [{ point: 1, name: "Turbolader", description: "Verdichtet Luft.", parts: ["Verdichtergehäuse", "Wastegate"] }, { point: 3, name: "Zu viel" }] };
-  const out = await identifyObjects(req, {
-    baseUrl: "https://ai.test/v1",
-    apiKey: "k",
-    models: ["vision"],
-    fetchImpl: async () => new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify(reply) } }], model: "vision" }), { status: 200 }),
-  });
-  assert.equal(out.objects.length, 1);
-  assert.equal(out.objects[0].name, "Turbolader");
-  assert.deepEqual(out.objects[0].parts, ["Verdichtergehäuse", "Wastegate"]);
-});
-
-test("Live naming returns just a short name, or null when unclear", async () => {
-  const { nameObject } = await import("../src/identify.mjs");
-  const reply = (text) => async () => new Response(JSON.stringify({ choices: [{ message: { content: text } }], model: "vision" }), { status: 200 });
-  const req = { locale: "de", image: { mediaType: "image/jpeg", data: "AAAA" } };
-  assert.equal((await nameObject(req, { baseUrl: "https://ai.test/v1", apiKey: "k", models: ["v"], fetchImpl: reply('"Monitor."\nmore') })).name, "Monitor");
-  assert.equal((await nameObject(req, { baseUrl: "https://ai.test/v1", apiKey: "k", models: ["v"], fetchImpl: reply("?") })).name, null);
-});

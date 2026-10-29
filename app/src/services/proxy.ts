@@ -201,17 +201,6 @@ export async function transcribe(base: string, token: string, input: { locale: "
   return typeof body?.text === "string" ? body.text.trim() : "";
 }
 
-/** Just the name of the object in a small crop, for the live label in the camera (null when unclear). */
-export async function nameObject(base: string, token: string, input: { locale: "de" | "en"; image: string }, signal?: AbortSignal): Promise<string | null> {
-  const body = await request(base, token, "/v1/name", {
-    method: "POST",
-    signal,
-    timeoutMs: 20_000,
-    body: JSON.stringify({ locale: input.locale, image: { mediaType: "image/jpeg", data: input.image } }),
-  });
-  return typeof body?.name === "string" && body.name.trim() ? body.name.trim() : null;
-}
-
 /** Server voice (Fish Audio). Resolves with MP3 bytes, or null when the server has no voice set up. */
 export async function serverSpeech(base: string, token: string, input: { locale: "de" | "en"; gender: "female" | "male"; text: string }, signal?: AbortSignal) {
   const res = await fetch(`${base}/v1/tts`, {

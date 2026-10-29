@@ -9,9 +9,6 @@ import * as VideoThumbnails from "expo-video-thumbnails";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { useLiveObjects } from "../../services/liveObjects";
-import { objectBoxInView, ObjectLayer } from "../../ui/ObjectLayer";
-import type { LiveObject } from "../../services/liveObjects";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { t } from "../../i18n/index.ts";
 import { addCaptures, draftStore, MAX_CAPTURES, removeCapture, useDraft } from "../../services/draft.ts";
@@ -41,14 +38,9 @@ export default function Scan() {
   const [permission, requestPermission] = useCameraPermissions();
   const camera = useRef<CameraView>(null);
   const [mode, setMode] = useState<Mode>("photo");
-  // Tap to identify: tapped objects are cut out and covered by a blue layer that follows them.
-  const [view, setView] = useState({ width: 1, height: 1 });
   const [state, setState] = useState<CamState>("starting");
-  const live = useLiveObjects(camera, focused && state === "ready" && mode === "photo", view);
-  useEffect(() => {
-    if (mode !== "photo") live.clear();
-  }, [mode]);
   const [torch, setTorch] = useState(false);
+  const [facing, setFacing] = useState<"back" | "front">("back");
   // Pinch to zoom: 0 = widest, 1 = the device's maximum. Small steps feel natural for the finger.
   const [zoom, setZoom] = useState(0);
   const zoomStart = useRef(0);
@@ -60,22 +52,13 @@ export default function Scan() {
     .onUpdate((e) => {
       setZoom(Math.min(Math.max(zoomStart.current + (e.scale - 1) * 0.18, 0), 1));
     });
-  const tap = Gesture.Tap()
-    .runOnJS(true)
-    .maxDistance(12)
-    .onEnd((e) => toggleObject(e.x, e.y));
-  const cameraGestures = Gesture.Simultaneous(pinch, tap);
 
-  /** Tap an object to cut it out and cover it (up to three); tap it again to remove it. */
-  async function toggleObject(px: number, py: number) {
-    if (mode !== "photo" || state !== "ready") return;
-    // Only taps into the picture itself, not near the buttons at the top and bottom.
-    if (py < insets.top + 80 || py > view.height - insets.bottom - 230) return;
-    const changed = await live.tapAt(px, py);
-    if (Platform.OS !== "web") {
-      if (changed) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      else Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-    }
+  /** Back ↔ front camera. The light only exists on the back, so it switches off. */
+  function flip() {
+    setTorch(false);
+    setZoom(0);
+    setFacing((f) => (f === "back" ? "front" : "back"));
+    if (Platform.OS !== "web") Haptics.selectionAsync();
   }
   const [flash, setFlash] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -121,21 +104,13 @@ export default function Scan() {
     setState("capturing");
     setFlash(true);
     try {
-      // The live layer grabs small stills to follow objects; let it finish before the real photo.
-      live.pause(true);
-      for (let i = 0; i < 30 && live.isWorking(); i++) await new Promise((r) => setTimeout(r, 50));
       const pic = await camera.current.takePictureAsync({ quality: 0.9, shutterSound: false });
       const capture: Capture = { id: Crypto.randomUUID(), uri: pic.uri, width: pic.width, height: pic.height, source: "camera" };
-      // Named objects go along as a note, so the Fix analysis knows what was marked.
-      const names = live.objects.map((o) => o.name).filter((n): n is string => Boolean(n));
-      if (names.length) draftStore.set((d) => ({ ...d, note: t("Marked in the photo: %@", names.join(", ")) }));
-      live.clear();
       add([capture]);
     } catch {
       setError(t("The photo could not be taken. Try again."));
     } finally {
       setFlash(false);
-      live.pause(false);
       setState("ready");
     }
   }
@@ -199,13 +174,13 @@ export default function Scan() {
 
 
   return (
-    <View style={styles.root} onLayout={(e) => setView({ width: e.nativeEvent.layout.width, height: e.nativeEvent.layout.height })}>
+    <View style={styles.root}>
       {focused && permission?.granted ? (
-        <GestureDetector gesture={cameraGestures}>
+        <GestureDetector gesture={pinch}>
         <CameraView
           ref={camera}
           style={StyleSheet.absoluteFill}
-          facing="back"
+          facing={facing}
           mode={mode === "video" ? "video" : "picture"}
           mute
           enableTorch={torch}
@@ -238,10 +213,6 @@ export default function Scan() {
         </View>
       )}
 
-      <ObjectLayer items={live.objects} view={view} />
-      {live.objects.map((o) => (
-        <ObjectName key={o.id} object={o} view={view} onRemove={() => live.remove(o.id)} />
-      ))}
 
       {flash && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: "#ffffff88" }]} />}
 
@@ -257,7 +228,12 @@ export default function Scan() {
           ) : (
             <View />
           )}
-          <RoundButton icon={torch ? "flashlight" : "flashlight-outline"} label={torch ? t("Turn light off") : t("Turn light on")} onPress={() => setTorch((v) => !v)} />
+          <View style={styles.topRight}>
+            <RoundButton icon="camera-reverse-outline" label={facing === "back" ? t("Switch to front camera") : t("Switch to back camera")} onPress={flip} />
+            {facing === "back" && (
+              <RoundButton icon={torch ? "flashlight" : "flashlight-outline"} label={torch ? t("Turn light off") : t("Turn light on")} onPress={() => setTorch((v) => !v)} />
+            )}
+          </View>
         </View>
 
         {zoom > 0.01 && (
@@ -358,27 +334,8 @@ function GlassButton({ label, onPress }: { label: string; onPress: () => void })
   );
 }
 
-/** The object's name, floating just above it (follows it). Tapping the name removes the object's area. */
-function ObjectName({ object, view, onRemove }: { object: LiveObject; view: { width: number; height: number }; onRemove: () => void }) {
-  if (object.name === null) return null;
-  const box = objectBoxInView(object, view);
-  const cx = Math.min(Math.max(box.x + box.w / 2, 70), view.width - 70);
-  const top = Math.max(box.y - 44, 90);
-  return (
-    <View pointerEvents="box-none" style={[styles.nameWrap, { left: cx - 120, top }]}>
-      <Pressable onPress={onRemove} hitSlop={10} accessibilityRole="button" accessibilityLabel={t("Remove %@", object.name ?? "")}>
-        <Glass style={styles.namePill}>
-          {object.name === undefined ? <ActivityIndicator size="small" color="#BFE3FF" /> : <Text style={styles.nameText}>{object.name}</Text>}
-        </Glass>
-      </Pressable>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  nameWrap: { position: "absolute", width: 240, alignItems: "center" },
-  namePill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 999, borderWidth: 1, borderColor: "#5BB0FF99", boxShadow: "0 0 18px #3B9BFF88" },
-  nameText: { color: "#fff", fontFamily: font.semibold, fontSize: 14, letterSpacing: 0.2 },
+  topRight: { flexDirection: "row", gap: space.s },
   zoomPill: { alignSelf: "center", marginTop: space.s },
   zoomInner: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 14, paddingVertical: 7, borderRadius: 999 },
   root: { flex: 1, backgroundColor: "#000" },
