@@ -80,7 +80,8 @@ export function Segmented<T extends string>({ value, options, onChange }: { valu
             pointerEvents="none"
             style={[
               styles.segmentPill,
-              { width: slot, backgroundColor: dark ? "#FFFFFF24" : "#FFFFFFF2", boxShadow: dark ? undefined : "0 1px 6px rgba(16, 24, 48, 0.12)" },
+              // The chosen option sits on solid action blue.
+              { width: slot, backgroundColor: c.accent, boxShadow: `0 4px 14px ${c.accent}66` },
               pill,
             ]}
           />
@@ -94,7 +95,7 @@ export function Segmented<T extends string>({ value, options, onChange }: { valu
               if (value !== v && Platform.OS !== "web") Haptics.selectionAsync();
               onChange(v);
             }}
-            color={value === v ? c.text : c.secondary}
+            color={value === v ? "#FFFFFF" : c.secondary}
           />
         ))}
       </View>
@@ -125,6 +126,35 @@ function SegmentLabel({ label, on, onPress, color }: { label: string; on: boolea
         {label}
       </Animated.Text>
     </Pressable>
+  );
+}
+
+/** Round icon button like a polished dark disc: soft gradient, bright rim on top, white symbol. */
+export function IconCircle({ icon, size = 44, color, active }: { icon: IconName; size?: number; color?: string; active?: boolean }) {
+  const { c, dark } = useTheme();
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        overflow: "hidden",
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth: 1,
+        borderColor: active ? `${c.accent}AA` : dark ? "#FFFFFF26" : "#0000000F",
+        boxShadow: active ? `0 6px 18px ${c.accent}66` : dark ? "0 6px 16px rgba(0, 0, 0, 0.55)" : "0 3px 10px rgba(16, 24, 48, 0.12)",
+      }}
+    >
+      <LinearGradient
+        colors={active ? [c.accent, "#1B47C8"] : dark ? ["#2A2F3B", "#0C0E14"] : ["#FFFFFF", "#E6EAF2"]}
+        start={{ x: 0.2, y: 0 }}
+        end={{ x: 0.8, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <LinearGradient pointerEvents="none" colors={["#FFFFFF2E", "#FFFFFF00"]} end={{ x: 0.5, y: 0.5 }} style={StyleSheet.absoluteFill} />
+      <Ionicons name={icon} size={size * 0.44} color={color ?? (active || dark ? "#FFFFFF" : c.text)} />
+    </View>
   );
 }
 
@@ -238,12 +268,14 @@ export function Button({ title, onPress, icon, kind = "primary", disabled, loadi
       // Feedback on touch-down, not on release.
       style={({ pressed }) => [{ opacity: disabled ? 0.45 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] }, style]}
     >
-      {glass ? (
-        <Glass
-          interactive
-          tint={kind === "primary" ? c.accent : undefined}
-          style={[inner, { borderRadius: radius.control }, kind === "primary" && { boxShadow: `0 8px 26px ${c.accent}55` }]}
-        >
+      {kind === "primary" ? (
+        // Actions are solid, saturated blue with a light top edge (hard contrast, no glass).
+        <View style={[inner, styles.primary, { backgroundColor: c.accent, boxShadow: `0 10px 28px ${c.accent}66` }]}>
+          <LinearGradient pointerEvents="none" colors={["#FFFFFF33", "#FFFFFF00"]} end={{ x: 0.5, y: 0.6 }} style={StyleSheet.absoluteFill} />
+          {label}
+        </View>
+      ) : glass ? (
+        <Glass interactive style={[inner, { borderRadius: radius.control }]}>
           {label}
         </Glass>
       ) : (
@@ -257,7 +289,7 @@ export function InfoRow({ icon, title, detail }: { icon: IconName; title: string
   const { c } = useTheme();
   return (
     <View style={[styles.row, { alignItems: "flex-start" }]} accessible>
-      <Ionicons name={icon} size={20} color={c.accent} style={{ width: 24, marginTop: 1 }} />
+      <IconCircle icon={icon} size={38} />
       <View style={{ flex: 1, gap: 2 }}>
         <Body>{title}</Body>
         {detail ? <Caption>{detail}</Caption> : null}
@@ -292,6 +324,7 @@ export function Divider() {
 }
 
 const styles = StyleSheet.create({
+  primary: { borderRadius: 999, overflow: "hidden" },
   glassCard: { borderRadius: radius.card, padding: space.l, gap: space.m, borderCurve: "continuous" },
   glassGlow: { borderRadius: radius.card, borderCurve: "continuous" },
   rim: { position: "absolute", top: 0, left: 24, right: 24, height: StyleSheet.hairlineWidth * 2 },

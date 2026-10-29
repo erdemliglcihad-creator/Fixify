@@ -10,7 +10,7 @@ const light = {
   hairline: "#DCE3EE",
   text: "#070B14",
   secondary: "#5A6478",
-  accent: "#1E5BFF",
+  accent: "#2459F5",
   accentSoft: "#E4ECFF",
   onAccent: "#FFFFFF",
   marker: "#F5A300",
@@ -21,15 +21,16 @@ const light = {
 };
 
 const dark: typeof light = {
-  background: "#020409",
-  surface: "#0A0F1A",
-  raised: "#111827",
-  hairline: "#FFFFFF14",
-  // More contrast: pure white headlines, quieter secondary text.
+  // Hard contrast: near-black ground, graphite surfaces with a visible edge, pure white text,
+  // and one saturated blue for everything you can act on.
+  background: "#010204",
+  surface: "#0D1017",
+  raised: "#171B24",
+  hairline: "#FFFFFF1C",
   text: "#FFFFFF",
-  secondary: "#7D879B",
-  accent: "#5B9BFF",
-  accentSoft: "#0D1A33",
+  secondary: "#8A92A4",
+  accent: "#2F6BFF",
+  accentSoft: "#0B1838",
   onAccent: "#FFFFFF",
   marker: "#FFB61E",
   success: "#3DD68C",
@@ -40,7 +41,7 @@ const dark: typeof light = {
 
 /** Areas share one blue glow now; the type stays so screens can still mark where they are. */
 export type Area = "home" | "fixbot" | "library" | "settings" | "session";
-const BLUE = { glow: ["#1E5BFF", "#0B2A6B", "#5AA8FF"] as [string, string, string], accent: "#5B9BFF" };
+const BLUE = { glow: ["#1E5BFF", "#0B2A6B", "#5AA8FF"] as [string, string, string], accent: "#2F6BFF" };
 export const areaColors: Record<Area, { glow: [string, string, string]; accent: string }> = {
   home: BLUE,
   fixbot: BLUE,

@@ -9,7 +9,7 @@ import { cancelAllReminders } from "../../services/reminders.ts";
 import { deleteEverything, deletePhotos, useSessions } from "../../services/sessions.ts";
 import { updateSettings, useSettings, type Appearance, type VoiceGender } from "../../services/settings.ts";
 import { isOpen } from "../../core/session.ts";
-import { Caption, Divider, GlassCard, Segmented } from "../../ui/components.tsx";
+import { Caption, Divider, GlassCard, IconCircle, Segmented } from "../../ui/components.tsx";
 import { confirmDestructive } from "../../ui/confirm.ts";
 import type { IconName } from "../../ui/categories.ts";
 import { radius, space, type, useTheme, font } from "../../ui/theme.ts";
@@ -31,7 +31,7 @@ function Link({ icon, title, onPress, danger }: { icon: IconName; title: string;
   const { c } = useTheme();
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.row, { opacity: pressed ? 0.6 : 1 }]} accessibilityRole="button">
-      <Ionicons name={icon} size={20} color={danger ? c.danger : c.accent} />
+      <IconCircle icon={icon} size={36} color={danger ? c.danger : undefined} />
       <Text style={[type.body, { color: danger ? c.danger : c.text, flex: 1 }]}>{title}</Text>
       {!danger && <Ionicons name="chevron-forward" size={16} color={c.secondary} />}
     </Pressable>

@@ -9,7 +9,7 @@ import { useSessions } from "../../services/sessions.ts";
 import { firstName } from "../../core/profile.ts";
 import { isServerConfigured, useSettings } from "../../services/settings.ts";
 import { useQuota } from "../../services/usage.ts";
-import { Caption, Divider, GlassCard, LightCatch } from "../../ui/components.tsx";
+import { Caption, Divider, GlassCard, IconCircle, LightCatch } from "../../ui/components.tsx";
 import { Glass } from "../../ui/Glass.tsx";
 import { PressScale } from "../../ui/motion.tsx";
 import { FlowingGradientText, Reveal, RevealWords } from "../../ui/reveal.tsx";
@@ -66,7 +66,8 @@ export default function Home() {
         <GlassCard style={styles.hero}>
           <LinearGradient pointerEvents="none" colors={["#1E5BFF00", "#1E5BFF26"]} start={{ x: 0, y: 0.2 }} end={{ x: 0.6, y: 1 }} style={StyleSheet.absoluteFill} />
           <View style={{ gap: space.m }}>
-            <Text style={[type.eyebrow, { color: c.accent, fontSize: 13, letterSpacing: 1.2 }]}>LIVE FIX</Text>
+            <IconCircle icon="scan-outline" size={52} />
+            <Text style={[type.eyebrow, { color: dark ? "#7DA6FF" : c.accent, fontSize: 13, letterSpacing: 1.2, marginTop: space.s }]}>LIVE FIX</Text>
             <Text style={[type.title, { color: c.text }]}>{t("Show it. Fix it.")}</Text>
             <Text style={[type.body, { color: c.secondary, fontSize: 15, lineHeight: 22 }]}>
               {t("Show the problem. Fixify marks what matters and guides you step by step until you have checked that it works.")}
@@ -75,16 +76,16 @@ export default function Home() {
           <View style={{ flexDirection: "row", gap: space.s }}>
             <PressScale style={{ flex: 1 }} haptic="medium" onPress={() => startScan()}>
               <RainbowBorder radius={26} width={1.25} glow={0.25} intensity={0.55}>
-                <View style={[styles.primary, { backgroundColor: c.text, boxShadow: dark ? "0 8px 28px rgba(255, 255, 255, 0.16)" : "0 8px 22px rgba(7, 11, 20, 0.22)" }]}>
-                  <Ionicons name="scan-outline" size={18} color={c.background} />
-                  <Text style={[type.headline, { color: c.background }]}>{t("Open camera")}</Text>
+                {/* The action: solid saturated blue. */}
+                <View style={[styles.primary, { backgroundColor: c.accent, boxShadow: `0 10px 28px ${c.accent}66`, overflow: "hidden" }]}>
+                  <LinearGradient pointerEvents="none" colors={["#FFFFFF33", "#FFFFFF00"]} end={{ x: 0.5, y: 0.6 }} style={StyleSheet.absoluteFill} />
+                  <Ionicons name="scan-outline" size={18} color="#FFFFFF" />
+                  <Text style={[type.headline, { color: "#FFFFFF" }]}>{t("Open camera")}</Text>
                 </View>
               </RainbowBorder>
             </PressScale>
             <PressScale onPress={() => startScan({ library: true })} accessibilityHint={t("Pick a photo or screenshot of the problem")}>
-              <Glass style={styles.secondary}>
-                <Ionicons name="images-outline" size={18} color={c.text} />
-              </Glass>
+              <IconCircle icon="images-outline" size={52} />
             </PressScale>
           </View>
         </GlassCard>
@@ -94,9 +95,7 @@ export default function Home() {
         <PressScale onPress={() => router.navigate("/fixvoice")}>
           <Glass interactive style={[styles.row, { boxShadow: dark ? GLOW_ROW_DARK : GLOW_ROW_LIGHT }]}>
             <LightCatch dark={dark} />
-            <View style={[styles.rowIcon, { borderColor: c.hairline, boxShadow: `0 0 18px ${c.accent}33` }]}>
-              <Ionicons name="mic-outline" size={20} color={c.accent} />
-            </View>
+            <IconCircle icon="mic-outline" size={46} />
             <View style={{ flex: 1, gap: 2 }}>
               <Text style={[type.headline, { color: c.text }]}>{t("Talk to FixVoice")}</Text>
               <Caption style={{ fontSize: 13 }}>{t("Hands-free, by voice")}</Caption>

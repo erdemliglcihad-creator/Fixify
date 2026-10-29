@@ -9,7 +9,7 @@ import Animated, { FadeInRight, useAnimatedStyle, withSpring } from "react-nativ
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DEVICES, emptyProfile, HELP, SOURCES, TOPICS, WHY, type Profile } from "../core/profile.ts";
 import { t } from "../i18n/index.ts";
-import { Button, LightCatch } from "./components.tsx";
+import { Button, IconCircle, LightCatch } from "./components.tsx";
 import { PressScale } from "./motion.tsx";
 import { RevealWords } from "./reveal.tsx";
 import { font, space, textGlow, type, useTheme } from "./theme.ts";
@@ -214,9 +214,7 @@ function Choice({ option, on, multi, onPress }: { option: Option; on: boolean; m
         ]}
       >
         <LightCatch dark={dark} />
-        <View style={[styles.choiceIcon, { backgroundColor: on ? c.accent : c.raised }]}>
-          <Ionicons name={option.icon} size={20} color={on ? "#fff" : c.text} />
-        </View>
+        <IconCircle icon={option.icon} size={44} active={on} />
         <Text style={{ color: c.text, fontSize: 15, fontFamily: on ? font.semibold : font.medium, flex: 1 }} numberOfLines={2}>
           {option.label()}
         </Text>
