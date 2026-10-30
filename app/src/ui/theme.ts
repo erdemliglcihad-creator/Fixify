@@ -1,8 +1,8 @@
 import { Platform, useColorScheme } from "react-native";
 import { useSettings } from "../services/settings.ts";
 
-// One red color world (Station palette: #CA0808, #120404, #270A0A, white, black), on black (dark) or
-// light gray (light). The amber marker stays because it reads on arbitrary camera images.
+// One blue color world (Deep Nebula palette: #000008, #080523, #010094, #261598, #7548D2), on night black
+// (dark) or light gray (light). The amber marker stays because it reads on arbitrary camera images.
 const shared = {
   onAccent: "#FFFFFF",
   marker: "#F5A300",
@@ -11,24 +11,24 @@ const shared = {
   danger: "#C62828",
 };
 
-const light = { ...shared, background: "#ECECEE", surface: "#FFFFFF", raised: "#FFFFFF", hairline: "#DCDCE0", text: "#120404", secondary: "#6B5555", accent: "#CA0808", accentSoft: "#FBE3E3", hero: "#CA0808" };
+const light = { ...shared, background: "#ECECEE", surface: "#FFFFFF", raised: "#FFFFFF", hairline: "#DCDCE0", text: "#080523", secondary: "#5D5A78", accent: "#261598", accentSoft: "#E6E3FA", hero: "#010094" };
 
-// Hard contrast: black ground, deep red surfaces, pure white text, one saturated red to act on.
+// Hard contrast: night black ground, deep blue surfaces, pure white text, violet to act on (bright enough on black).
 const dark: typeof light = {
   ...shared,
-  background: "#000000",
-  surface: "#120404",
-  raised: "#270A0A",
+  background: "#000008",
+  surface: "#080523",
+  raised: "#120C3A",
   hairline: "#FFFFFF1F",
   text: "#FFFFFF",
-  secondary: "#B8A4A4",
-  accent: "#CA0808",
-  accentSoft: "#270A0A",
+  secondary: "#A6A3C2",
+  accent: "#7548D2",
+  accentSoft: "#120C3A",
   marker: "#FFB61E",
   success: "#34E89A",
   caution: "#FFB23E",
   danger: "#FF5A4F",
-  hero: "#CA0808",
+  hero: "#261598",
 };
 
 export type Palette = typeof light;
@@ -36,17 +36,17 @@ export type Palette = typeof light;
 /** Everything colored that is not a plain surface or text: glows, lights, the moving edge. */
 export const brand = {
   /** FixVoice orb and wave: main, depth, highlight. */
-  orb: ["#CA0808", "#270A0A", "#FF6A5A"] as [string, string, string],
+  orb: ["#261598", "#080523", "#9C7BFF"] as [string, string, string],
   /** The two drifting lights of the backdrop. */
-  lights: ["#CA0808", "#FF5A4F"] as [string, string],
+  lights: ["#010094", "#7548D2"] as [string, string],
   /** The moving rainbow edge (first and last equal). */
-  rainbow: ["#CA0808", "#FF3B2F", "#FF8A7A", "#FFE3DE", "#FFFFFF", "#FF5A4F", "#7A0505", "#E01414", "#CA0808"],
+  rainbow: ["#261598", "#3D2BD8", "#7548D2", "#C9B8FF", "#FFFFFF", "#9C7BFF", "#010094", "#2E1FB0", "#261598"],
   /** Deep end of the accent gradient on round buttons. */
-  accentDeep: "#7A0505",
+  accentDeep: "#150A66",
   /** "r, g, b" of the glow under glass cards. */
-  glowRgb: "202, 8, 8",
+  glowRgb: "117, 72, 210",
   /** Bright mark (e.g. the streak line). */
-  mark: "#FF3B2F",
+  mark: "#9C7BFF",
 };
 
 /** Areas share one glow; the type stays so screens can still mark where they are. */
