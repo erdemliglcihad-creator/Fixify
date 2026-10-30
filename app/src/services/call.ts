@@ -16,7 +16,12 @@ export type CallPhase = "idle" | "connecting" | "listening" | "transcribing" | "
  * first 1.2 s and then only counts a voice clearly above it, so the answer is not cut off by itself.
  */
 const BARGE_IN = { margin: 8, minSpeechMs: 450, noSpeechMs: 120_000, echo: true, calibrateMs: 1200 };
-/** Quiet turns in a row before the call hangs up by itself. */
+/**
+ * Your turn, tuned to not be annoying: FixVoice waits 1.5 s of quiet before it answers (short thinking pauses
+ * don't cut you off), and only a voice of a third of a second or more counts, so clicks and taps don't start a turn.
+ */
+const TURN = { margin: 12, minSpeechMs: 320, silenceMs: 1500, noSpeechMs: 30_000 };
+/** Quiet turns in a row before the call hangs up by itself (about a minute of silence). */
 const MAX_SILENT_TURNS = 2;
 
 const tick = () => {
@@ -29,9 +34,11 @@ export function useCall() {
   const [reply, setReply] = useState("");
   const [spokenTo, setSpokenTo] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [muted, setMuted] = useState(false);
   const speechLevel = useSharedValue(0);
 
   const active = useRef(false);
+  const mutedRef = useRef(false);
   const mode = useRef<"turn" | "barge">("turn");
   const bargedIn = useRef(false);
   const ignoreNext = useRef(false);
@@ -73,8 +80,10 @@ export function useCall() {
   async function listen() {
     if (!active.current) return;
     mode.current = "turn";
+    // Muted: the call stays open, the microphone stays off until you turn it back on.
+    if (mutedRef.current) return go("listening");
     try {
-      await listener.start();
+      await listener.start(TURN);
       go("listening");
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -105,7 +114,7 @@ export function useCall() {
       // Listen for interruptions while speaking.
       mode.current = "barge";
       bargedIn.current = false;
-      await listener.start(BARGE_IN).catch(() => {});
+      if (!mutedRef.current) await listener.start(BARGE_IN).catch(() => {});
       await speak(answer.text, speechLevel, setSpokenTo);
       if (!active.current || bargedIn.current) return; // Interrupted: the running recording is the next turn.
       await stopListening();
@@ -129,6 +138,8 @@ export function useCall() {
     if (active.current) return;
     active.current = true;
     silentTurns.current = 0;
+    mutedRef.current = false;
+    setMuted(false);
     setError(null);
     setHeard("");
     setReply("");
@@ -147,6 +158,19 @@ export function useCall() {
     tick();
   }
 
+  /** Microphone off and on again during the call. While off, FixVoice can still finish its answer. */
+  async function toggleMute() {
+    if (!active.current) return;
+    mutedRef.current = !mutedRef.current;
+    setMuted(mutedRef.current);
+    tick();
+    if (mutedRef.current) {
+      if (phaseRef.current === "listening") await stopListening();
+    } else if (phaseRef.current === "listening") {
+      listen();
+    }
+  }
+
   /** Tap during the call: send now while listening, interrupt while speaking. */
   function tap() {
     if (phaseRef.current === "listening") listener.send();
@@ -163,5 +187,5 @@ export function useCall() {
     [],
   );
 
-  return { phase, heard, reply, spokenTo, error, level, inCall: phase !== "idle", startCall, endCall, tap };
+  return { phase, heard, reply, spokenTo, error, level, muted, inCall: phase !== "idle", startCall, endCall, tap, toggleMute };
 }
