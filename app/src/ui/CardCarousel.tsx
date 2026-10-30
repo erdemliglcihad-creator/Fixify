@@ -7,7 +7,7 @@ import { morphOpen } from "../services/morph.ts";
 import { PressScale } from "./motion.tsx";
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
 import type { IconName } from "./categories.ts";
-import { useSoft, type SoftTone } from "./soft.ts";
+import { SOFT, type SoftTone } from "./soft.ts";
 import { SoftSurface } from "./SoftSurface";
 import { font, space, useTheme } from "./theme.ts";
 
@@ -81,7 +81,6 @@ export function SoftCard({
   onLongPress?: () => void;
   accessibilityLabel?: string;
 }) {
-  const soft = useSoft();
   const ref = useRef<Measurable>(null);
   // Tap: the card grows into the next screen (services/morph), long press stays where it is.
   const open = () => {
@@ -99,7 +98,7 @@ export function SoftCard({
       style={{ flex: 1 }}
     >
       <View ref={ref as never} collapsable={false} style={{ flex: 1 }}>
-        <SoftSurface palette={soft[tone]} radius={CARD_RADIUS} style={styles.card}>
+        <SoftSurface palette={SOFT[tone]} radius={CARD_RADIUS} style={styles.card}>
           <Arcs />
           {(label || icon) && (
             <View style={styles.top}>

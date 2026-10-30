@@ -1,9 +1,8 @@
 import { Platform, useColorScheme } from "react-native";
-import { useSettings, type ColorTheme } from "../services/settings.ts";
+import { useSettings } from "../services/settings.ts";
 
-// Two color worlds to choose from in Settings, each from a reference palette:
-// red (Station: #CA0808, #120404, #270A0A) and blue (Deep Nebula: #000008, #080523, #010094, #261598, #7548D2).
-// Both on black (dark) or light gray (light). The amber marker stays: it reads on arbitrary camera images.
+// One red color world (Station palette: #CA0808, #120404, #270A0A, white, black), on black (dark) or
+// light gray (light). The amber marker stays because it reads on arbitrary camera images.
 const shared = {
   onAccent: "#FFFFFF",
   marker: "#F5A300",
@@ -11,67 +10,53 @@ const shared = {
   caution: "#B86E00",
   danger: "#C62828",
 };
-const sharedDark = { ...shared, hairline: "#FFFFFF1F", text: "#FFFFFF", marker: "#FFB61E", success: "#34E89A", caution: "#FFB23E", danger: "#FF5A4F" };
 
-const PALETTES = {
-  red: {
-    light: { ...shared, background: "#ECECEE", surface: "#FFFFFF", raised: "#FFFFFF", hairline: "#DCDCE0", text: "#120404", secondary: "#6B5555", accent: "#CA0808", accentSoft: "#FBE3E3", hero: "#CA0808" },
-    // Hard contrast: black ground, deep red surfaces, pure white text, one saturated red to act on.
-    dark: { ...sharedDark, background: "#000000", surface: "#120404", raised: "#270A0A", secondary: "#B8A4A4", accent: "#CA0808", accentSoft: "#270A0A", hero: "#CA0808" },
-  },
-  blue: {
-    light: { ...shared, background: "#ECECEE", surface: "#FFFFFF", raised: "#FFFFFF", hairline: "#DCDCE0", text: "#080523", secondary: "#5D5A78", accent: "#261598", accentSoft: "#E6E3FA", hero: "#010094" },
-    // Deep night blue ground, violet to act on (bright enough on black).
-    dark: { ...sharedDark, background: "#000008", surface: "#080523", raised: "#120C3A", secondary: "#A6A3C2", accent: "#7548D2", accentSoft: "#120C3A", hero: "#261598" },
-  },
+const light = { ...shared, background: "#ECECEE", surface: "#FFFFFF", raised: "#FFFFFF", hairline: "#DCDCE0", text: "#120404", secondary: "#6B5555", accent: "#CA0808", accentSoft: "#FBE3E3", hero: "#CA0808" };
+
+// Hard contrast: black ground, deep red surfaces, pure white text, one saturated red to act on.
+const dark: typeof light = {
+  ...shared,
+  background: "#000000",
+  surface: "#120404",
+  raised: "#270A0A",
+  hairline: "#FFFFFF1F",
+  text: "#FFFFFF",
+  secondary: "#B8A4A4",
+  accent: "#CA0808",
+  accentSoft: "#270A0A",
+  marker: "#FFB61E",
+  success: "#34E89A",
+  caution: "#FFB23E",
+  danger: "#FF5A4F",
+  hero: "#CA0808",
 };
 
-export type Palette = typeof PALETTES.red.dark;
+export type Palette = typeof light;
 
 /** Everything colored that is not a plain surface or text: glows, lights, the moving edge. */
-export type Brand = {
-  /** FixVoice orb: main, depth, highlight. */
-  orb: [string, string, string];
+export const brand = {
+  /** FixVoice orb and wave: main, depth, highlight. */
+  orb: ["#CA0808", "#270A0A", "#FF6A5A"] as [string, string, string],
   /** The two drifting lights of the backdrop. */
-  lights: [string, string];
+  lights: ["#CA0808", "#FF5A4F"] as [string, string],
   /** The moving rainbow edge (first and last equal). */
-  rainbow: string[];
+  rainbow: ["#CA0808", "#FF3B2F", "#FF8A7A", "#FFE3DE", "#FFFFFF", "#FF5A4F", "#7A0505", "#E01414", "#CA0808"],
   /** Deep end of the accent gradient on round buttons. */
-  accentDeep: string;
+  accentDeep: "#7A0505",
   /** "r, g, b" of the glow under glass cards. */
-  glowRgb: string;
+  glowRgb: "202, 8, 8",
   /** Bright mark (e.g. the streak line). */
-  mark: string;
-};
-
-export const BRANDS: Record<ColorTheme, Brand> = {
-  red: {
-    orb: ["#CA0808", "#270A0A", "#FF6A5A"],
-    lights: ["#CA0808", "#FF5A4F"],
-    rainbow: ["#CA0808", "#FF3B2F", "#FF8A7A", "#FFE3DE", "#FFFFFF", "#FF5A4F", "#7A0505", "#E01414", "#CA0808"],
-    accentDeep: "#7A0505",
-    glowRgb: "202, 8, 8",
-    mark: "#FF3B2F",
-  },
-  blue: {
-    orb: ["#261598", "#080523", "#9C7BFF"],
-    lights: ["#010094", "#7548D2"],
-    rainbow: ["#261598", "#3D2BD8", "#7548D2", "#C9B8FF", "#FFFFFF", "#9C7BFF", "#010094", "#2E1FB0", "#261598"],
-    accentDeep: "#150A66",
-    glowRgb: "117, 72, 210",
-    mark: "#9C7BFF",
-  },
+  mark: "#FF3B2F",
 };
 
 /** Areas share one glow; the type stays so screens can still mark where they are. */
 export type Area = "home" | "fixbot" | "library" | "settings" | "session";
 
-export function useTheme(): { c: Palette; dark: boolean; brand: Brand; theme: ColorTheme } {
+export function useTheme(): { c: Palette; dark: boolean; brand: typeof brand } {
   const system = useColorScheme();
-  const { appearance, colorTheme } = useSettings();
+  const { appearance } = useSettings();
   const isDark = appearance === "dark" || (appearance === "system" && system === "dark");
-  const theme = colorTheme ?? "red";
-  return { c: PALETTES[theme][isDark ? "dark" : "light"], dark: isDark, brand: BRANDS[theme], theme };
+  return { c: isDark ? dark : light, dark: isDark, brand };
 }
 
 /**

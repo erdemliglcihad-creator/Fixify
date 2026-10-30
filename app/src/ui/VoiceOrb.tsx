@@ -2,6 +2,7 @@
 // your microphone while listening, word pulses while FixVoice speaks, a slow breath while thinking.
 import { BlurMask, Canvas, Circle, Group, Path, RadialGradient, usePathValue, vec } from "@shopify/react-native-skia";
 import { useDerivedValue, useFrameCallback, useReducedMotion, useSharedValue, type SharedValue } from "react-native-reanimated";
+import { follow } from "./smooth.ts";
 
 export type OrbMode = "idle" | "listening" | "thinking" | "speaking";
 
@@ -15,8 +16,12 @@ export function VoiceOrb({ level, mode, size = 300, colors }: Props) {
   const thinking = useSharedValue(0);
   thinking.value = mode === "thinking" ? 1 : 0;
 
+  // Energy: a calm minimum so the orb always breathes a little, plus the live level, eased every frame
+  // (rising a bit faster than it settles) so the shape never twitches with uneven voice levels.
+  const voice = useSharedValue(0);
   useFrameCallback((frame) => {
     if (!reduceMotion) time.value = (frame.timeSinceFirstFrame ?? 0) / 1000;
+    voice.value = follow(voice.value, level.value, frame.timeSincePreviousFrame ?? 16, level.value > voice.value ? 140 : 380);
   });
 
   // The glow reaches past the orb, so the canvas gets extra room around it (negative margin keeps the layout).
@@ -25,8 +30,7 @@ export function VoiceOrb({ level, mode, size = 300, colors }: Props) {
   const full = size + pad * 2;
   const c = full / 2;
   const R = size * 0.27;
-  // Energy: a calm minimum so the orb always breathes a little, plus the live level.
-  const energy = useDerivedValue(() => 0.14 + level.value * 0.86 + thinking.value * 0.18 * (0.5 + 0.5 * Math.sin(time.value * 3)));
+  const energy = useDerivedValue(() => 0.14 + voice.value * 0.86 + thinking.value * 0.18 * (0.5 + 0.5 * Math.sin(time.value * 3)));
 
   const ring = (lobes: number, speed: number, phase: number, amp: number, scale: number) =>
     usePathValue((p) => {

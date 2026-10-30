@@ -6,7 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
-import Animated, { Easing, FadeIn, FadeOut, useAnimatedReaction, useAnimatedStyle, useSharedValue, withRepeat, withSpring, withTiming, ZoomIn, ZoomOut, type SharedValue } from "react-native-reanimated";
+import Animated, { Easing, FadeIn, FadeOut, useAnimatedStyle, useFrameCallback, useSharedValue, withRepeat, withTiming, ZoomIn, ZoomOut, type SharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { t } from "../../i18n/index.ts";
 import { useArea } from "../../services/area.ts";
@@ -19,6 +19,7 @@ import { GlassCard, IconCircle, Segmented } from "../../ui/components.tsx";
 import { PressScale } from "../../ui/motion.tsx";
 import { useTabBarSpace } from "../../ui/Screen.tsx";
 import { font, space, type, useTheme } from "../../ui/theme.ts";
+import { follow } from "../../ui/smooth.ts";
 import { VoiceWave } from "../../ui/VoiceWave";
 
 const STATUS: Record<CallPhase, () => string> = {
@@ -194,13 +195,12 @@ function TalkButton({ level, listening, onPress, label }: { level: SharedValue<n
 function VoiceGlow({ level, active }: { level: SharedValue<number>; active: boolean }) {
   const { c, brand } = useTheme();
   const energy = useSharedValue(0);
-  useAnimatedReaction(
-    () => (active ? level.value : 0),
-    (target) => {
-      energy.value = withSpring(target, { duration: 500, dampingRatio: 1 });
-    },
-    [active],
-  );
+  const on = useSharedValue(active ? 1 : 0);
+  on.value = active ? 1 : 0;
+  // Eased every frame instead of a new spring per voice value, so the light breathes without twitching.
+  useFrameCallback((f) => {
+    energy.value = follow(energy.value, on.value * level.value, f.timeSincePreviousFrame ?? 16, 260);
+  });
   const style = useAnimatedStyle(() => ({
     opacity: 0.85 + energy.value * 0.15,
     transform: [{ translateY: -energy.value * 40 }, { translateX: (energy.value - 0.3) * 24 }, { scaleY: 1 + energy.value * 0.25 }],

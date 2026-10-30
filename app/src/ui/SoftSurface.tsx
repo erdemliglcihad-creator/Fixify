@@ -1,6 +1,6 @@
-// A lit glass slab (Skia): dark at the top, colored light pooling inside from the bottom edge, a thin
-// light rim, a glow spilling out underneath, fine grain over everything, and an outline that dissolves
-// pixel by pixel into the background instead of cutting a clean line. Children sit above it.
+// A lit glass slab (Skia): dark at the top, colored light pooling inside from the bottom edge, a soft
+// milky white band along the rim, a glow spilling out underneath, grain over everything, and an outline
+// that fades out softly (with a hint of grain) instead of cutting a clean line. Children sit above it.
 import { BlurMask, Canvas, Circle, ColorMatrix, FractalNoise, Group, LinearGradient, RadialGradient, Rect, RoundedRect, Shader, Skia, rect, rrect, vec } from "@shopify/react-native-skia";
 import { useState, type ReactNode } from "react";
 import { View, type StyleProp, type ViewStyle } from "react-native";
@@ -9,8 +9,8 @@ import type { SoftPalette } from "./soft.ts";
 // Noise to neutral gray (alpha kept): grain over the whole card.
 const GRAY = [0.33, 0.33, 0.33, 0, 0, 0.33, 0.33, 0.33, 0, 0, 0.33, 0.33, 0.33, 0, 0, 0, 0, 0, 1, 0];
 
-// Edge mask: distance to the rounded rectangle, shaken by per-pixel noise, so the outline breaks up
-// into grains over `feather` points (dithered, never a smooth blur and never a straight line).
+// Edge mask: distance to the rounded rectangle, faded smoothly over `feather` points with a little noise
+// mixed in, so the outline is soft and slightly grainy, never a hard straight line.
 const EDGE = Skia.RuntimeEffect.Make(`
 uniform float2 origin;
 uniform float2 size;
@@ -28,9 +28,8 @@ float hash(float2 p) {
 
 half4 main(float2 xy) {
   float d = roundBox(xy - origin - size * 0.5, size * 0.5, radius);
-  // Coarse grains: one noise value per 2.5 point block, so the edge breaks up into visible specks.
-  float n = hash(floor(xy / 2.5)) - 0.5;
-  float a = 1.0 - smoothstep(-feather * 0.6, feather * 0.4, d + n * feather * 1.8);
+  float n = hash(floor(xy / 2.0)) - 0.5;
+  float a = 1.0 - smoothstep(-feather, feather * 0.5, d + n * feather * 0.5);
   return half4(a);
 }
 `)!;
@@ -40,7 +39,7 @@ export function SoftSurface({
   radius,
   glow = 1,
   grain = 0.24,
-  feather = 4,
+  feather = 5,
   style,
   children,
 }: {
@@ -90,9 +89,12 @@ export function SoftSurface({
               <LinearGradient start={vec(0, pad + h * 0.6)} end={vec(0, pad + h)} colors={[`${palette.inner}00`, palette.inner]} />
               <BlurMask blur={4} style="normal" />
             </RoundedRect>
-            {/* Thin light rim, a little brighter where the light comes from. */}
-            <RoundedRect rect={rrect(rect(pad + 1, pad + 1, w - 2, h - 2), radius - 1, radius - 1)} style="stroke" strokeWidth={1.5}>
-              <LinearGradient start={vec(0, pad)} end={vec(0, pad + h)} colors={[`${palette.rim}55`, `${palette.rim}22`, `${palette.rim}AA`]} positions={[0, 0.5, 1]} />
+            {/* The milky white rim: a soft white band along the inside of the edge, fading into the color. */}
+            <RoundedRect rect={shape} style="stroke" strokeWidth={20} color="#FFFFFF" opacity={0.36}>
+              <BlurMask blur={9} style="normal" />
+            </RoundedRect>
+            <RoundedRect rect={shape} style="stroke" strokeWidth={5} color="#FFFFFF" opacity={0.4}>
+              <BlurMask blur={2.5} style="normal" />
             </RoundedRect>
             {/* Coarse, even grain over the whole card, the same texture as the backdrop. */}
             <Rect rect={over} opacity={grain} blendMode="overlay">

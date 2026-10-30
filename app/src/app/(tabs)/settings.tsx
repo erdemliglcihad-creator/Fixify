@@ -7,7 +7,7 @@ import { t } from "../../i18n/index.ts";
 import { storageBytes } from "../../services/images.ts";
 import { cancelAllReminders } from "../../services/reminders.ts";
 import { deleteEverything, deletePhotos, useSessions } from "../../services/sessions.ts";
-import { settingsStore, updateSettings, useSettings, type Appearance, type ColorTheme, type VoiceGender } from "../../services/settings.ts";
+import { settingsStore, updateSettings, useSettings, type Appearance, type VoiceGender } from "../../services/settings.ts";
 import { emptyProfile, type Profile } from "../../core/profile.ts";
 import { DEVICE_OPTIONS, HELP_OPTIONS, TOPIC_OPTIONS } from "../../ui/OnboardingFlow.tsx";
 import { isOpen } from "../../core/session.ts";
@@ -154,11 +154,6 @@ export default function Settings() {
           value={s.appearance}
           options={[["system", t("System")], ["light", t("Light")], ["dark", t("Dark")]]}
           onChange={(appearance) => updateSettings({ appearance })}
-        />
-        <Segmented<ColorTheme>
-          value={s.colorTheme ?? "red"}
-          options={[["red", t("Red")], ["blue", t("Blue")]]}
-          onChange={(colorTheme) => updateSettings({ colorTheme })}
         />
       </Section>
 

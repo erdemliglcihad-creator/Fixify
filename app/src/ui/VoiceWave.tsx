@@ -2,7 +2,8 @@
 // voice: yours while listening, FixVoice's while it speaks, a slow breath while thinking.
 // All lines are one path, drawn twice: a soft glow underneath and the crisp lines on top.
 import { BlurMask, Canvas, Group, LinearGradient, Path, usePathValue, vec } from "@shopify/react-native-skia";
-import { useAnimatedReaction, useFrameCallback, useReducedMotion, useSharedValue, withSpring, type SharedValue } from "react-native-reanimated";
+import { useFrameCallback, useReducedMotion, useSharedValue, type SharedValue } from "react-native-reanimated";
+import { follow } from "./smooth.ts";
 import type { OrbMode } from "./VoiceOrb";
 
 type Props = { level: SharedValue<number>; mode: OrbMode; width: number; height: number; colors: readonly [string, string, string] };
@@ -19,14 +20,10 @@ export function VoiceWave({ level, mode, width: W, height: H, colors }: Props) {
 
   useFrameCallback((f) => {
     if (!reduceMotion) time.value = (f.timeSinceFirstFrame ?? 0) / 1000;
+    // The swing eases toward the voice every frame (rising a bit faster than it settles), so it never twitches.
+    const target = 0.1 + level.value * 0.9;
+    energy.value = follow(energy.value, target, f.timeSincePreviousFrame ?? 16, target > energy.value ? 160 : 420);
   });
-  // Springs keep the swing smooth: it follows the voice without jitter.
-  useAnimatedReaction(
-    () => level.value,
-    (v) => {
-      energy.value = withSpring(0.1 + v * 0.9, { duration: 450, dampingRatio: 0.9 });
-    },
-  );
 
   const cy = H / 2;
   const ribbon = usePathValue((p) => {

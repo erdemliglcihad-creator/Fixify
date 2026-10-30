@@ -15,7 +15,7 @@ import { Glass } from "../../ui/Glass.tsx";
 import { PressScale } from "../../ui/motion.tsx";
 import { Reveal } from "../../ui/reveal.tsx";
 import { Screen } from "../../ui/Screen.tsx";
-import { useSoft, type SoftTone } from "../../ui/soft.ts";
+import { SOFT, type SoftTone } from "../../ui/soft.ts";
 import { SoftSurface } from "../../ui/SoftSurface";
 import type { IconName } from "../../ui/categories.ts";
 import { font, space, type, useTheme } from "../../ui/theme.ts";
@@ -110,10 +110,9 @@ const SHORT = 96;
 const TALL = SHORT * 2 + GAP;
 
 function Tile({ tone, label, onPress, style, children }: { tone: SoftTone; label: string; onPress: () => void; style?: object; children: ReactNode }) {
-  const soft = useSoft();
   return (
     <PressScale onPress={onPress} accessibilityLabel={label} style={style}>
-      <SoftSurface palette={soft[tone]} radius={30} glow={0.6} style={styles.tile}>
+      <SoftSurface palette={SOFT[tone]} radius={30} glow={0.6} style={styles.tile}>
         <Text style={styles.tileLabel} numberOfLines={1}>
           {label}
         </Text>

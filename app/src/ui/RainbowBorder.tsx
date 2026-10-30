@@ -21,7 +21,7 @@ type Props = {
 const GLOW = 30;
 
 export function RainbowBorder({ children, radius, intensity = 1, glow = 1, width = 2, style }: Props) {
-  // The theme colors flowing around the edge (ui/theme BRANDS).
+  // The theme colors flowing around the edge (ui/theme brand).
   const { brand } = useTheme();
   const [size, setSize] = useState({ w: 0, h: 0 });
   const reduceMotion = useReducedMotion();

@@ -18,7 +18,7 @@ function injectKeyframes() {
 type Props = { children: ReactNode; radius: number; intensity?: number; glow?: number; width?: number; style?: StyleProp<ViewStyle> };
 
 export function RainbowBorder({ children, radius, intensity = 1, glow = 1, width = 2, style }: Props) {
-  // The theme colors flowing around the edge (ui/theme BRANDS).
+  // The theme colors flowing around the edge (ui/theme brand).
   const { brand } = useTheme();
   injectKeyframes();
   const gradient = `conic-gradient(from var(--fx-angle), ${brand.rainbow.join(", ")})`;
