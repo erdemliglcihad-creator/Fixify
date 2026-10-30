@@ -7,11 +7,14 @@ import type { Profile } from "../core/profile.ts";
 import { createStore, useStore } from "./store.ts";
 
 export type Appearance = "system" | "light" | "dark";
+/** Color world of the whole app: red (Station) or blue (Deep Nebula). */
+export type ColorTheme = "red" | "blue";
 /** cloud = Fixify Cloud (free, works for everyone), proxy = your own server (server/), off = no AI. */
 export type Provider = "cloud" | "proxy" | "off";
 
 export type Settings = {
   appearance: Appearance;
+  colorTheme: ColorTheme;
   provider: Provider;
   serverURL: string;
   appToken: string;
@@ -37,6 +40,7 @@ export type VoiceGender = "female" | "male";
 const DEFAULTS: Settings = {
   // Dark-first: the gradients are designed for a dark base. Light stays available in Settings.
   appearance: "dark",
+  colorTheme: "red",
   provider: "cloud",
   serverURL: "",
   appToken: "",

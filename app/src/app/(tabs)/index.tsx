@@ -15,7 +15,7 @@ import { Glass } from "../../ui/Glass.tsx";
 import { PressScale } from "../../ui/motion.tsx";
 import { Reveal } from "../../ui/reveal.tsx";
 import { Screen } from "../../ui/Screen.tsx";
-import { SOFT, type SoftTone } from "../../ui/soft.ts";
+import { useSoft, type SoftTone } from "../../ui/soft.ts";
 import { SoftSurface } from "../../ui/SoftSurface";
 import type { IconName } from "../../ui/categories.ts";
 import { font, space, type, useTheme } from "../../ui/theme.ts";
@@ -33,11 +33,11 @@ export default function Home() {
 
   // The three ways in, one big soft card each (swipe sideways).
   const actions: Action[] = [
-    { id: "scan", tone: "red", label: "Live Fix", icon: "scan-outline", title: t("Open camera"), subtitle: t("Show it. Fix it."), run: () => startScan() },
-    { id: "voice", tone: "crimson", label: "FixVoice", icon: "mic-outline", title: t("Talk to FixVoice"), subtitle: t("Hands-free, by voice"), run: () => router.navigate("/fixvoice") },
+    { id: "scan", tone: "vivid", label: "Live Fix", icon: "scan-outline", title: t("Open camera"), subtitle: t("Show it. Fix it."), run: () => startScan() },
+    { id: "voice", tone: "deep", label: "FixVoice", icon: "mic-outline", title: t("Talk to FixVoice"), subtitle: t("Hands-free, by voice"), run: () => router.navigate("/fixvoice") },
     {
       id: "photo",
-      tone: "blush",
+      tone: "pale",
       label: t("Photo"),
       icon: "images-outline",
       title: t("Choose from photos"),
@@ -71,17 +71,17 @@ export default function Home() {
 
       {/* Small tiles, like "Daily Streak", "Training" and "Breath Volume". */}
       <Reveal kind="slideUp" delay={240} style={styles.tiles}>
-        <Tile tone="ember" style={{ flex: 1, height: TALL }} onPress={() => router.navigate("/library")} label={t("Solved")}>
+        <Tile tone="night" style={{ flex: 1, height: TALL }} onPress={() => router.navigate("/library")} label={t("Solved")}>
           <View style={{ flex: 1, justifyContent: "flex-end", gap: space.m }}>
             <CountUp value={solved.length} style={styles.big} />
             <DotLine filled={Math.min(solved.length, 12)} />
           </View>
         </Tile>
         <View style={{ flex: 1, gap: GAP }}>
-          <Tile tone="red" style={{ height: SHORT }} onPress={() => router.navigate("/library")} label={t("Sessions")}>
+          <Tile tone="vivid" style={{ height: SHORT }} onPress={() => router.navigate("/library")} label={t("Sessions")}>
             <CountUp value={sessions.length} style={styles.small} />
           </Tile>
-          <Tile tone="blush" style={{ height: SHORT }} onPress={() => (last ? openSession(last.id) : startScan())} label={t("Last session")}>
+          <Tile tone="pale" style={{ height: SHORT }} onPress={() => (last ? openSession(last.id) : startScan())} label={t("Last session")}>
             <Text style={styles.smallText} numberOfLines={1}>
               {last ? last.title : t("Nothing yet")}
             </Text>
@@ -110,9 +110,10 @@ const SHORT = 96;
 const TALL = SHORT * 2 + GAP;
 
 function Tile({ tone, label, onPress, style, children }: { tone: SoftTone; label: string; onPress: () => void; style?: object; children: ReactNode }) {
+  const soft = useSoft();
   return (
     <PressScale onPress={onPress} accessibilityLabel={label} style={style}>
-      <SoftSurface palette={SOFT[tone]} radius={30} glow={0.6} style={styles.tile}>
+      <SoftSurface palette={soft[tone]} radius={30} glow={0.6} style={styles.tile}>
         <Text style={styles.tileLabel} numberOfLines={1}>
           {label}
         </Text>
@@ -124,12 +125,13 @@ function Tile({ tone, label, onPress, style, children }: { tone: SoftTone; label
 
 /** A dotted track with a bright mark, like the streak line in the reference. */
 function DotLine({ filled }: { filled: number }) {
+  const { brand } = useTheme();
   return (
     <View style={styles.dotLine}>
       {Array.from({ length: 12 }, (_, i) => (
         <View key={i} style={[styles.lineDot, { opacity: i < filled ? 1 : 0.3 }]} />
       ))}
-      <View style={styles.lineMark} />
+      <View style={[styles.lineMark, { backgroundColor: brand.mark }]} />
     </View>
   );
 }
@@ -145,6 +147,6 @@ const styles = StyleSheet.create({
   smallText: { color: "#FFFFFF", ...font.regular, fontSize: 15 },
   dotLine: { flexDirection: "row", alignItems: "center", gap: 5 },
   lineDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: "#FFFFFF" },
-  lineMark: { width: 3, height: 14, borderRadius: 1.5, backgroundColor: "#FF3B2F" },
+  lineMark: { width: 3, height: 14, borderRadius: 1.5 },
   notice: { flexDirection: "row", alignItems: "center", gap: space.m, padding: space.l, borderRadius: 24, borderCurve: "continuous" },
 });

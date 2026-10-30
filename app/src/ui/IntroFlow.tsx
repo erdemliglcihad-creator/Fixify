@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { t } from "../i18n/index.ts";
 import { Button, LightCatch } from "./components.tsx";
 import { Glass } from "./Glass.tsx";
-import { areaColors, font, space, textGlow, type, useTheme } from "./theme.ts";
+import { font, space, textGlow, type, useTheme } from "./theme.ts";
 import { VoiceOrb } from "./VoiceOrb";
 
 type Page = { title: () => string; body: () => string; demo: (active: boolean) => ReactNode };
@@ -188,7 +188,7 @@ function Marker({ n, x, y, delay, active }: { n: number; x: number; y: number; d
 // --- 2. FixVoice: the real orb with a talking level and a tap ripple ---------------------------------------
 
 function VoiceDemo({ active }: { active: boolean }) {
-  const { c } = useTheme();
+  const { c, brand } = useTheme();
   const talk = useLoop(active, 900);
   const level = useDerivedValue(() => 0.15 + Math.abs(Math.sin(talk.value * Math.PI * 3)) * 0.6 * talk.value);
   const ripple = useSharedValue(0);
@@ -199,7 +199,7 @@ function VoiceDemo({ active }: { active: boolean }) {
   const ring = useAnimatedStyle(() => ({ opacity: (1 - ripple.value) * 0.7, transform: [{ scale: 0.4 + ripple.value * 0.9 }] }));
   return (
     <View style={{ alignItems: "center", justifyContent: "center" }}>
-      {active && <VoiceOrb level={level} mode="speaking" size={210} colors={areaColors.fixbot.glow} />}
+      {active && <VoiceOrb level={level} mode="speaking" size={210} colors={brand.orb} />}
       <Animated.View pointerEvents="none" style={[styles.ripple, { borderColor: c.text }, ring]} />
       <Ionicons name="hand-left-outline" size={26} color={c.text} style={{ position: "absolute", bottom: 18, right: 46, opacity: 0.85 }} />
     </View>

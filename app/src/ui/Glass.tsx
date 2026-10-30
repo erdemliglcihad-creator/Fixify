@@ -73,8 +73,8 @@ export function Glass({ children, style, variant = "regular", tint, interactive,
       : tint + "D9"
     : scheme === "dark"
       ? variant === "clear"
-        ? "#12040455"
-        : "#1A060699"
+        ? `${c.surface}55`
+        : `${c.surface}99`
       : variant === "clear"
         ? "#FFFFFF33"
         : "#FFFFFFA6";

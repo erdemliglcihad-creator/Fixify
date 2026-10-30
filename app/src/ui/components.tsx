@@ -18,10 +18,13 @@ export function Card({ children, style }: { children: ReactNode; style?: StylePr
 
 /** Clean rounded Liquid Glass card for grouped content (not for safety warnings, those stay solid). */
 export function GlassCard({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
-  const { dark } = useTheme();
+  const { dark, brand } = useTheme();
+  // Soft glow under the glass: a wide, faint light in the theme color plus a tight dark shadow for contrast.
+  const glow = dark
+    ? `0 18px 44px rgba(${brand.glowRgb}, 0.2), 0 2px 12px rgba(0, 0, 0, 0.5)`
+    : `0 14px 34px rgba(${brand.glowRgb}, 0.12), 0 1px 4px rgba(16, 24, 48, 0.08)`;
   return (
-    // Soft glow under the glass: a wide, faint red light plus a tight dark shadow for contrast.
-    <View style={[styles.glassGlow, { boxShadow: dark ? GLOW_DARK : GLOW_LIGHT }]}>
+    <View style={[styles.glassGlow, { boxShadow: glow }]}>
       <Glass style={[styles.glassCard, style]}>
         <LightCatch dark={dark} />
         {children}
@@ -29,9 +32,6 @@ export function GlassCard({ children, style }: { children: ReactNode; style?: St
     </View>
   );
 }
-
-const GLOW_DARK = "0 18px 44px rgba(202, 8, 8, 0.2), 0 2px 12px rgba(0, 0, 0, 0.5)";
-const GLOW_LIGHT = "0 14px 34px rgba(202, 8, 8, 0.12), 0 1px 4px rgba(16, 24, 48, 0.08)";
 
 /** Light catching the top of the glass: a faint sheen and a bright rim that fades out to both sides. */
 export function LightCatch({ dark }: { dark: boolean }) {
@@ -132,7 +132,7 @@ function SegmentLabel({ label, on, onPress, color }: { label: string; on: boolea
 
 /** Round icon button like a polished dark disc: soft gradient, bright rim on top, white symbol. */
 export function IconCircle({ icon, size = 44, color, active }: { icon: IconName; size?: number; color?: string; active?: boolean }) {
-  const { c, dark } = useTheme();
+  const { c, dark, brand } = useTheme();
   return (
     <View
       style={{
@@ -148,7 +148,7 @@ export function IconCircle({ icon, size = 44, color, active }: { icon: IconName;
       }}
     >
       <LinearGradient
-        colors={active ? [c.accent, "#7A0505"] : dark ? ["#2A2F3B", "#0C0E14"] : ["#FFFFFF", "#E6EAF2"]}
+        colors={active ? [c.accent, brand.accentDeep] : dark ? [c.raised, c.surface] : ["#FFFFFF", "#E6EAF2"]}
         start={{ x: 0.2, y: 0 }}
         end={{ x: 0.8, y: 1 }}
         style={StyleSheet.absoluteFill}
@@ -267,7 +267,7 @@ export function Button({ title, onPress, icon, kind = "primary", disabled, loadi
       style={[{ opacity: disabled ? 0.45 : 1 }, style]}
     >
       {kind === "primary" ? (
-        // Actions are solid, saturated red with a light top edge (hard contrast, no glass).
+        // Actions are solid, saturated theme color with a light top edge (hard contrast, no glass).
         <View style={[inner, styles.primary, { backgroundColor: c.accent, boxShadow: `0 10px 28px ${c.accent}66` }]}>
           <LinearGradient pointerEvents="none" colors={["#FFFFFF33", "#FFFFFF00"]} end={{ x: 0.5, y: 0.6 }} style={StyleSheet.absoluteFill} />
           {label}

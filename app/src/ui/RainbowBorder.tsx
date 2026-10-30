@@ -4,9 +4,7 @@ import { BlurMask, Canvas, Group, RoundedRect, SweepGradient, vec } from "@shopi
 import { useEffect, useState, type ReactNode } from "react";
 import { View, type StyleProp, type ViewStyle } from "react-native";
 import { Easing, useDerivedValue, useReducedMotion, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
-
-// The red world flowing around the edge: brand red, hot light red, white-hot, deep red, back to red.
-export const RAINBOW = ["#CA0808", "#FF3B2F", "#FF8A7A", "#FFE3DE", "#FFFFFF", "#FF5A4F", "#7A0505", "#E01414", "#CA0808"];
+import { useTheme } from "./theme.ts";
 
 type Props = {
   children: ReactNode;
@@ -23,6 +21,8 @@ type Props = {
 const GLOW = 30;
 
 export function RainbowBorder({ children, radius, intensity = 1, glow = 1, width = 2, style }: Props) {
+  // The theme colors flowing around the edge (ui/theme BRANDS).
+  const { brand } = useTheme();
   const [size, setSize] = useState({ w: 0, h: 0 });
   const reduceMotion = useReducedMotion();
   const turn = useSharedValue(0);
@@ -45,13 +45,13 @@ export function RainbowBorder({ children, radius, intensity = 1, glow = 1, width
           {/* Glow in the ring's colors: a soft halo and a brighter, tighter glow on top. */}
           <Group opacity={0.5 * intensity * glow}>
             <RoundedRect x={GLOW} y={GLOW} width={size.w} height={size.h} r={radius} style="stroke" strokeWidth={width * 5}>
-              <SweepGradient c={vec(cx, cy)} colors={RAINBOW} transform={shader} />
+              <SweepGradient c={vec(cx, cy)} colors={brand.rainbow} transform={shader} />
               <BlurMask blur={11 * glow} style="normal" />
             </RoundedRect>
           </Group>
           <Group opacity={0.9 * intensity}>
             <RoundedRect x={GLOW} y={GLOW} width={size.w} height={size.h} r={radius} style="stroke" strokeWidth={width * 2.5}>
-              <SweepGradient c={vec(cx, cy)} colors={RAINBOW} transform={shader} />
+              <SweepGradient c={vec(cx, cy)} colors={brand.rainbow} transform={shader} />
               <BlurMask blur={4} style="normal" />
             </RoundedRect>
           </Group>
@@ -66,7 +66,7 @@ export function RainbowBorder({ children, radius, intensity = 1, glow = 1, width
             strokeWidth={width}
             opacity={intensity}
           >
-            <SweepGradient c={vec(cx, cy)} colors={RAINBOW} transform={shader} />
+            <SweepGradient c={vec(cx, cy)} colors={brand.rainbow} transform={shader} />
           </RoundedRect>
           {/* Thin glassy highlight just inside the ring. */}
           <RoundedRect

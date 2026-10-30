@@ -19,10 +19,8 @@ import { PressScale } from "../../ui/motion.tsx";
 import { Grain } from "../../ui/Grain";
 import { RainbowBorder } from "../../ui/RainbowBorder";
 import { useTabBarSpace } from "../../ui/Screen.tsx";
-import { areaColors, font, space, type, useTheme } from "../../ui/theme.ts";
+import { font, space, type, useTheme } from "../../ui/theme.ts";
 import { VoiceOrb } from "../../ui/VoiceOrb";
-
-const glow = areaColors.fixbot.glow;
 
 function greeting() {
   const h = new Date().getHours();
@@ -40,7 +38,7 @@ const STATUS: Record<CallPhase, () => string> = {
 
 export default function FixVoice() {
   useArea("fixbot");
-  const { c } = useTheme();
+  const { c, brand } = useTheme();
   const insets = useSafeAreaInsets();
   const tabSpace = useTabBarSpace();
   const call = useCall();
@@ -59,13 +57,13 @@ export default function FixVoice() {
 
   return (
     <View style={{ flex: 1, paddingTop: insets.top + space.xl }}>
-      {/* Red light rising from the bottom. */}
+      {/* Light in the theme color rising from the bottom. */}
       <VoiceGlow level={call.level} active={call.inCall} />
 
       <View style={styles.orbArea}>
         {/* The orb is the on/off switch: tap to start talking, tap again to hang up. */}
         <Pressable onPress={call.inCall ? call.endCall : start} accessibilityRole="button" accessibilityLabel={call.inCall ? t("End call") : t("Start call")}>
-          <VoiceOrb level={call.level} mode={orbMode} size={240} colors={glow} />
+          <VoiceOrb level={call.level} mode={orbMode} size={240} colors={brand.orb} />
         </Pressable>
       </View>
 
@@ -97,7 +95,7 @@ export default function FixVoice() {
         {/* Soft rainbow edge, a little stronger while the call is live. */}
         <RainbowBorder radius={32} width={1.25} glow={0.6} intensity={call.inCall ? 1 : 0.85}>
           <Glass style={styles.pill}>
-            <LinearGradient pointerEvents="none" colors={["#FF6A5A33", "#CA08081F"]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
+            <LinearGradient pointerEvents="none" colors={[`${brand.orb[2]}33`, `${brand.orb[0]}1F`]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
             <Grain opacity={0.3} />
             <PressScale
               onPress={call.inCall ? call.tap : start}
@@ -136,10 +134,11 @@ export default function FixVoice() {
 }
 
 /**
- * Red light rising from the bottom. While talking it breathes with the voice (yours or FixVoice's):
+ * Light in the theme color rising from the bottom. While talking it breathes with the voice (yours or FixVoice's):
  * a little taller and brighter, and it drifts sideways a touch. Springs keep it smooth, never jumpy.
  */
 function VoiceGlow({ level, active }: { level: SharedValue<number>; active: boolean }) {
+  const { c, brand } = useTheme();
   const energy = useSharedValue(0);
   useAnimatedReaction(
     () => (active ? level.value : 0),
@@ -154,7 +153,7 @@ function VoiceGlow({ level, active }: { level: SharedValue<number>; active: bool
   }));
   return (
     <Animated.View pointerEvents="none" style={[styles.bottomGlow, style]}>
-      <LinearGradient colors={["#00000000", "#270A0A88", "#CA0808B0", "#FF6A5AA8"]} locations={[0, 0.55, 0.85, 1]} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[`${c.background}00`, `${brand.orb[1]}88`, `${brand.orb[0]}B8`, `${brand.orb[2]}A8`]} locations={[0, 0.55, 0.85, 1]} style={StyleSheet.absoluteFill} />
     </Animated.View>
   );
 }

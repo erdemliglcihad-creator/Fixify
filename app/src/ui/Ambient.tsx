@@ -1,5 +1,5 @@
-// The backdrop behind every screen: black ground with two soft red lights (brand red top right,
-// a lighter red bottom left) drifting very slowly, plus film grain. Quiet enough that the cards stay the brightest thing.
+// The backdrop behind every screen: dark ground with two soft lights in the theme colors (top right,
+// bottom left) drifting very slowly, plus film grain. Quiet enough that the cards stay the brightest thing.
 import { Canvas, Circle, RadialGradient, vec } from "@shopify/react-native-skia";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import { useDerivedValue, useFrameCallback, useReducedMotion, useSharedValue } from "react-native-reanimated";
@@ -8,7 +8,7 @@ import { useTheme } from "./theme.ts";
 
 export function Ambient() {
   const { width: W, height: H } = useWindowDimensions();
-  const { dark } = useTheme();
+  const { dark, brand } = useTheme();
   const reduceMotion = useReducedMotion();
   const time = useSharedValue(0);
   useFrameCallback((f) => {
@@ -22,10 +22,10 @@ export function Ambient() {
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       <Canvas style={StyleSheet.absoluteFill}>
         <Circle c={a} r={W * 0.95}>
-          <RadialGradient c={a} r={W * 0.95} colors={[`#CA0808${strength}`, "#CA080800"]} />
+          <RadialGradient c={a} r={W * 0.95} colors={[`${brand.lights[0]}${strength}`, `${brand.lights[0]}00`]} />
         </Circle>
         <Circle c={b} r={W * 0.85}>
-          <RadialGradient c={b} r={W * 0.85} colors={[`#FF5A4F${strength}`, "#FF5A4F00"]} />
+          <RadialGradient c={b} r={W * 0.85} colors={[`${brand.lights[1]}${strength}`, `${brand.lights[1]}00`]} />
         </Circle>
       </Canvas>
       <Grain opacity={dark ? 0.16 : 0.1} />

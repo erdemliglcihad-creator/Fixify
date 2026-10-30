@@ -24,7 +24,7 @@ const WHY_OPTIONS: Record<(typeof WHY)[number], Option> = {
   work: { value: "work", label: () => t("For work"), icon: "briefcase-outline" },
   curious: { value: "curious", label: () => t("Just curious"), icon: "sparkles-outline" },
 };
-const TOPIC_OPTIONS: Record<(typeof TOPICS)[number], Option> = {
+export const TOPIC_OPTIONS: Record<(typeof TOPICS)[number], Option> = {
   computer: { value: "computer", label: () => t("Computer"), icon: "desktop-outline" },
   network: { value: "network", label: () => t("Wi-Fi & internet"), icon: "wifi-outline" },
   phone: { value: "phone", label: () => t("Phone & tablet"), icon: "phone-portrait-outline" },
@@ -33,7 +33,7 @@ const TOPIC_OPTIONS: Record<(typeof TOPICS)[number], Option> = {
   home: { value: "home", label: () => t("Home & tools"), icon: "hammer-outline" },
   car: { value: "car", label: () => t("Car & bike"), icon: "car-outline" },
 };
-const DEVICE_OPTIONS: Record<(typeof DEVICES)[number], Option> = {
+export const DEVICE_OPTIONS: Record<(typeof DEVICES)[number], Option> = {
   iphone: { value: "iphone", label: () => "iPhone", icon: "logo-apple" },
   android: { value: "android", label: () => "Android", icon: "logo-android" },
   mac: { value: "mac", label: () => "Mac", icon: "laptop-outline" },
@@ -44,7 +44,7 @@ const DEVICE_OPTIONS: Record<(typeof DEVICES)[number], Option> = {
   console: { value: "console", label: () => t("Game console"), icon: "game-controller-outline" },
   smarthome: { value: "smarthome", label: () => t("Smart home"), icon: "bulb-outline" },
 };
-const HELP_OPTIONS: Record<(typeof HELP)[number], Option> = {
+export const HELP_OPTIONS: Record<(typeof HELP)[number], Option> = {
   voice: { value: "voice", label: () => t("Talk it through (FixVoice)"), icon: "mic-outline" },
   camera: { value: "camera", label: () => t("Show it (camera)"), icon: "camera-outline" },
   read: { value: "read", label: () => t("Read short steps"), icon: "reader-outline" },
@@ -72,10 +72,10 @@ const STEPS: Step[] = [
   { kind: "single", key: "source", question: () => t("How did you hear about Fixify?"), options: Object.values(SOURCE_OPTIONS) },
 ];
 
-export function OnboardingFlow({ initial, onDone }: { initial?: Profile | null; onDone: (profile: Profile | null) => void }) {
+export function OnboardingFlow({ onDone }: { onDone: (profile: Profile | null) => void }) {
   const { c, dark } = useTheme();
   const insets = useSafeAreaInsets();
-  const [profile, setProfile] = useState<Profile>(() => initial ?? emptyProfile());
+  const [profile, setProfile] = useState<Profile>(emptyProfile);
   const [index, setIndex] = useState(0);
   const step = STEPS[index];
   const last = index === STEPS.length - 1;

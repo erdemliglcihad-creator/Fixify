@@ -1,9 +1,7 @@
 // Web preview version of the rainbow edge: a masked conic gradient whose angle is animated with CSS.
 import type { ReactNode } from "react";
 import { View, type StyleProp, type ViewStyle } from "react-native";
-
-// The red world flowing around the edge: brand red, hot light red, white-hot, deep red, back to red.
-export const RAINBOW = ["#CA0808", "#FF3B2F", "#FF8A7A", "#FFE3DE", "#FFFFFF", "#FF5A4F", "#7A0505", "#E01414", "#CA0808"];
+import { useTheme } from "./theme.ts";
 
 let injected = false;
 function injectKeyframes() {
@@ -20,8 +18,10 @@ function injectKeyframes() {
 type Props = { children: ReactNode; radius: number; intensity?: number; glow?: number; width?: number; style?: StyleProp<ViewStyle> };
 
 export function RainbowBorder({ children, radius, intensity = 1, glow = 1, width = 2, style }: Props) {
+  // The theme colors flowing around the edge (ui/theme BRANDS).
+  const { brand } = useTheme();
   injectKeyframes();
-  const gradient = `conic-gradient(from var(--fx-angle), ${RAINBOW.join(", ")})`;
+  const gradient = `conic-gradient(from var(--fx-angle), ${brand.rainbow.join(", ")})`;
   const ring = (extra: object) =>
     ({
       position: "absolute",
