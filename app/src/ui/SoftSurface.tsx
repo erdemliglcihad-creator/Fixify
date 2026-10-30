@@ -1,13 +1,11 @@
 // A lit glass slab (Skia): dark at the top, colored light pooling inside from the bottom edge, a soft
 // milky white band along the rim, a glow spilling out underneath, grain over everything, and an outline
 // that fades out softly (with a hint of grain) instead of cutting a clean line. Children sit above it.
-import { BlurMask, Canvas, Circle, ColorMatrix, FractalNoise, Group, LinearGradient, RadialGradient, Rect, RoundedRect, Shader, Skia, rect, rrect, vec } from "@shopify/react-native-skia";
+import { BlurMask, Canvas, Circle, Group, LinearGradient, RadialGradient, Rect, RoundedRect, Shader, Skia, rect, rrect, vec } from "@shopify/react-native-skia";
 import { useState, type ReactNode } from "react";
 import { View, type StyleProp, type ViewStyle } from "react-native";
+import { GRAIN, grainDensity } from "./Grain";
 import type { SoftPalette } from "./soft.ts";
-
-// Noise to neutral gray (alpha kept): grain over the whole card.
-const GRAY = [0.33, 0.33, 0.33, 0, 0, 0.33, 0.33, 0.33, 0, 0, 0.33, 0.33, 0.33, 0, 0, 0, 0, 0, 1, 0];
 
 // Edge mask: distance to the rounded rectangle, faded smoothly over `feather` points with a little noise
 // mixed in, so the outline is soft and slightly grainy, never a hard straight line.
@@ -16,6 +14,7 @@ uniform float2 origin;
 uniform float2 size;
 uniform float radius;
 uniform float feather;
+uniform float density;
 
 float roundBox(float2 p, float2 b, float r) {
   float2 q = abs(p) - b + r;
@@ -23,12 +22,15 @@ float roundBox(float2 p, float2 b, float r) {
 }
 
 float hash(float2 p) {
-  return fract(sin(dot(p, float2(12.9898, 78.233))) * 43758.5453);
+  float3 p3 = fract(float3(p.xyx) * 0.1031);
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
 }
 
 half4 main(float2 xy) {
   float d = roundBox(xy - origin - size * 0.5, size * 0.5, radius);
-  float n = hash(floor(xy / 2.0)) - 0.5;
+  // Same crisp pixel grain as the card surface, so the edge reads as part of it.
+  float n = hash(floor(xy * density)) - 0.5;
   float a = 1.0 - smoothstep(-feather, feather * 0.5, d + n * feather * 0.5);
   return half4(a);
 }
@@ -96,14 +98,13 @@ export function SoftSurface({
             <RoundedRect rect={shape} style="stroke" strokeWidth={5} color="#FFFFFF" opacity={0.4}>
               <BlurMask blur={2.5} style="normal" />
             </RoundedRect>
-            {/* Coarse, even grain over the whole card, the same texture as the backdrop. */}
+            {/* Crisp, even grain over the whole card, the same texture as the backdrop. */}
             <Rect rect={over} opacity={grain} blendMode="overlay">
-              <FractalNoise freqX={0.32} freqY={0.32} octaves={2} seed={3} />
-              <ColorMatrix matrix={GRAY} />
+              <Shader source={GRAIN} uniforms={{ density: grainDensity() }} />
             </Rect>
             {/* Keep only what the grainy edge mask lets through. */}
             <Rect x={0} y={0} width={w + pad * 2} height={h + pad * 2} blendMode="dstIn">
-              <Shader source={EDGE} uniforms={{ origin: vec(pad, pad), size: vec(w, h), radius, feather }} />
+              <Shader source={EDGE} uniforms={{ origin: vec(pad, pad), size: vec(w, h), radius, feather, density: grainDensity() }} />
             </Rect>
           </Group>
         </Canvas>
