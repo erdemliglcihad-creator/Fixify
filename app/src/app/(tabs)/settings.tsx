@@ -44,7 +44,7 @@ function Section({ title, footer, children }: { title: string; footer?: string; 
   return (
     <View style={{ gap: space.s }}>
       <View style={{ marginLeft: space.s }}>
-        <RevealWords text={title.toUpperCase()} style={[type.caption, { color: c.secondary, fontFamily: font.semibold, letterSpacing: 0.6 }]} />
+        <RevealWords text={title.toUpperCase()} style={[type.caption, { color: c.secondary, ...font.semibold, letterSpacing: 0.6 }]} />
       </View>
       <Reveal kind="build" delay={80}>
         <GlassCard style={styles.group}>{children}</GlassCard>

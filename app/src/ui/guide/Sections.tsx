@@ -47,7 +47,7 @@ export function FindingsSection({ analysis, located, onSelect }: { analysis: Pro
         <Pressable key={f.id} onPress={() => onSelect(f)} style={{ flexDirection: "row", gap: space.m }} accessibilityRole="button">
           <MarkerBadge number={i + 1} size={22} dimmed={!located.has(f.id)} />
           <View style={{ flex: 1, gap: 2 }}>
-            <Text style={[type.body, { color: c.text, fontFamily: font.medium }]}>{f.label}</Text>
+            <Text style={[type.body, { color: c.text, ...font.medium }]}>{f.label}</Text>
             {f.detail ? <Caption>{f.detail}</Caption> : null}
             <Caption style={{ fontSize: 12 }}>{source(f)}</Caption>
           </View>
@@ -68,7 +68,7 @@ export function CausesSection({ causes }: { causes: Cause[] }) {
         <View key={cause.id} style={{ gap: 4 }}>
           {i > 0 && <Divider />}
           <View style={{ flexDirection: "row", justifyContent: "space-between", gap: space.s, marginTop: i > 0 ? space.s : 0 }}>
-            <Text style={[type.body, { color: c.text, fontFamily: font.semibold, flex: 1 }]}>{cause.title}</Text>
+            <Text style={[type.body, { color: c.text, ...font.semibold, flex: 1 }]}>{cause.title}</Text>
             {chip(cause.likelihood)}
           </View>
           {cause.explanation ? <Caption>{cause.explanation}</Caption> : null}
@@ -96,7 +96,7 @@ export function NextDiagnosticCard({ d }: { d: Diagnostic }) {
   const { c } = useTheme();
   return (
     <View style={[styles.soft, { backgroundColor: c.accentSoft }]}>
-      <Text style={{ color: c.accent, fontSize: 12, fontFamily: font.bold, textTransform: "uppercase" }}>{t("Check this first")}</Text>
+      <Text style={{ color: c.accent, fontSize: 12, ...font.bold, textTransform: "uppercase" }}>{t("Check this first")}</Text>
       <Text style={[type.headline, { color: c.text }]}>{d.title}</Text>
       <Body>{d.instruction}</Body>
       {d.reason ? <Caption>{d.reason}</Caption> : null}
@@ -120,7 +120,7 @@ export function QuestionsSection({ questions, canUpdate, onSubmit }: { questions
       <SectionTitle title={t("Fixify needs to know")} icon="chatbubbles-outline" />
       {questions.map((q) => (
         <View key={q.id} style={{ gap: space.s }}>
-          <Text style={[type.body, { color: c.text, fontFamily: font.medium }]}>{q.question}</Text>
+          <Text style={[type.body, { color: c.text, ...font.medium }]}>{q.question}</Text>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.s }}>
             {q.options.map((o) => {
               const sel = answers[q.id] === o;
@@ -203,7 +203,7 @@ export function StepsSection(props: {
               ) : state === "skipped" ? (
                 <Ionicons name="play-skip-forward" size={12} color={c.secondary} />
               ) : (
-                <Text style={{ color: step.id === currentId ? "#fff" : c.secondary, fontFamily: font.bold, fontSize: 13 }}>{index + 1}</Text>
+                <Text style={{ color: step.id === currentId ? "#fff" : c.secondary, ...font.bold, fontSize: 13 }}>{index + 1}</Text>
               )}
             </View>
             <Text
@@ -234,18 +234,18 @@ function StepCard(props: {
 }) {
   const { c } = useTheme();
   const { step } = props;
-  const label = (text: string) => <Text style={{ color: c.secondary, fontSize: 13, fontFamily: font.semibold }}>{text}</Text>;
+  const label = (text: string) => <Text style={{ color: c.secondary, fontSize: 13, ...font.semibold }}>{text}</Text>;
   return (
     <View style={[styles.stepCard, { backgroundColor: c.surface, borderColor: c.accent + "55" }]}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-        <Text style={{ color: c.accent, fontSize: 12, fontFamily: font.bold, textTransform: "uppercase" }}>{t("Step %lld of %lld", props.index + 1, props.total)}</Text>
+        <Text style={{ color: c.accent, fontSize: 12, ...font.bold, textTransform: "uppercase" }}>{t("Step %lld of %lld", props.index + 1, props.total)}</Text>
         {props.state === "failed" && <Chip text={t("Didn't work")} color={c.danger} icon="close" />}
       </View>
       <Text style={[type.title, { color: c.text }]}>{step.title}</Text>
       {step.explanation ? <Body secondary>{step.explanation}</Body> : null}
       <View style={[styles.soft, { backgroundColor: c.accentSoft, padding: space.m }]}>
         {label(t("Do this"))}
-        <Text style={[type.body, { color: c.text, fontFamily: font.medium }]}>{step.action}</Text>
+        <Text style={[type.body, { color: c.text, ...font.medium }]}>{step.action}</Text>
       </View>
       {step.findingIds.length > 0 && (
         <View style={{ flexDirection: "row", alignItems: "center", gap: space.s }}>
@@ -260,7 +260,7 @@ function StepCard(props: {
           })}
         </View>
       )}
-      {step.safetyNote ? <Text style={{ color: c.caution, fontFamily: font.medium }}>{`⚠ ${step.safetyNote}`}</Text> : null}
+      {step.safetyNote ? <Text style={{ color: c.caution, ...font.medium }}>{`⚠ ${step.safetyNote}`}</Text> : null}
       {step.pitfalls.length > 0 && (
         <View style={{ gap: 4 }}>
           {label(t("Watch out"))}

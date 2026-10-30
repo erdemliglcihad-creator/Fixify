@@ -1,4 +1,3 @@
-import { useFonts } from "expo-font";
 import { DarkTheme, DefaultTheme, router, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
@@ -28,18 +27,7 @@ export default function RootLayout() {
     // Native parts (Liquid Glass, keyboard, alerts) follow the app's choice, not only the iPhone's.
     if (Platform.OS !== "web") Appearance.setColorScheme(appearance === "system" ? "unspecified" : appearance);
   }, [appearance]);
-  const [fontsLoaded, fontError] = useFonts({
-    "Montserrat-Light": require("../../assets/fonts/Montserrat-Light.ttf"),
-    "Montserrat-Regular": require("../../assets/fonts/Montserrat-Regular.ttf"),
-    "Montserrat-Medium": require("../../assets/fonts/Montserrat-Medium.ttf"),
-    "Montserrat-SemiBold": require("../../assets/fonts/Montserrat-SemiBold.ttf"),
-    "Montserrat-Bold": require("../../assets/fonts/Montserrat-Bold.ttf"),
-    // Demo license: these files stay on this PC (gitignored).
-    "NeueMontreal-Light": require("../../assets/fonts/NeueMontreal-Light.otf"),
-    "NeueMontreal-Regular": require("../../assets/fonts/NeueMontreal-Regular.otf"),
-    "NeueMontreal-Medium": require("../../assets/fonts/NeueMontreal-Medium.otf"),
-    "NeueMontreal-Bold": require("../../assets/fonts/NeueMontreal-Bold.otf"),
-  });
+
 
   useEffect(() => {
     Promise.all([loadSettings(), loadSessions(), loadChat()])
@@ -67,7 +55,7 @@ export default function RootLayout() {
   // Screens are transparent over the plain background of the root view.
   const navTheme = { ...base, colors: { ...base.colors, primary: c.accent, background: "transparent", card: c.surface, text: c.text, border: c.hairline } };
 
-  if (!ready || !(fontsLoaded || fontError)) {
+  if (!ready) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: c.background }}>
         <ActivityIndicator />

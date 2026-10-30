@@ -42,7 +42,7 @@ function inline(text: string, color: string) {
   // Split on **bold** spans; everything else is plain text.
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
     part.startsWith("**") && part.endsWith("**") && part.length > 4 ? (
-      <Text key={i} style={{ fontFamily: font.bold, color }}>
+      <Text key={i} style={{ ...font.bold, color }}>
         {part.slice(2, -2)}
       </Text>
     ) : (

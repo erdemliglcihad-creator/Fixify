@@ -91,7 +91,7 @@ export function ActiveCard({ session, onPress }: { session: FixSession; onPress:
           </View>
         )}
         <View style={styles.progressPill}>
-          <Text style={{ color: "#fff", fontSize: 12, fontFamily: font.bold }}>{Math.round(progress(session) * 100)}%</Text>
+          <Text style={{ color: "#fff", fontSize: 12, ...font.bold }}>{Math.round(progress(session) * 100)}%</Text>
         </View>
       </View>
       <Text style={[type.headline, { color: c.text }]} numberOfLines={1}>

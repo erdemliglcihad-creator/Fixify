@@ -1,163 +1,149 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
+import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { t } from "../../i18n/index.ts";
 import { useArea } from "../../services/area.ts";
 import { openSession, startScan } from "../../services/nav.ts";
 import { useSessions } from "../../services/sessions.ts";
-import { firstName } from "../../core/profile.ts";
 import { isServerConfigured, useSettings } from "../../services/settings.ts";
 import { useQuota } from "../../services/usage.ts";
-import { Caption, Divider, GlassCard, IconCircle, LightCatch } from "../../ui/components.tsx";
+import { CardCarousel, SoftCard } from "../../ui/CardCarousel.tsx";
+import { Caption, IconCircle } from "../../ui/components.tsx";
 import { Glass } from "../../ui/Glass.tsx";
 import { PressScale } from "../../ui/motion.tsx";
-import { FlowingGradientText, Reveal, RevealWords } from "../../ui/reveal.tsx";
-import { RainbowBorder } from "../../ui/RainbowBorder";
+import { Reveal } from "../../ui/reveal.tsx";
 import { Screen } from "../../ui/Screen.tsx";
-import { SessionRow } from "../../ui/SessionRow.tsx";
-import { font, radius, space, type, useTheme } from "../../ui/theme.ts";
+import { SOFT, type SoftTone } from "../../ui/soft.ts";
+import { SoftSurface } from "../../ui/SoftSurface";
+import type { IconName } from "../../ui/categories.ts";
+import { font, space, type, useTheme } from "../../ui/theme.ts";
 
-function greeting() {
-  const h = new Date().getHours();
-  return h >= 5 && h < 12 ? t("Good morning") : h >= 12 && h < 18 ? t("Good afternoon") : t("Good evening");
-}
+type Action = { id: string; tone: SoftTone; label: string; icon: IconName; title: string; subtitle: string; run: () => void };
 
 export default function Home() {
   useArea("home");
-  const { c, dark } = useTheme();
+  const { c } = useTheme();
   const sessions = useSessions();
   const settings = useSettings();
   const quota = useQuota();
-  const name = firstName(settings.profile);
-  const solved = sessions.filter((s) => s.status === "solved").sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 3);
+  const solved = sessions.filter((s) => s.status === "solved");
+  const last = [...sessions].sort((a, b) => b.updatedAt - a.updatedAt)[0];
+
+  // The three ways in, one big soft card each (swipe sideways).
+  const actions: Action[] = [
+    { id: "scan", tone: "pink", label: "Live Fix", icon: "scan-outline", title: t("Open camera"), subtitle: t("Show it. Fix it."), run: () => startScan() },
+    { id: "voice", tone: "blue", label: "FixVoice", icon: "mic-outline", title: t("Talk to FixVoice"), subtitle: t("Hands-free, by voice"), run: () => router.navigate("/fixvoice") },
+    {
+      id: "photo",
+      tone: "orange",
+      label: t("Photo"),
+      icon: "images-outline",
+      title: t("Choose from photos"),
+      subtitle: quota.uploadsLeft !== null && quota.uploadsDaily ? t("%lld left today", quota.uploadsLeft) : t("Photo or screenshot"),
+      run: () => startScan({ library: true }),
+    },
+  ];
 
   return (
-    <Screen contentStyle={{ gap: space.xxl + space.s }}>
-      <Reveal kind="fade" style={styles.topRow}>
-        <Text style={[styles.wordmark, { color: c.text }]}>Fixify</Text>
-        {quota.uploadsLeft !== null && quota.uploadsDaily ? (
-          <View
-            style={[styles.quota, { borderColor: c.hairline }]}
-            accessible
-            accessibilityLabel={t("%lld of %lld photo uploads left today", quota.uploadsLeft, quota.uploadsDaily)}
-          >
-            <Ionicons name="image-outline" size={13} color={quota.uploadsLeft > 0 ? c.secondary : c.caution} />
-            <Text style={{ color: quota.uploadsLeft > 0 ? c.secondary : c.caution, fontSize: 13, fontFamily: font.medium }}>
-              {quota.uploadsLeft}/{quota.uploadsDaily}
-            </Text>
-          </View>
-        ) : null}
+    <Screen contentStyle={{ gap: space.xl }}>
+      {/* Header like the reference: round buttons left and right, the name in the middle. */}
+      <Reveal kind="fade" style={styles.header}>
+        <PressScale onPress={() => router.navigate("/library")} accessibilityLabel={t("Library")}>
+          <IconCircle icon="albums-outline" size={50} />
+        </PressScale>
+        <Text style={[styles.title, { color: c.text }]} accessibilityRole="header">
+          Fixify
+        </Text>
+        <PressScale onPress={() => router.navigate("/settings")} accessibilityLabel={t("Settings")}>
+          <IconCircle icon="options-outline" size={50} />
+        </PressScale>
       </Reveal>
 
-      {/* Greeting word by word, then the headline rises with a slowly flowing gradient. */}
-      <View style={{ gap: space.m, marginTop: space.xl }}>
-        <RevealWords text={name ? `${greeting()}, ${name}` : greeting()} style={[type.eyebrow, { color: c.secondary }]} delay={100} />
-        <Reveal kind="slideUp" delay={260}>
-          <FlowingGradientText colors={dark ? ["#FFFFFF", "#DCE8FF", "#8DB8FF", "#FFFFFF"] : ["#070B14", "#16357F", "#1E5BFF", "#070B14"]} style={type.hero}>
-            {t("What are we fixing today?")}
-          </FlowingGradientText>
-        </Reveal>
-      </View>
+      <Reveal kind="slideUp" delay={120}>
+        <CardCarousel
+          items={actions}
+          keyOf={(a) => a.id}
+          render={(a) => <SoftCard tone={a.tone} label={a.label} icon={a.icon} title={a.title} subtitle={a.subtitle} onPress={a.run} />}
+        />
+      </Reveal>
 
-      <View style={{ gap: space.l }}>
-        {/* Live Fix: the one primary action. It emerges out of film grain, the only "noise build up" on the screen. */}
-        <Reveal kind="noise" radius={24} delay={420}>
-        <GlassCard style={styles.hero}>
-          <LinearGradient pointerEvents="none" colors={["#1E5BFF00", "#1E5BFF26"]} start={{ x: 0, y: 0.2 }} end={{ x: 0.6, y: 1 }} style={StyleSheet.absoluteFill} />
-          <View style={{ gap: space.m }}>
-            <IconCircle icon="scan-outline" size={52} />
-            <Text style={[type.eyebrow, { color: dark ? "#7DA6FF" : c.accent, fontSize: 13, letterSpacing: 1.2, marginTop: space.s }]}>LIVE FIX</Text>
-            <Text style={[type.title, { color: c.text }]}>{t("Show it. Fix it.")}</Text>
-            <Text style={[type.body, { color: c.secondary, fontSize: 15, lineHeight: 22 }]}>
-              {t("Show the problem. Fixify marks what matters and guides you step by step until you have checked that it works.")}
+      {/* Small tiles, like "Daily Streak", "Training" and "Breath Volume". */}
+      <Reveal kind="slideUp" delay={240} style={styles.tiles}>
+        <Tile tone="graphite" style={{ flex: 1, height: TALL }} onPress={() => router.navigate("/library")} label={t("Solved")}>
+          <View style={{ flex: 1, justifyContent: "flex-end", gap: space.m }}>
+            <Text style={styles.big}>{solved.length}</Text>
+            <DotLine filled={Math.min(solved.length, 12)} />
+          </View>
+        </Tile>
+        <View style={{ flex: 1, gap: GAP }}>
+          <Tile tone="blue" style={{ height: SHORT }} onPress={() => router.navigate("/library")} label={t("Sessions")}>
+            <Text style={styles.small}>{sessions.length}</Text>
+          </Tile>
+          <Tile tone="orange" style={{ height: SHORT }} onPress={() => (last ? openSession(last.id) : startScan())} label={t("Last session")}>
+            <Text style={styles.smallText} numberOfLines={1}>
+              {last ? last.title : t("Nothing yet")}
             </Text>
-          </View>
-          <View style={{ flexDirection: "row", gap: space.s }}>
-            <PressScale style={{ flex: 1 }} haptic="medium" onPress={() => startScan()}>
-              <RainbowBorder radius={26} width={1.25} glow={0.25} intensity={0.55}>
-                {/* The action: solid saturated blue. */}
-                <View style={[styles.primary, { backgroundColor: c.accent, boxShadow: `0 10px 28px ${c.accent}66`, overflow: "hidden" }]}>
-                  <LinearGradient pointerEvents="none" colors={["#FFFFFF33", "#FFFFFF00"]} end={{ x: 0.5, y: 0.6 }} style={StyleSheet.absoluteFill} />
-                  <Ionicons name="scan-outline" size={18} color="#FFFFFF" />
-                  <Text style={[type.headline, { color: "#FFFFFF" }]}>{t("Open camera")}</Text>
-                </View>
-              </RainbowBorder>
-            </PressScale>
-            <PressScale onPress={() => startScan({ library: true })} accessibilityHint={t("Pick a photo or screenshot of the problem")}>
-              <IconCircle icon="images-outline" size={52} />
-            </PressScale>
-          </View>
-        </GlassCard>
-        </Reveal>
+          </Tile>
+        </View>
+      </Reveal>
 
-        <Reveal kind="pop" delay={560}>
-        <PressScale onPress={() => router.navigate("/fixvoice")}>
-          <Glass interactive style={[styles.row, { boxShadow: dark ? GLOW_ROW_DARK : GLOW_ROW_LIGHT }]}>
-            <LightCatch dark={dark} />
-            <IconCircle icon="mic-outline" size={46} />
+      {!isServerConfigured(settings) && settings.provider === "proxy" && (
+        <PressScale onPress={() => router.navigate("/settings")}>
+          <Glass interactive style={styles.notice}>
+            <Ionicons name="server-outline" size={20} color={c.caution} />
             <View style={{ flex: 1, gap: 2 }}>
-              <Text style={[type.headline, { color: c.text }]}>{t("Talk to FixVoice")}</Text>
-              <Caption style={{ fontSize: 13 }}>{t("Hands-free, by voice")}</Caption>
+              <Text style={[type.headline, { color: c.text }]}>{t("AI analysis is not set up")}</Text>
+              <Caption>{t("Choose an AI service in Settings to get a diagnosis and a guided plan.")}</Caption>
             </View>
             <Ionicons name="chevron-forward" size={18} color={c.secondary} />
           </Glass>
         </PressScale>
-        </Reveal>
-
-        {!isServerConfigured(settings) && settings.provider === "proxy" && (
-          <PressScale onPress={() => router.navigate("/settings")}>
-            <Glass interactive style={styles.row}>
-              <Ionicons name="server-outline" size={20} color={c.caution} />
-              <View style={{ flex: 1, gap: 2 }}>
-                <Text style={[type.headline, { color: c.text }]}>{t("AI analysis is not set up")}</Text>
-                <Caption>{t("Choose an AI service in Settings to get a diagnosis and a guided plan.")}</Caption>
-              </View>
-              <Ionicons name="chevron-forward" size={18} color={c.secondary} />
-            </Glass>
-          </PressScale>
-        )}
-      </View>
-
-      {solved.length > 0 && (
-        <View style={{ gap: space.m }}>
-          <RevealWords text={t("Recently solved").toUpperCase()} style={[type.eyebrow, { color: c.secondary, fontSize: 13, letterSpacing: 1 }]} />
-          <Reveal kind="build" delay={100}>
-          <GlassCard style={{ gap: 0, paddingVertical: space.xs, paddingHorizontal: 0 }}>
-            {solved.map((s, i) => (
-              <View key={s.id} style={{ paddingHorizontal: space.l }}>
-                {i > 0 && <Divider />}
-                <SessionRow session={s} onPress={() => openSession(s.id)} />
-              </View>
-            ))}
-          </GlassCard>
-          </Reveal>
-        </View>
       )}
     </Screen>
   );
 }
 
-const GLOW_ROW_DARK = "0 14px 36px rgba(30, 91, 255, 0.14), 0 2px 10px rgba(0, 0, 0, 0.45)";
-const GLOW_ROW_LIGHT = "0 10px 28px rgba(30, 91, 255, 0.10), 0 1px 4px rgba(16, 24, 48, 0.08)";
+const GAP = 12;
+const SHORT = 84;
+const TALL = SHORT * 2 + GAP;
+
+function Tile({ tone, label, onPress, style, children }: { tone: SoftTone; label: string; onPress: () => void; style?: object; children: ReactNode }) {
+  return (
+    <PressScale onPress={onPress} accessibilityLabel={label} style={style}>
+      <SoftSurface palette={SOFT[tone]} radius={30} feather={6} style={styles.tile}>
+        <Text style={styles.tileLabel} numberOfLines={1}>
+          {label}
+        </Text>
+        {children}
+      </SoftSurface>
+    </PressScale>
+  );
+}
+
+/** A dotted track with a bright mark, like the streak line in the reference. */
+function DotLine({ filled }: { filled: number }) {
+  return (
+    <View style={styles.dotLine}>
+      {Array.from({ length: 12 }, (_, i) => (
+        <View key={i} style={[styles.lineDot, { opacity: i < filled ? 1 : 0.3 }]} />
+      ))}
+      <View style={styles.lineMark} />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
-  topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  wordmark: { fontFamily: font.accentMedium, fontSize: 20, letterSpacing: -0.2 },
-  quota: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: StyleSheet.hairlineWidth },
-  hero: { padding: space.xl, gap: space.xl },
-  primary: { flexDirection: "row", gap: space.s, alignItems: "center", justifyContent: "center", borderRadius: 999, height: 52 },
-  secondary: { width: 52, height: 52, borderRadius: 999, alignItems: "center", justifyContent: "center" },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: space.m,
-    padding: space.l,
-    paddingRight: space.xl,
-    borderRadius: radius.card,
-    borderCurve: "continuous",
-  },
-  rowIcon: { width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center", borderWidth: StyleSheet.hairlineWidth },
-  list: { borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, overflow: "hidden", borderCurve: "continuous" },
-  topic: { flexDirection: "row", alignItems: "center", gap: space.m, paddingHorizontal: space.l, paddingVertical: 16 },
+  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: space.s },
+  title: { ...font.semibold, fontSize: 24, letterSpacing: -0.3 },
+  tiles: { flexDirection: "row", gap: GAP },
+  tile: { flex: 1, paddingHorizontal: space.l, paddingVertical: space.m + 2, gap: 4 },
+  tileLabel: { color: "#FFFFFFE6", ...font.medium, fontSize: 15, letterSpacing: -0.2 },
+  big: { color: "#FFFFFF", ...font.light, fontSize: 48, lineHeight: 52, letterSpacing: -1 },
+  small: { color: "#FFFFFF", ...font.light, fontSize: 30, lineHeight: 34, letterSpacing: -0.5 },
+  smallText: { color: "#FFFFFF", ...font.regular, fontSize: 15 },
+  dotLine: { flexDirection: "row", alignItems: "center", gap: 5 },
+  lineDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: "#FFFFFF" },
+  lineMark: { width: 3, height: 14, borderRadius: 1.5, backgroundColor: "#D7F25A" },
+  notice: { flexDirection: "row", alignItems: "center", gap: space.m, padding: space.l, borderRadius: 24, borderCurve: "continuous" },
 });

@@ -278,7 +278,7 @@ export default function Scan() {
               style={[styles.mode, mode === m && { backgroundColor: MARKER }]}
               aria-selected={mode === m}
             >
-              <Text style={{ color: mode === m ? "#000" : "#fff", fontFamily: font.semibold, fontSize: 13 }}>{m === "photo" ? t("Photo") : t("Video")}</Text>
+              <Text style={{ color: mode === m ? "#000" : "#fff", ...font.semibold, fontSize: 13 }}>{m === "photo" ? t("Photo") : t("Video")}</Text>
             </Pressable>
           ))}
         </Glass>
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
   overlay: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, paddingHorizontal: space.l, gap: space.m },
   topBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   statusPill: { flexDirection: "row", alignItems: "center", gap: 6, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 8 },
-  statusText: { color: "#fff", fontSize: 13, fontFamily: font.semibold },
+  statusText: { color: "#fff", fontSize: 13, ...font.semibold },
   dot: { width: 8, height: 8, borderRadius: 4 },
   stripRow: { flexDirection: "row", alignItems: "center", gap: space.s },
   thumb: { width: 48, height: 48, borderRadius: 10 },

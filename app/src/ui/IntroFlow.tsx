@@ -72,7 +72,7 @@ export function IntroFlow({ onDone }: { onDone: () => void }) {
       <View style={[styles.top, { paddingTop: insets.top + space.s }]}>
         <Dots page={page} total={PAGES.length} />
         <Pressable onPress={finish} hitSlop={12} accessibilityRole="button">
-          <Text style={{ color: c.secondary, fontFamily: font.medium, fontSize: 15 }}>{t("Skip")}</Text>
+          <Text style={{ color: c.secondary, ...font.medium, fontSize: 15 }}>{t("Skip")}</Text>
         </Pressable>
       </View>
 
@@ -180,7 +180,7 @@ function Marker({ n, x, y, delay, active }: { n: number; x: number; y: number; d
   const style = useAnimatedStyle(() => ({ transform: [{ scale: s.value }], opacity: s.value }));
   return (
     <Animated.View style={[styles.marker, { left: x, top: y, backgroundColor: c.marker, boxShadow: `0 0 16px ${c.marker}AA` }, style]}>
-      <Text style={{ color: "#000", fontFamily: font.bold, fontSize: 13 }}>{n}</Text>
+      <Text style={{ color: "#000", ...font.bold, fontSize: 13 }}>{n}</Text>
     </Animated.View>
   );
 }
@@ -222,7 +222,7 @@ function LimitDemo({ active }: { active: boolean }) {
         return <LimitDot key={i} index={i} fill={fill} x={Math.cos(a) * 82} y={Math.sin(a) * 82} />;
       })}
       <Text style={[type.hero, { color: c.text }, textGlow(true)]}>10</Text>
-      <Text style={{ color: c.secondary, fontFamily: font.medium, fontSize: 13, marginTop: -4 }}>{t("photos / day")}</Text>
+      <Text style={{ color: c.secondary, ...font.medium, fontSize: 13, marginTop: -4 }}>{t("photos / day")}</Text>
     </View>
   );
 }
@@ -262,13 +262,13 @@ function SettingsDemo({ active }: { active: boolean }) {
       <Glass style={styles.miniRow}>
         <LightCatch dark={dark} />
         <Ionicons name={dark ? "moon" : "sunny"} size={18} color={c.accent} />
-        <Text style={{ color: c.text, fontFamily: font.medium, fontSize: 14, flex: 1 }}>{t("Appearance")}</Text>
-        <Text style={{ color: c.secondary, fontFamily: font.medium, fontSize: 13 }}>{dark ? t("Dark") : t("Light")}</Text>
+        <Text style={{ color: c.text, ...font.medium, fontSize: 14, flex: 1 }}>{t("Appearance")}</Text>
+        <Text style={{ color: c.secondary, ...font.medium, fontSize: 13 }}>{dark ? t("Dark") : t("Light")}</Text>
       </Glass>
       <Glass style={styles.miniRow}>
         <LightCatch dark={dark} />
         <Ionicons name="lock-closed" size={18} color={c.success} />
-        <Text style={{ color: c.text, fontFamily: font.medium, fontSize: 14, flex: 1 }}>{t("Only after you agree")}</Text>
+        <Text style={{ color: c.text, ...font.medium, fontSize: 14, flex: 1 }}>{t("Only after you agree")}</Text>
       </Glass>
     </View>
   );
@@ -289,6 +289,6 @@ const styles = StyleSheet.create({
   limitDotInner: { width: 28, height: 28, borderRadius: 14, alignItems: "center", justifyContent: "center" },
   miniSegment: { flexDirection: "row", borderRadius: 999, padding: 4, height: 46, alignItems: "center" },
   miniPill: { position: "absolute", left: 4, top: 4, bottom: 4, width: 126, borderRadius: 999 },
-  miniLabel: { flex: 1, textAlign: "center", fontFamily: font.medium, fontSize: 13 },
+  miniLabel: { flex: 1, textAlign: "center", ...font.medium, fontSize: 13 },
   miniRow: { flexDirection: "row", alignItems: "center", gap: space.m, borderRadius: 18, paddingHorizontal: space.l, height: 52 },
 });

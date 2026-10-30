@@ -121,7 +121,7 @@ function SegmentLabel({ label, on, onPress, color }: { label: string; on: boolea
         numberOfLines={1}
         adjustsFontSizeToFit
         minimumFontScale={0.85}
-        style={[{ color, fontSize: 14, fontFamily: on ? font.semibold : font.medium }, animated]}
+        style={[{ color, fontSize: 14, ...(on ? font.semibold : font.medium) }, animated]}
       >
         {label}
       </Animated.Text>
@@ -187,7 +187,7 @@ export function Chip({ text, color, icon }: { text: string; color?: string; icon
   return (
     <View style={[styles.chip, { backgroundColor: tint + "22" }]}>
       {icon && <Ionicons name={icon} size={12} color={tint} />}
-      <Text style={[type.small, { color: tint, fontFamily: font.semibold }]}>{text}</Text>
+      <Text style={[type.small, { color: tint, ...font.semibold }]}>{text}</Text>
     </View>
   );
 }
@@ -216,7 +216,7 @@ export function MarkerBadge({ number, size = 24, estimated, dimmed }: { number: 
         },
       ]}
     >
-      <Text style={{ fontSize: size * 0.5, fontFamily: font.bold, color: "#000" }}>{number}</Text>
+      <Text style={{ fontSize: size * 0.5, ...font.bold, color: "#000" }}>{number}</Text>
     </View>
   );
 }
@@ -312,7 +312,7 @@ export function SafetyBanner({ safety }: { safety: ProblemAnalysis["safety"] }) 
         <Body key={w}>{w}</Body>
       ))}
       {safety.recommendProfessional && (
-        <Body style={{ fontFamily: font.semibold }}>{t("We recommend getting a qualified professional for this. Do not continue if you are unsure.")}</Body>
+        <Body style={{ ...font.semibold }}>{t("We recommend getting a qualified professional for this. Do not continue if you are unsure.")}</Body>
       )}
     </View>
   );

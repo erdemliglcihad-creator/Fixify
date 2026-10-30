@@ -7,7 +7,7 @@ export default function Privacy() {
   const { c } = useTheme();
   const group = (title: string, rows: [Parameters<typeof InfoRow>[0]["icon"], string, string][]) => (
     <View style={{ gap: space.s }}>
-      <Caption style={{ textTransform: "uppercase", fontFamily: font.semibold, marginLeft: space.s }}>{title}</Caption>
+      <Caption style={{ textTransform: "uppercase", ...font.semibold, marginLeft: space.s }}>{title}</Caption>
       <Card>
         {rows.map(([icon, title, detail]) => (
           <InfoRow key={title} icon={icon} title={title} detail={detail} />

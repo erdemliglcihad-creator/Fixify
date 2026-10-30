@@ -82,7 +82,7 @@ export default function FixVoice() {
         {contextSession && (
           <View style={[styles.context, { borderColor: c.hairline }]}>
             <Ionicons name="construct-outline" size={13} color={c.secondary} />
-            <Text style={{ color: c.secondary, fontSize: 13, fontFamily: font.regular, flexShrink: 1 }} numberOfLines={1}>
+            <Text style={{ color: c.secondary, fontSize: 13, ...font.regular, flexShrink: 1 }} numberOfLines={1}>
               {t("About: %@", contextSession.title)}
             </Text>
             <Pressable onPress={() => setChatContext(null)} hitSlop={10} accessibilityLabel={t("Remove session from chat")}>
@@ -97,7 +97,7 @@ export default function FixVoice() {
         {/* Soft rainbow edge, a little stronger while the call is live. */}
         <RainbowBorder radius={32} width={1.25} glow={0.6} intensity={call.inCall ? 1 : 0.85}>
           <Glass style={styles.pill}>
-            <LinearGradient pointerEvents="none" colors={["#5AA8FF33", "#1E5BFF14"]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
+            <LinearGradient pointerEvents="none" colors={["#4FD2FF33", "#6A2BD91F"]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
             <Grain opacity={0.3} />
             <PressScale
               onPress={call.inCall ? call.tap : start}
@@ -151,7 +151,7 @@ function VoiceGlow({ level, active }: { level: SharedValue<number>; active: bool
   }));
   return (
     <Animated.View pointerEvents="none" style={[styles.bottomGlow, style]}>
-      <LinearGradient colors={["#02040900", "#0B2A6B88", "#1E5BFFAA", "#5AA8FFAA"]} locations={[0, 0.55, 0.85, 1]} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={["#02040900", "#3A1A8A88", "#3D6BFFB8", "#4FD2FFB0"]} locations={[0, 0.55, 0.85, 1]} style={StyleSheet.absoluteFill} />
     </Animated.View>
   );
 }
@@ -186,11 +186,11 @@ const styles = StyleSheet.create({
   bottomGlow: { position: "absolute", left: -30, right: -30, bottom: -60, height: "55%", transformOrigin: "bottom" },
   orbArea: { alignItems: "center", justifyContent: "center", marginTop: space.l },
   textArea: { flex: 1, alignItems: "center", paddingHorizontal: space.xl, gap: space.l, paddingTop: space.l },
-  headline: { fontFamily: font.medium, fontSize: 34, lineHeight: 40, letterSpacing: -1, textAlign: "center" },
+  headline: { ...font.medium, fontSize: 34, lineHeight: 40, letterSpacing: -1, textAlign: "center" },
   context: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, maxWidth: "100%" },
   pill: { flexDirection: "row", alignItems: "center", height: 64, borderRadius: 32, paddingRight: 8, gap: space.s },
   pillMain: { flex: 1, flexDirection: "row", alignItems: "center", alignSelf: "stretch", paddingLeft: space.l, gap: space.m },
-  pillText: { flex: 1, fontFamily: font.accent, fontSize: 17, letterSpacing: 0.1 },
+  pillText: { flex: 1, ...font.accent, fontSize: 17, letterSpacing: 0.1 },
   bars: { flexDirection: "row", alignItems: "center", gap: 3, height: 32, paddingRight: space.s },
   bar: { width: 2.5, borderRadius: 2 },
   hangUp: { width: 48, height: 48, borderRadius: 24, alignItems: "center", justifyContent: "center" },

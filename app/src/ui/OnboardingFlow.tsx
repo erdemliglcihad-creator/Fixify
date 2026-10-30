@@ -121,7 +121,7 @@ export function OnboardingFlow({ initial, onDone }: { initial?: Profile | null; 
         </Pressable>
         <Progress index={index} total={STEPS.length} />
         <Pressable onPress={() => finish(profile.name || profile.why || profile.topics.length ? profile : null)} hitSlop={12} accessibilityRole="button">
-          <Text style={{ color: c.secondary, fontFamily: font.medium, fontSize: 15 }}>{t("Skip")}</Text>
+          <Text style={{ color: c.secondary, ...font.medium, fontSize: 15 }}>{t("Skip")}</Text>
         </Pressable>
       </View>
 
@@ -149,7 +149,7 @@ export function OnboardingFlow({ initial, onDone }: { initial?: Profile | null; 
                   returnKeyType="next"
                   onSubmitEditing={next}
                   maxLength={40}
-                  style={{ color: c.text, fontSize: 20, fontFamily: font.medium, flex: 1 }}
+                  style={{ color: c.text, fontSize: 20, ...font.medium, flex: 1 }}
                 />
               </View>
               <View style={styles.privacy}>
@@ -215,7 +215,7 @@ function Choice({ option, on, multi, onPress }: { option: Option; on: boolean; m
       >
         <LightCatch dark={dark} />
         <IconCircle icon={option.icon} size={44} active={on} />
-        <Text style={{ color: c.text, fontSize: 15, fontFamily: on ? font.semibold : font.medium, flex: 1 }} numberOfLines={2}>
+        <Text style={{ color: c.text, fontSize: 15, ...(on ? font.semibold : font.medium), flex: 1 }} numberOfLines={2}>
           {option.label()}
         </Text>
         <Ionicons

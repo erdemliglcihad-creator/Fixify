@@ -4,13 +4,15 @@ import { useState } from "react";
 import { Platform, StyleSheet, Text, TextInput, View } from "react-native";
 import { searchText } from "../../core/session.ts";
 import type { FixSession } from "../../core/types.ts";
-import { t } from "../../i18n/index.ts";
+import { lang, t } from "../../i18n/index.ts";
 import { openSession } from "../../services/nav.ts";
 import { deleteSession, useSessions } from "../../services/sessions.ts";
 import { Caption } from "../../ui/components.tsx";
 import { Glass } from "../../ui/Glass.tsx";
 import { confirmDestructive } from "../../ui/confirm.ts";
-import { SessionCarousel } from "../../ui/SessionCarousel.tsx";
+import { CardCarousel, SoftCard } from "../../ui/CardCarousel.tsx";
+import { ROTATION } from "../../ui/soft.ts";
+import { formatDate } from "../../core/format.ts";
 import { space, type, useTheme } from "../../ui/theme.ts";
 import { Screen } from "../../ui/Screen.tsx";
 import { useArea } from "../../services/area.ts";
@@ -62,7 +64,21 @@ export default function Library() {
 
       {filtered.length ? (
         // A new search starts again at the first card.
-        <SessionCarousel key={q} sessions={filtered} onOpen={(s) => openSession(s.id)} onLongPress={askDelete} />
+        <CardCarousel
+          key={q}
+          items={filtered}
+          keyOf={(s) => s.id}
+          render={(s, i) => (
+            <SoftCard
+              // Just the project: title and date, colors rotating like the reference cards.
+              tone={ROTATION[i % ROTATION.length]}
+              title={s.title}
+              subtitle={formatDate(s.updatedAt, lang)}
+              onPress={() => openSession(s.id)}
+              onLongPress={() => askDelete(s)}
+            />
+          )}
+        />
       ) : (
         <Caption style={{ textAlign: "center", marginTop: space.xl }}>{t("No results for \"%@\"", query)}</Caption>
       )}
