@@ -4,7 +4,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import Animated, { FadeIn, FadeOut, useAnimatedReaction, useAnimatedStyle, useFrameCallback, useSharedValue, withSpring, type SharedValue } from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut, ZoomIn, ZoomOut, useAnimatedReaction, useAnimatedStyle, useFrameCallback, useSharedValue, withSpring, type SharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { t } from "../../i18n/index.ts";
 import { useArea } from "../../services/area.ts";
@@ -59,7 +59,7 @@ export default function FixVoice() {
 
   return (
     <View style={{ flex: 1, paddingTop: insets.top + space.xl }}>
-      {/* Blue light rising from the bottom, like the reference screen. */}
+      {/* Red light rising from the bottom. */}
       <VoiceGlow level={call.level} active={call.inCall} />
 
       <View style={styles.orbArea}>
@@ -97,7 +97,7 @@ export default function FixVoice() {
         {/* Soft rainbow edge, a little stronger while the call is live. */}
         <RainbowBorder radius={32} width={1.25} glow={0.6} intensity={call.inCall ? 1 : 0.85}>
           <Glass style={styles.pill}>
-            <LinearGradient pointerEvents="none" colors={["#4FD2FF33", "#6A2BD91F"]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
+            <LinearGradient pointerEvents="none" colors={["#FF6A5A33", "#CA08081F"]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
             <Grain opacity={0.3} />
             <PressScale
               onPress={call.inCall ? call.tap : start}
@@ -111,10 +111,13 @@ export default function FixVoice() {
               </Text>
               <Bars level={call.level} active={call.inCall} />
             </PressScale>
+            {/* The hang-up button grows out of the pill when the call starts and shrinks back into it. */}
             {call.inCall && (
-              <PressScale onPress={call.endCall} haptic="medium" accessibilityLabel={t("End call")} style={[styles.hangUp, { backgroundColor: c.danger }]}>
-                <Ionicons name="close" size={20} color="#fff" />
-              </PressScale>
+              <Animated.View entering={ZoomIn.springify().damping(16)} exiting={ZoomOut.duration(180)}>
+                <PressScale onPress={call.endCall} haptic="medium" accessibilityLabel={t("End call")} style={[styles.hangUp, { backgroundColor: c.danger }]}>
+                  <Ionicons name="close" size={20} color="#fff" />
+                </PressScale>
+              </Animated.View>
             )}
           </Glass>
         </RainbowBorder>
@@ -133,7 +136,7 @@ export default function FixVoice() {
 }
 
 /**
- * Blue light rising from the bottom. While talking it breathes with the voice (yours or FixVoice's):
+ * Red light rising from the bottom. While talking it breathes with the voice (yours or FixVoice's):
  * a little taller and brighter, and it drifts sideways a touch. Springs keep it smooth, never jumpy.
  */
 function VoiceGlow({ level, active }: { level: SharedValue<number>; active: boolean }) {
@@ -151,7 +154,7 @@ function VoiceGlow({ level, active }: { level: SharedValue<number>; active: bool
   }));
   return (
     <Animated.View pointerEvents="none" style={[styles.bottomGlow, style]}>
-      <LinearGradient colors={["#02040900", "#3A1A8A88", "#3D6BFFB8", "#4FD2FFB0"]} locations={[0, 0.55, 0.85, 1]} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={["#00000000", "#270A0A88", "#CA0808B0", "#FF6A5AA8"]} locations={[0, 0.55, 0.85, 1]} style={StyleSheet.absoluteFill} />
     </Animated.View>
   );
 }

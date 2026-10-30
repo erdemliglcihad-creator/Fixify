@@ -1,8 +1,10 @@
 // Sideways carousel of tall soft cards (Home and Library). The centered card is full size,
 // its neighbors peek in a little smaller; page dots follow the swipe.
 import Ionicons from "@expo/vector-icons/Ionicons";
-import type { ReactNode } from "react";
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { useRef, type ReactNode } from "react";
+import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { morphOpen } from "../services/morph.ts";
+import { PressScale } from "./motion.tsx";
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
 import type { IconName } from "./categories.ts";
 import { SOFT, type SoftTone } from "./soft.ts";
@@ -10,6 +12,7 @@ import { SoftSurface } from "./SoftSurface";
 import { font, space, useTheme } from "./theme.ts";
 
 const GAP = 12;
+type Measurable = { measureInWindow: (cb: (x: number, y: number, width: number, height: number) => void) => void };
 export const CARD_RADIUS = 52;
 
 export function CardCarousel<T>({ items, keyOf, render }: { items: T[]; keyOf: (item: T) => string; render: (item: T, index: number) => ReactNode }) {
@@ -78,37 +81,46 @@ export function SoftCard({
   onLongPress?: () => void;
   accessibilityLabel?: string;
 }) {
+  const ref = useRef<Measurable>(null);
+  // Tap: the card grows into the next screen (services/morph), long press stays where it is.
+  const open = () => {
+    if (!ref.current) return onPress();
+    ref.current.measureInWindow((x, y, width, height) => (width ? morphOpen({ x, y, width, height }, tone, CARD_RADIUS, onPress) : onPress()));
+  };
   return (
-    <Pressable
-      onPress={onPress}
+    <PressScale
+      onPress={open}
       onLongPress={onLongPress}
       delayLongPress={450}
-      accessibilityRole="button"
+      haptic="light"
+      scaleTo={0.97}
       accessibilityLabel={accessibilityLabel ?? title}
-      style={({ pressed }) => ({ flex: 1, transform: [{ scale: pressed ? 0.97 : 1 }] })}
+      style={{ flex: 1 }}
     >
-      <SoftSurface palette={SOFT[tone]} radius={CARD_RADIUS} style={styles.card}>
-        <Arcs />
-        {(label || icon) && (
-          <View style={styles.top}>
-            <Text style={styles.label} numberOfLines={1}>
-              {label}
+      <View ref={ref as never} collapsable={false} style={{ flex: 1 }}>
+        <SoftSurface palette={SOFT[tone]} radius={CARD_RADIUS} style={styles.card}>
+          <Arcs />
+          {(label || icon) && (
+            <View style={styles.top}>
+              <Text style={styles.label} numberOfLines={1}>
+                {label}
+              </Text>
+              {icon && (
+                <View style={styles.icon}>
+                  <Ionicons name={icon} size={16} color="#FFFFFFD9" />
+                </View>
+              )}
+            </View>
+          )}
+          <View style={styles.middle}>
+            <Text style={styles.title} numberOfLines={4} adjustsFontSizeToFit minimumFontScale={0.7}>
+              {title}
             </Text>
-            {icon && (
-              <View style={styles.icon}>
-                <Ionicons name={icon} size={16} color="#FFFFFFD9" />
-              </View>
-            )}
+            {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
           </View>
-        )}
-        <View style={styles.middle}>
-          <Text style={styles.title} numberOfLines={4} adjustsFontSizeToFit minimumFontScale={0.7}>
-            {title}
-          </Text>
-          {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
-        </View>
-      </SoftSurface>
-    </Pressable>
+        </SoftSurface>
+      </View>
+    </PressScale>
   );
 }
 

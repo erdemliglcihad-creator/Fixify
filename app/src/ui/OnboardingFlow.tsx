@@ -209,7 +209,7 @@ function Choice({ option, on, multi, onPress }: { option: Option; on: boolean; m
       <View
         style={[
           styles.choice,
-          { backgroundColor: on ? (dark ? "#0F1B33" : "#EEF3FF") : c.surface, borderColor: on ? c.accent : c.hairline },
+          { backgroundColor: on ? c.accentSoft : c.surface, borderColor: on ? c.accent : c.hairline },
           on ? { boxShadow: `0 0 0 1px ${c.accent}40, 0 10px 28px ${c.accent}40` } : { boxShadow: dark ? "0 6px 18px rgba(0, 0, 0, 0.35)" : "0 4px 14px rgba(16, 24, 48, 0.06)" },
         ]}
       >

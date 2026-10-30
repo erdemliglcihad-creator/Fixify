@@ -27,18 +27,23 @@ type PressScaleProps = Omit<PressableProps, "style"> & {
 
 /** Sinks on touch-down (instant feedback) and springs back with a small bounce on release. */
 export function PressScale({ style, children, scaleTo = 0.95, haptic = "selection", onPressIn, onPressOut, onPress, ...rest }: PressScaleProps) {
-  const scale = useSharedValue(1);
-  const animated = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+  // Squish, not just shrink: the shape gets a touch wider and flatter under the finger (a small morph),
+  // then springs back into form.
+  const sx = useSharedValue(1);
+  const sy = useSharedValue(1);
+  const animated = useAnimatedStyle(() => ({ transform: [{ scaleX: sx.value }, { scaleY: sy.value }] }));
   return (
     <AnimatedPressable
       accessibilityRole="button"
       {...rest}
       onPressIn={(e) => {
-        scale.value = withSpring(scaleTo, SNAP);
+        sx.value = withSpring(1 - (1 - scaleTo) * 0.35, SNAP);
+        sy.value = withSpring(scaleTo - (1 - scaleTo) * 0.4, SNAP);
         onPressIn?.(e);
       }}
       onPressOut={(e) => {
-        scale.value = withSpring(1, BOUNCE);
+        sx.value = withSpring(1, BOUNCE);
+        sy.value = withSpring(1, BOUNCE);
         onPressOut?.(e);
       }}
       onPress={(e) => {

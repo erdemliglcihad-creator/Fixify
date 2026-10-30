@@ -51,7 +51,7 @@ export function Glass({ children, style, variant = "regular", tint, interactive,
   if (reduce) {
     // Accessibility: a solid, clearly bordered surface instead of translucency.
     return (
-      <View style={[{ backgroundColor: tint ?? (dark ? "#1C1F26" : c.raised), borderColor: c.hairline, borderWidth: StyleSheet.hairlineWidth, overflow: "hidden" }, style]}>
+      <View style={[{ backgroundColor: tint ?? c.raised, borderColor: c.hairline, borderWidth: StyleSheet.hairlineWidth, overflow: "hidden" }, style]}>
         {children}
       </View>
     );
@@ -66,15 +66,15 @@ export function Glass({ children, style, variant = "regular", tint, interactive,
   }
 
   // Fallback material: blur, a light veil and a bright edge where "light catches the glass".
-  // Tinted glass skips the blur so the tint (with its own alpha) defines the surface, e.g. on the blue hero.
+  // Tinted glass skips the blur so the tint (with its own alpha) defines the surface, e.g. on the colored hero.
   const veil = tint
     ? tint.length === 9
       ? tint
       : tint + "D9"
     : scheme === "dark"
       ? variant === "clear"
-        ? "#11141A55"
-        : "#161A2299"
+        ? "#12040455"
+        : "#1A060699"
       : variant === "clear"
         ? "#FFFFFF33"
         : "#FFFFFFA6";

@@ -8,6 +8,7 @@ import { t } from "../i18n/index.ts";
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from "react-native-reanimated";
 import { statusInfo, type IconName } from "./categories.ts";
 import { Glass } from "./Glass.tsx";
+import { PressScale } from "./motion.tsx";
 import { radius, space, type, useTheme, type Palette, font } from "./theme.ts";
 
 export function Card({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
@@ -19,7 +20,7 @@ export function Card({ children, style }: { children: ReactNode; style?: StylePr
 export function GlassCard({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
   const { dark } = useTheme();
   return (
-    // Soft glow under the glass: a wide, faint blue light plus a tight dark shadow for contrast.
+    // Soft glow under the glass: a wide, faint red light plus a tight dark shadow for contrast.
     <View style={[styles.glassGlow, { boxShadow: dark ? GLOW_DARK : GLOW_LIGHT }]}>
       <Glass style={[styles.glassCard, style]}>
         <LightCatch dark={dark} />
@@ -29,8 +30,8 @@ export function GlassCard({ children, style }: { children: ReactNode; style?: St
   );
 }
 
-const GLOW_DARK = "0 18px 44px rgba(30, 91, 255, 0.16), 0 2px 12px rgba(0, 0, 0, 0.5)";
-const GLOW_LIGHT = "0 14px 34px rgba(30, 91, 255, 0.12), 0 1px 4px rgba(16, 24, 48, 0.08)";
+const GLOW_DARK = "0 18px 44px rgba(202, 8, 8, 0.2), 0 2px 12px rgba(0, 0, 0, 0.5)";
+const GLOW_LIGHT = "0 14px 34px rgba(202, 8, 8, 0.12), 0 1px 4px rgba(16, 24, 48, 0.08)";
 
 /** Light catching the top of the glass: a faint sheen and a bright rim that fades out to both sides. */
 export function LightCatch({ dark }: { dark: boolean }) {
@@ -80,7 +81,7 @@ export function Segmented<T extends string>({ value, options, onChange }: { valu
             pointerEvents="none"
             style={[
               styles.segmentPill,
-              // The chosen option sits on solid action blue.
+              // The chosen option sits on the solid action color.
               { width: slot, backgroundColor: c.accent, boxShadow: `0 4px 14px ${c.accent}66` },
               pill,
             ]}
@@ -147,7 +148,7 @@ export function IconCircle({ icon, size = 44, color, active }: { icon: IconName;
       }}
     >
       <LinearGradient
-        colors={active ? [c.accent, "#1B47C8"] : dark ? ["#2A2F3B", "#0C0E14"] : ["#FFFFFF", "#E6EAF2"]}
+        colors={active ? [c.accent, "#7A0505"] : dark ? ["#2A2F3B", "#0C0E14"] : ["#FFFFFF", "#E6EAF2"]}
         start={{ x: 0.2, y: 0 }}
         end={{ x: 0.8, y: 1 }}
         style={StyleSheet.absoluteFill}
@@ -257,19 +258,16 @@ export function Button({ title, onPress, icon, kind = "primary", disabled, loadi
     </>
   );
   return (
-    <Pressable
-      accessibilityRole="button"
+    // Feedback on touch-down, not on release: the button squishes and springs back (PressScale).
+    <PressScale
       aria-disabled={Boolean(disabled || loading)}
       disabled={disabled || loading}
-      onPress={() => {
-        if (Platform.OS !== "web") Haptics.selectionAsync();
-        onPress();
-      }}
-      // Feedback on touch-down, not on release.
-      style={({ pressed }) => [{ opacity: disabled ? 0.45 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] }, style]}
+      scaleTo={0.96}
+      onPress={() => onPress()}
+      style={[{ opacity: disabled ? 0.45 : 1 }, style]}
     >
       {kind === "primary" ? (
-        // Actions are solid, saturated blue with a light top edge (hard contrast, no glass).
+        // Actions are solid, saturated red with a light top edge (hard contrast, no glass).
         <View style={[inner, styles.primary, { backgroundColor: c.accent, boxShadow: `0 10px 28px ${c.accent}66` }]}>
           <LinearGradient pointerEvents="none" colors={["#FFFFFF33", "#FFFFFF00"]} end={{ x: 0.5, y: 0.6 }} style={StyleSheet.absoluteFill} />
           {label}
@@ -281,7 +279,7 @@ export function Button({ title, onPress, icon, kind = "primary", disabled, loadi
       ) : (
         <View style={[inner, { backgroundColor: kind === "danger" ? c.danger + "18" : "transparent" }]}>{label}</View>
       )}
-    </Pressable>
+    </PressScale>
   );
 }
 

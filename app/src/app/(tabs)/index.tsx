@@ -10,6 +10,7 @@ import { isServerConfigured, useSettings } from "../../services/settings.ts";
 import { useQuota } from "../../services/usage.ts";
 import { CardCarousel, SoftCard } from "../../ui/CardCarousel.tsx";
 import { Caption, IconCircle } from "../../ui/components.tsx";
+import { CountUp } from "../../ui/CountUp.tsx";
 import { Glass } from "../../ui/Glass.tsx";
 import { PressScale } from "../../ui/motion.tsx";
 import { Reveal } from "../../ui/reveal.tsx";
@@ -32,11 +33,11 @@ export default function Home() {
 
   // The three ways in, one big soft card each (swipe sideways).
   const actions: Action[] = [
-    { id: "scan", tone: "pink", label: "Live Fix", icon: "scan-outline", title: t("Open camera"), subtitle: t("Show it. Fix it."), run: () => startScan() },
-    { id: "voice", tone: "blue", label: "FixVoice", icon: "mic-outline", title: t("Talk to FixVoice"), subtitle: t("Hands-free, by voice"), run: () => router.navigate("/fixvoice") },
+    { id: "scan", tone: "red", label: "Live Fix", icon: "scan-outline", title: t("Open camera"), subtitle: t("Show it. Fix it."), run: () => startScan() },
+    { id: "voice", tone: "crimson", label: "FixVoice", icon: "mic-outline", title: t("Talk to FixVoice"), subtitle: t("Hands-free, by voice"), run: () => router.navigate("/fixvoice") },
     {
       id: "photo",
-      tone: "orange",
+      tone: "blush",
       label: t("Photo"),
       icon: "images-outline",
       title: t("Choose from photos"),
@@ -70,17 +71,17 @@ export default function Home() {
 
       {/* Small tiles, like "Daily Streak", "Training" and "Breath Volume". */}
       <Reveal kind="slideUp" delay={240} style={styles.tiles}>
-        <Tile tone="graphite" style={{ flex: 1, height: TALL }} onPress={() => router.navigate("/library")} label={t("Solved")}>
+        <Tile tone="ember" style={{ flex: 1, height: TALL }} onPress={() => router.navigate("/library")} label={t("Solved")}>
           <View style={{ flex: 1, justifyContent: "flex-end", gap: space.m }}>
-            <Text style={styles.big}>{solved.length}</Text>
+            <CountUp value={solved.length} style={styles.big} />
             <DotLine filled={Math.min(solved.length, 12)} />
           </View>
         </Tile>
         <View style={{ flex: 1, gap: GAP }}>
-          <Tile tone="blue" style={{ height: SHORT }} onPress={() => router.navigate("/library")} label={t("Sessions")}>
-            <Text style={styles.small}>{sessions.length}</Text>
+          <Tile tone="red" style={{ height: SHORT }} onPress={() => router.navigate("/library")} label={t("Sessions")}>
+            <CountUp value={sessions.length} style={styles.small} />
           </Tile>
-          <Tile tone="orange" style={{ height: SHORT }} onPress={() => (last ? openSession(last.id) : startScan())} label={t("Last session")}>
+          <Tile tone="blush" style={{ height: SHORT }} onPress={() => (last ? openSession(last.id) : startScan())} label={t("Last session")}>
             <Text style={styles.smallText} numberOfLines={1}>
               {last ? last.title : t("Nothing yet")}
             </Text>
@@ -105,13 +106,13 @@ export default function Home() {
 }
 
 const GAP = 12;
-const SHORT = 84;
+const SHORT = 96;
 const TALL = SHORT * 2 + GAP;
 
 function Tile({ tone, label, onPress, style, children }: { tone: SoftTone; label: string; onPress: () => void; style?: object; children: ReactNode }) {
   return (
     <PressScale onPress={onPress} accessibilityLabel={label} style={style}>
-      <SoftSurface palette={SOFT[tone]} radius={30} feather={6} style={styles.tile}>
+      <SoftSurface palette={SOFT[tone]} radius={30} glow={0.6} style={styles.tile}>
         <Text style={styles.tileLabel} numberOfLines={1}>
           {label}
         </Text>
@@ -137,13 +138,13 @@ const styles = StyleSheet.create({
   header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: space.s },
   title: { ...font.semibold, fontSize: 24, letterSpacing: -0.3 },
   tiles: { flexDirection: "row", gap: GAP },
-  tile: { flex: 1, paddingHorizontal: space.l, paddingVertical: space.m + 2, gap: 4 },
+  tile: { flex: 1, paddingHorizontal: space.l, paddingVertical: space.m, gap: 2 },
   tileLabel: { color: "#FFFFFFE6", ...font.medium, fontSize: 15, letterSpacing: -0.2 },
   big: { color: "#FFFFFF", ...font.light, fontSize: 48, lineHeight: 52, letterSpacing: -1 },
   small: { color: "#FFFFFF", ...font.light, fontSize: 30, lineHeight: 34, letterSpacing: -0.5 },
   smallText: { color: "#FFFFFF", ...font.regular, fontSize: 15 },
   dotLine: { flexDirection: "row", alignItems: "center", gap: 5 },
   lineDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: "#FFFFFF" },
-  lineMark: { width: 3, height: 14, borderRadius: 1.5, backgroundColor: "#D7F25A" },
+  lineMark: { width: 3, height: 14, borderRadius: 1.5, backgroundColor: "#FF3B2F" },
   notice: { flexDirection: "row", alignItems: "center", gap: space.m, padding: space.l, borderRadius: 24, borderCurve: "continuous" },
 });

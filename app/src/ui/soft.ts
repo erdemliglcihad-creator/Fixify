@@ -1,44 +1,50 @@
-// Color looks for the soft cards (ui/SoftSurface): a vertical gradient, a few blurred color blobs on top,
-// and a lighter rim. Colors are 6-digit hex so the blobs can fade to their own transparent version.
+// Color looks for the soft cards (ui/SoftSurface): a vertical gradient, a few color blobs on top,
+// a light frosted rim and an outer glow. One red world (Station palette: #CA0808, #120404, #270A0A,
+// white, black) in four shades: red, near-black crimson with a hot glow, a light blush, and quiet ember.
+// Colors are 6-digit hex so blobs and glows can fade to their own transparent version.
 
 /** Blob position and radius are fractions of the card (radius relative to its width). */
 export type Blob = { x: number; y: number; r: number; color: string };
-export type SoftPalette = { colors: string[]; positions: number[]; blobs: Blob[]; rim: string };
+/** `inner` is the light pooling inside the card from its bottom edge. */
+export type SoftPalette = { colors: string[]; positions: number[]; blobs: Blob[]; rim: string; glow: string; inner: string };
 
+// Dark at the top, light rising from the bottom edge, like a lit glass slab.
 export const SOFT = {
-  pink: {
-    colors: ["#F24FC2", "#7C1E88", "#2B0B37"],
-    positions: [0, 0.45, 1],
-    blobs: [
-      { x: 0.1, y: 0, r: 0.6, color: "#FF5FD6" },
-      { x: 0.85, y: 1, r: 0.6, color: "#FF7A3C" },
-    ],
-    rim: "#FF9BE6",
-  },
-  blue: {
-    colors: ["#3540B8", "#161B5E", "#0B0E30"],
-    positions: [0, 0.5, 1],
-    blobs: [
-      { x: 0.45, y: 1, r: 0.75, color: "#38C8EC" },
-      { x: 1, y: 0.55, r: 0.5, color: "#B45CE0" },
-    ],
-    rim: "#97A2FF",
-  },
-  orange: {
-    colors: ["#E2312E", "#FF7428", "#FFC34A"],
+  red: {
+    colors: ["#270A0A", "#4A0707", "#8E0909"],
     positions: [0, 0.55, 1],
-    blobs: [{ x: 0.15, y: 0, r: 0.6, color: "#D0145E" }],
-    rim: "#FFB98A",
+    blobs: [{ x: 0.5, y: 1.05, r: 0.75, color: "#E8231B" }],
+    rim: "#FFB3AA",
+    glow: "#CA0808",
+    inner: "#FF2A1F",
   },
-  graphite: {
-    colors: ["#2D3242", "#13161F", "#07080C"],
+  crimson: {
+    colors: ["#050101", "#120404", "#2A0606"],
+    positions: [0, 0.6, 1],
+    blobs: [{ x: 0.5, y: 1.1, r: 0.6, color: "#CA0808" }],
+    rim: "#FF8A7A",
+    glow: "#CA0808",
+    inner: "#FF1A10",
+  },
+  blush: {
+    colors: ["#3A0A0A", "#9A1F1A", "#E0605A"],
+    positions: [0, 0.55, 1],
+    blobs: [{ x: 0.5, y: 1.05, r: 0.7, color: "#FFB3AA" }],
+    rim: "#FFFFFF",
+    glow: "#FF5A4F",
+    inner: "#FFD2CC",
+  },
+  ember: {
+    colors: ["#0A0202", "#120404", "#270A0A"],
     positions: [0, 0.5, 1],
-    blobs: [{ x: 0.95, y: 0, r: 0.65, color: "#3D5BFF" }],
-    rim: "#6C7690",
+    blobs: [{ x: 0.5, y: 1.1, r: 0.6, color: "#6A0606" }],
+    rim: "#B89A9A",
+    glow: "#CA0808",
+    inner: "#CA0808",
   },
 } satisfies Record<string, SoftPalette>;
 
 export type SoftTone = keyof typeof SOFT;
 
-/** Colors rotate like the reference cards: pink, blue, orange. */
-export const ROTATION: SoftTone[] = ["pink", "blue", "orange"];
+/** Colors rotate through the shades of red, with a near-black card in between. */
+export const ROTATION: SoftTone[] = ["red", "ember", "blush", "crimson"];

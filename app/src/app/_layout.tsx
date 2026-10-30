@@ -8,6 +8,8 @@ import { t } from "../i18n/index.ts";
 import { applyRetention, loadSessions } from "../services/sessions.ts";
 import { isServerConfigured, loadSettings, serverBase, settingsStore, updateSettings, useSettings } from "../services/settings.ts";
 import { IntroFlow } from "../ui/IntroFlow.tsx";
+import { Ambient } from "../ui/Ambient";
+import { MorphLayer } from "../ui/MorphLayer.tsx";
 import { OnboardingFlow } from "../ui/OnboardingFlow.tsx";
 import { loadChat } from "../services/chat.ts";
 import { refreshQuota } from "../services/proxy.ts";
@@ -52,7 +54,7 @@ export default function RootLayout() {
   }, [ready]);
 
   const base = dark ? DarkTheme : DefaultTheme;
-  // Screens are transparent over the plain background of the root view.
+  // Screens are transparent over the shared backdrop (ui/Ambient).
   const navTheme = { ...base, colors: { ...base.colors, primary: c.accent, background: "transparent", card: c.surface, text: c.text, border: c.hairline } };
 
   if (!ready) {
@@ -67,6 +69,8 @@ export default function RootLayout() {
     <ThemeProvider value={navTheme}>
       <StatusBar style={dark ? "light" : "dark"} />
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: c.background }}>
+      {/* Screens are transparent over one shared backdrop: dark ground, slow warm light, grain. */}
+      <Ambient />
       <Stack screenOptions={{ headerBackButtonDisplayMode: "minimal", contentStyle: { backgroundColor: "transparent" } }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         {/* iOS: translucent native header (Liquid Glass on iOS 26); content scrolls under it. */}
@@ -84,6 +88,7 @@ export default function RootLayout() {
       {/* First launch: questions, then the introduction, above the app without any navigation. */}
       {firstLaunch && (
         <Animated.View exiting={FadeOut.duration(350)} style={[StyleSheet.absoluteFill, { backgroundColor: c.background }]}>
+          <Ambient />
           {!onboardingDone ? (
             <OnboardingFlow onDone={(profile) => updateSettings({ profile, onboardingDone: true })} />
           ) : (
@@ -93,6 +98,8 @@ export default function RootLayout() {
           )}
         </Animated.View>
       )}
+      {/* A tapped card growing into the next screen. */}
+      <MorphLayer />
       </GestureHandlerRootView>
     </ThemeProvider>
   );

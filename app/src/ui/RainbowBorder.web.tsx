@@ -2,8 +2,8 @@
 import type { ReactNode } from "react";
 import { View, type StyleProp, type ViewStyle } from "react-native";
 
-// Like the reference: saturated blue, white-hot yellow and orange, purple and red, flowing into each other.
-export const RAINBOW = ["#2F7BFF", "#7CC4FF", "#FF7A1A", "#FFD84D", "#FFF6D8", "#3AA0FF", "#B14DFF", "#FF5C3A", "#2F7BFF"];
+// The red world flowing around the edge: brand red, hot light red, white-hot, deep red, back to red.
+export const RAINBOW = ["#CA0808", "#FF3B2F", "#FF8A7A", "#FFE3DE", "#FFFFFF", "#FF5A4F", "#7A0505", "#E01414", "#CA0808"];
 
 let injected = false;
 function injectKeyframes() {
