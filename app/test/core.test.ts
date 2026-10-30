@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { drawnRect, markersForImage, rectInView, validateAnalysis, InvalidAnalysisError } from "../src/core/analysis.ts";
 import { carryOverStates, currentStep, hasNewObservation, imagesToSend, progress, searchText } from "../src/core/session.ts";
 import { formatString } from "../src/core/format.ts";
+import { chatAnswer } from "../src/core/answer.ts";
 import type { FixSession, ProblemAnalysis, TextBlock } from "../src/core/types.ts";
 
 const analysis = (): ProblemAnalysis => ({
@@ -157,4 +158,22 @@ test("an empty or skipped profile sends nothing", () => {
   assert.equal(profileSummary(null), null);
   assert.equal(profileSummary(emptyProfile()), null);
   assert.equal(firstName(emptyProfile()), null);
+});
+
+test("chat answer: warnings first, summary, numbered steps with their markers", () => {
+  const a = analysis();
+  a.safety = { level: "caution", warnings: ["Unplug the printer first."], recommendProfessional: false };
+  const text = chatAnswer(a, (id) => (id === "f2" ? 2 : null));
+  const [warning, summary, steps] = text.split("\n\n");
+  assert.equal(warning, "Unplug the printer first.");
+  assert.equal(summary, a.summary);
+  assert.match(steps, /^1\. /);
+  assert.equal(steps.split("\n").length, a.steps.length);
+});
+
+test("chat answer: no steps falls back to the next check, then to a question", () => {
+  const a = { ...analysis(), steps: [], nextDiagnostic: { title: "Check", instruction: "Look at the cable.", reason: "" } };
+  assert.equal(chatAnswer(a, () => null), `${a.summary}\n\nLook at the cable.`);
+  const b = { ...a, nextDiagnostic: null, questions: [{ id: "q", question: "Is it plugged in?", options: [] }] };
+  assert.equal(chatAnswer(b, () => null), `${a.summary}\n\nIs it plugged in?`);
 });

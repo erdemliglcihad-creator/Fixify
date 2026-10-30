@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Constants from "expo-constants";
+import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { useState, type ReactNode } from "react";
 import { Platform, Pressable, Share, StyleSheet, Switch, Text, TextInput, View } from "react-native";
@@ -39,6 +40,11 @@ function Link({ icon, title, onPress, danger }: { icon: IconName; title: string;
     </Pressable>
   );
 }
+
+/** A light tick for every switch and chip, like the iOS Settings app. */
+const tick = () => {
+  if (Platform.OS !== "web") Haptics.selectionAsync();
+};
 
 /** Change the profile in place: any field, any time (no need to go through the questions again). */
 function updateProfile(patch: Partial<Profile>) {
@@ -102,7 +108,10 @@ function ChipGroup({ title, options, isOn, onToggle }: { title: string; options:
           return (
             <Pressable
               key={o.value}
-              onPress={() => onToggle(o.value)}
+              onPress={() => {
+                tick();
+                onToggle(o.value);
+              }}
               aria-selected={on}
               accessibilityRole="button"
               style={({ pressed }) => [styles.chip, { backgroundColor: on ? c.accent : c.raised, borderColor: on ? c.accent : c.hairline, opacity: pressed ? 0.7 : 1 }]}
@@ -172,7 +181,10 @@ export default function Settings() {
       <Section title={t("Privacy")} footer={t("When off, nothing leaves this iPhone, and Fixify asks before the next analysis.")}>
         <Row>
           <Label>{t("Allow sending photos for analysis")}</Label>
-          <Switch value={s.consent} onValueChange={(consent) => updateSettings({ consent })} trackColor={{ true: c.success }} thumbColor="#FFFFFF" />
+          <Switch value={s.consent} onValueChange={(consent) => {
+            tick();
+            updateSettings({ consent });
+          }} trackColor={{ true: c.success }} thumbColor="#FFFFFF" />
         </Row>
         <Divider />
         <Link icon="shield-checkmark-outline" title={t("What Fixify processes")} onPress={() => router.push("/privacy")} />
@@ -225,6 +237,7 @@ export default function Settings() {
             thumbColor="#FFFFFF"
             value={s.reminders}
             onValueChange={(reminders) => {
+              tick();
               updateSettings({ reminders });
               if (!reminders) cancelAllReminders();
             }}

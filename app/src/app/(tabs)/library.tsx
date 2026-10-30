@@ -1,7 +1,9 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Haptics from "expo-haptics";
 import { useState } from "react";
-import { Platform, StyleSheet, Text, TextInput, View } from "react-native";
+import { Platform, Share, StyleSheet, Text, TextInput, View } from "react-native";
+import { router } from "expo-router";
+import { setChatContext } from "../../services/chat.ts";
 import { searchText } from "../../core/session.ts";
 import type { FixSession } from "../../core/types.ts";
 import { lang, t } from "../../i18n/index.ts";
@@ -76,6 +78,20 @@ export default function Library() {
               subtitle={formatDate(s.updatedAt, lang)}
               onPress={() => openSession(s.id)}
               onLongPress={() => askDelete(s)}
+              // iOS: zoom into the session, long press shows its preview with these actions.
+              href={{ pathname: "/session/[id]", params: { id: s.id } }}
+              menu={[
+                {
+                  title: t("Ask FixVoice about this"),
+                  icon: "waveform",
+                  onPress: () => {
+                    setChatContext(s.id);
+                    router.navigate("/fixvoice");
+                  },
+                },
+                { title: t("Share"), icon: "square.and.arrow.up", onPress: () => Share.share({ message: `Fixify – ${s.title}` }) },
+                { title: t("Delete session"), icon: "trash", destructive: true, onPress: () => askDelete(s) },
+              ]}
             />
           )}
         />

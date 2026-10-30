@@ -296,26 +296,6 @@ export function InfoRow({ icon, title, detail }: { icon: IconName; title: string
   );
 }
 
-export function SafetyBanner({ safety }: { safety: ProblemAnalysis["safety"] }) {
-  const { c } = useTheme();
-  if (safety.level === "none" && !safety.recommendProfessional) return null;
-  const color = safety.level === "danger" ? c.danger : c.caution;
-  return (
-    <View style={[styles.banner, { backgroundColor: color + "1F", borderColor: color + "66" }]} accessible>
-      <View style={styles.row}>
-        <Ionicons name={safety.level === "danger" ? "alert-circle" : "warning"} size={20} color={color} />
-        <Text style={[type.headline, { color }]}>{safety.level === "danger" ? t("Safety risk") : t("Be careful")}</Text>
-      </View>
-      {safety.warnings.map((w) => (
-        <Body key={w}>{w}</Body>
-      ))}
-      {safety.recommendProfessional && (
-        <Body style={{ ...font.semibold }}>{t("We recommend getting a qualified professional for this. Do not continue if you are unsure.")}</Body>
-      )}
-    </View>
-  );
-}
-
 export function Divider() {
   const { c } = useTheme();
   return <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: c.hairline }} />;
