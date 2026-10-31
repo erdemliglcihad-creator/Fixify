@@ -45,7 +45,9 @@ export function levelFromDb(db: number | undefined) {
 export function vadStep(state: VadState, db: number | undefined, now: number, o: VadOptions = defaultVad): { state: VadState; event: VadEvent } {
   const elapsed = now - state.startedAt;
   if (elapsed >= o.maxMs) return { state, event: state.heard ? "cap" : "noSpeech" };
-  if (db === undefined || !Number.isFinite(db)) return { state, event: "none" };
+  // No real room is this quiet: iOS reports about -160 dB while the recorder starts up. Learning that as the
+  // room noise would put the bar so low that ordinary room noise counts as speech and the turn never ends.
+  if (db === undefined || !Number.isFinite(db) || db < -100) return { state, event: "none" };
 
   const prev = state.floor ?? db;
   const calibrating = elapsed < (o.calibrateMs ?? 0);
@@ -57,6 +59,9 @@ export function vadStep(state: VadState, db: number | undefined, now: number, o:
     // so the pauses between FixVoice's words do not lower the bar.
     const up = calibrating ? 0.6 : 0.1;
     floor = loud ? prev : db > prev ? prev * (1 - up) + db * up : prev * 0.995 + db * 0.005;
+  } else if (calibrating) {
+    // First moment of the turn: settle on the room noise quickly, in both directions.
+    floor = prev * 0.5 + db * 0.5;
   } else {
     // Room noise: the floor drops quickly, rises slowly, and is frozen while someone speaks.
     floor = loud ? prev : db < prev ? prev * 0.7 + db * 0.3 : prev * 0.98 + db * 0.02;

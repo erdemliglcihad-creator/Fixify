@@ -85,3 +85,10 @@ test("echo mode: the user talking clearly louder interrupts", () => {
   const r = runWith([...repeat(-55, 300), ...echo(2500), ...repeat(-10, 1000)], BARGE);
   assert.ok(r.heardAt > 2800 && r.heardAt < 3500, `heard at ${r.heardAt}`);
 });
+
+test("startup silence from the microphone does not freeze the floor below the room noise", () => {
+  // Right after recording starts, iOS reports -160 dB for a moment; the room itself sits at -38 dB.
+  const r = run([...repeat(-160, 300), ...repeat(-38, 800), ...repeat(-18, 1200), ...repeat(-38, 2500)]);
+  assert.equal(r.event, "end");
+  assert.ok(r.at < 2300 + 1600, `ended at ${r.at}`);
+});

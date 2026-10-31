@@ -11,6 +11,7 @@ import { useQuota } from "../../services/usage.ts";
 import { CardCarousel, SoftCard } from "../../ui/CardCarousel.tsx";
 import { Caption, IconCircle } from "../../ui/components.tsx";
 import { CountUp } from "../../ui/CountUp.tsx";
+import { DotGrid } from "../../ui/DotGrid";
 import { Glass } from "../../ui/Glass.tsx";
 import { PressScale } from "../../ui/motion.tsx";
 import { Reveal } from "../../ui/reveal.tsx";
@@ -47,61 +48,65 @@ export default function Home() {
   ];
 
   return (
-    <Screen contentStyle={{ gap: space.xl }}>
-      {/* Header like the reference: round buttons left and right, the name in the middle. */}
-      <Reveal kind="fade" style={styles.header}>
-        <PressScale onPress={() => router.navigate("/library")} accessibilityLabel={t("Library")}>
-          <IconCircle icon="albums-outline" size={50} />
-        </PressScale>
-        <Text style={[styles.title, { color: c.text }]} accessibilityRole="header">
-          Fixify
-        </Text>
-        <PressScale onPress={() => router.navigate("/settings")} accessibilityLabel={t("Settings")}>
-          <IconCircle icon="options-outline" size={50} />
-        </PressScale>
-      </Reveal>
+    <View style={{ flex: 1 }}>
+      {/* A quiet raster of small dots behind the home screen. */}
+      <DotGrid />
+      <Screen contentStyle={{ gap: space.xl }}>
+        {/* Header like the reference: round buttons left and right, the name in the middle. */}
+        <Reveal kind="fade" style={styles.header}>
+          <PressScale onPress={() => router.navigate("/library")} accessibilityLabel={t("Library")}>
+            <IconCircle icon="albums-outline" size={50} />
+          </PressScale>
+          <Text style={[styles.title, { color: c.text }]} accessibilityRole="header">
+            Fixify
+          </Text>
+          <PressScale onPress={() => router.navigate("/settings")} accessibilityLabel={t("Settings")}>
+            <IconCircle icon="options-outline" size={50} />
+          </PressScale>
+        </Reveal>
 
-      <Reveal kind="slideUp" delay={120}>
-        <CardCarousel
-          items={actions}
-          keyOf={(a) => a.id}
-          render={(a) => <SoftCard tone={a.tone} label={a.label} icon={a.icon} title={a.title} subtitle={a.subtitle} onPress={a.run} />}
-        />
-      </Reveal>
+        <Reveal kind="slideUp" delay={120}>
+          <CardCarousel
+            items={actions}
+            keyOf={(a) => a.id}
+            render={(a) => <SoftCard tone={a.tone} label={a.label} icon={a.icon} title={a.title} subtitle={a.subtitle} onPress={a.run} />}
+          />
+        </Reveal>
 
-      {/* Small tiles, like "Daily Streak", "Training" and "Breath Volume". */}
-      <Reveal kind="slideUp" delay={240} style={styles.tiles}>
-        <Tile tone="night" style={{ flex: 1, height: TALL }} onPress={() => router.navigate("/library")} label={t("Solved")}>
-          <View style={{ flex: 1, justifyContent: "flex-end", gap: space.m }}>
-            <CountUp value={solved.length} style={styles.big} />
-            <DotLine filled={Math.min(solved.length, 12)} />
-          </View>
-        </Tile>
-        <View style={{ flex: 1, gap: GAP }}>
-          <Tile tone="vivid" style={{ height: SHORT }} onPress={() => router.navigate("/library")} label={t("Sessions")}>
-            <CountUp value={sessions.length} style={styles.small} />
-          </Tile>
-          <Tile tone="pale" style={{ height: SHORT }} onPress={() => (last ? openSession(last.id) : startScan())} label={t("Last session")}>
-            <Text style={styles.smallText} numberOfLines={1}>
-              {last ? last.title : t("Nothing yet")}
-            </Text>
-          </Tile>
-        </View>
-      </Reveal>
-
-      {!isServerConfigured(settings) && settings.provider === "proxy" && (
-        <PressScale onPress={() => router.navigate("/settings")}>
-          <Glass interactive style={styles.notice}>
-            <Ionicons name="server-outline" size={20} color={c.caution} />
-            <View style={{ flex: 1, gap: 2 }}>
-              <Text style={[type.headline, { color: c.text }]}>{t("AI analysis is not set up")}</Text>
-              <Caption>{t("Choose an AI service in Settings to get a diagnosis and a guided plan.")}</Caption>
+        {/* Small tiles, like "Daily Streak", "Training" and "Breath Volume". */}
+        <Reveal kind="slideUp" delay={240} style={styles.tiles}>
+          <Tile tone="night" style={{ flex: 1, height: TALL }} onPress={() => router.navigate("/library")} label={t("Solved")}>
+            <View style={{ flex: 1, justifyContent: "flex-end", gap: space.m }}>
+              <CountUp value={solved.length} style={styles.big} />
+              <DotLine filled={Math.min(solved.length, 12)} />
             </View>
-            <Ionicons name="chevron-forward" size={18} color={c.secondary} />
-          </Glass>
-        </PressScale>
-      )}
-    </Screen>
+          </Tile>
+          <View style={{ flex: 1, gap: GAP }}>
+            <Tile tone="vivid" style={{ height: SHORT }} onPress={() => router.navigate("/library")} label={t("Sessions")}>
+              <CountUp value={sessions.length} style={styles.small} />
+            </Tile>
+            <Tile tone="pale" style={{ height: SHORT }} onPress={() => (last ? openSession(last.id) : startScan())} label={t("Last session")}>
+              <Text style={styles.smallText} numberOfLines={1}>
+                {last ? last.title : t("Nothing yet")}
+              </Text>
+            </Tile>
+          </View>
+        </Reveal>
+
+        {!isServerConfigured(settings) && settings.provider === "proxy" && (
+          <PressScale onPress={() => router.navigate("/settings")}>
+            <Glass interactive style={styles.notice}>
+              <Ionicons name="server-outline" size={20} color={c.caution} />
+              <View style={{ flex: 1, gap: 2 }}>
+                <Text style={[type.headline, { color: c.text }]}>{t("AI analysis is not set up")}</Text>
+                <Caption>{t("Choose an AI service in Settings to get a diagnosis and a guided plan.")}</Caption>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={c.secondary} />
+            </Glass>
+          </PressScale>
+        )}
+      </Screen>
+    </View>
   );
 }
 

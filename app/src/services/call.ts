@@ -19,8 +19,9 @@ const BARGE_IN = { margin: 8, minSpeechMs: 450, noSpeechMs: 120_000, echo: true,
 /**
  * Your turn, tuned to not be annoying: FixVoice waits 1.5 s of quiet before it answers (short thinking pauses
  * don't cut you off), and only a voice of a third of a second or more counts, so clicks and taps don't start a turn.
+ * The first 0.4 s only measure the room, so the end of your sentence is recognized against the real background.
  */
-const TURN = { margin: 12, minSpeechMs: 320, silenceMs: 1500, noSpeechMs: 30_000 };
+const TURN = { margin: 12, minSpeechMs: 320, silenceMs: 1500, noSpeechMs: 30_000, calibrateMs: 400 };
 /** Quiet turns in a row before the call hangs up by itself (about a minute of silence). */
 const MAX_SILENT_TURNS = 2;
 
