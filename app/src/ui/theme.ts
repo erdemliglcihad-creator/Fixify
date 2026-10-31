@@ -65,7 +65,11 @@ export function useTheme(): { c: Palette; dark: boolean; brand: typeof brand } {
  */
 const SYSTEM = Platform.select({ web: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif", default: undefined });
 const weight = (fontWeight: "300" | "400" | "500" | "600" | "700") => ({ fontFamily: SYSTEM, fontWeight });
+// SF Pro Rounded: Apple's sporty face (Fitness, Activity) for big numbers and card titles.
+const ROUNDED = Platform.select({ ios: "ui-rounded", web: "ui-rounded, 'SF Pro Rounded', -apple-system, system-ui, sans-serif", default: undefined });
 export const font = {
+  rounded: { fontFamily: ROUNDED, fontWeight: "700" as const },
+  roundedMedium: { fontFamily: ROUNDED, fontWeight: "600" as const },
   light: weight("300"),
   regular: weight("400"),
   medium: weight("500"),

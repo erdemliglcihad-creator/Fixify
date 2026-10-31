@@ -21,13 +21,13 @@ export function SoftSurface({
 }) {
   const blobs = palette.blobs.map((b) => `radial-gradient(circle at ${b.x * 100}% ${b.y * 100}%, ${b.color} 0%, ${b.color}00 ${b.r * 100}%)`);
   const stops = palette.colors.map((col, i) => `${col} ${palette.positions[i] * 100}%`).join(", ");
-  const alpha = Math.round(0.55 * glow * 255).toString(16).padStart(2, "0");
+  const alpha = Math.round(0.6 * glow * 255).toString(16).padStart(2, "0");
   const layer = {
     borderRadius: radius,
     overflow: "hidden",
     backgroundImage: [...blobs, `linear-gradient(180deg, ${stops})`].join(", "),
-    // Outer glow spilling out below, light pooling inside from the bottom edge, the milky white rim.
-    boxShadow: `0 12px 44px ${palette.glow}${alpha}, inset 0 -22px 30px -6px ${palette.inner}, inset 0 0 14px 4px #FFFFFF5C`,
+    // Outer glow spilling out below, light glowing in from the edges and pooling at the bottom, thin rim.
+    boxShadow: `0 14px 50px ${palette.glow}${alpha}, inset 0 -26px 34px -8px ${palette.inner}, inset 0 0 22px ${palette.inner}40, inset 0 0 0 1.5px ${palette.rim}55`,
   };
   return (
     <View style={style}>

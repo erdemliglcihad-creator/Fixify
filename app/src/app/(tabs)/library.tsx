@@ -14,6 +14,9 @@ import { Glass } from "../../ui/Glass.tsx";
 import { confirmDestructive } from "../../ui/confirm.ts";
 import { CardCarousel, SoftCard } from "../../ui/CardCarousel.tsx";
 import { ROTATION } from "../../ui/soft.ts";
+import type { CardDetail } from "../../ui/CardDetails.tsx";
+
+const DETAILS: CardDetail[] = ["gauge", "curve", "bars"];
 import { formatDate } from "../../core/format.ts";
 import { space, type, useTheme } from "../../ui/theme.ts";
 import { Screen } from "../../ui/Screen.tsx";
@@ -74,6 +77,7 @@ export default function Library() {
             <SoftCard
               // Just the project: title and date, colors rotating like the reference cards.
               tone={ROTATION[i % ROTATION.length]}
+              detail={DETAILS[i % DETAILS.length]}
               title={s.title}
               subtitle={formatDate(s.updatedAt, lang)}
               onPress={() => openSession(s.id)}

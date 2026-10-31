@@ -11,6 +11,8 @@ import { useQuota } from "../../services/usage.ts";
 import { CardCarousel, SoftCard } from "../../ui/CardCarousel.tsx";
 import { Caption, IconCircle } from "../../ui/components.tsx";
 import { CountUp } from "../../ui/CountUp.tsx";
+import type { CardDetail } from "../../ui/CardDetails.tsx";
+import type { FixSession } from "../../core/types.ts";
 import { DotGrid } from "../../ui/DotGrid";
 import { Glass } from "../../ui/Glass.tsx";
 import { PressScale } from "../../ui/motion.tsx";
@@ -21,7 +23,7 @@ import { SoftSurface } from "../../ui/SoftSurface";
 import type { IconName } from "../../ui/categories.ts";
 import { font, space, type, useTheme } from "../../ui/theme.ts";
 
-type Action = { id: string; tone: SoftTone; label: string; icon: IconName; title: string; subtitle: string; run: () => void };
+type Action = { id: string; tone: SoftTone; label: string; icon: IconName; title: string; subtitle: string; detail: CardDetail; run: () => void };
 
 export default function Home() {
   useArea("home");
@@ -34,8 +36,8 @@ export default function Home() {
 
   // The three ways in, one big soft card each (swipe sideways).
   const actions: Action[] = [
-    { id: "scan", tone: "vivid", label: "Live Fix", icon: "scan-outline", title: t("Open camera"), subtitle: t("Show it. Fix it."), run: () => startScan() },
-    { id: "voice", tone: "deep", label: "FixVoice", icon: "mic-outline", title: t("Talk to FixVoice"), subtitle: t("Hands-free, by voice"), run: () => router.navigate("/fixvoice") },
+    { id: "scan", tone: "vivid", label: "Live Fix", icon: "scan-outline", title: t("Open camera"), subtitle: t("Show it. Fix it."), detail: "gauge", run: () => startScan() },
+    { id: "voice", tone: "deep", label: "FixVoice", icon: "mic-outline", title: t("Talk to FixVoice"), subtitle: t("Hands-free, by voice"), detail: "curve", run: () => router.navigate("/fixvoice") },
     {
       id: "photo",
       tone: "pale",
@@ -43,6 +45,7 @@ export default function Home() {
       icon: "images-outline",
       title: t("Choose from photos"),
       subtitle: quota.uploadsLeft !== null && quota.uploadsDaily ? t("%lld left today", quota.uploadsLeft) : t("Photo or screenshot"),
+      detail: "bars",
       run: () => startScan({ library: true }),
     },
   ];
@@ -69,7 +72,7 @@ export default function Home() {
           <CardCarousel
             items={actions}
             keyOf={(a) => a.id}
-            render={(a) => <SoftCard tone={a.tone} label={a.label} icon={a.icon} title={a.title} subtitle={a.subtitle} onPress={a.run} />}
+            render={(a) => <SoftCard tone={a.tone} label={a.label} icon={a.icon} title={a.title} subtitle={a.subtitle} detail={a.detail} onPress={a.run} />}
           />
         </Reveal>
 
@@ -78,7 +81,7 @@ export default function Home() {
           <Tile tone="night" style={{ flex: 1, height: TALL }} onPress={() => router.navigate("/library")} label={t("Solved")}>
             <View style={{ flex: 1, justifyContent: "flex-end", gap: space.m }}>
               <CountUp value={solved.length} style={styles.big} />
-              <DotLine filled={Math.min(solved.length, 12)} />
+              <WeekBars sessions={solved} />
             </View>
           </Tile>
           <View style={{ flex: 1, gap: GAP }}>
@@ -127,30 +130,33 @@ function Tile({ tone, label, onPress, style, children }: { tone: SoftTone; label
   );
 }
 
-/** A dotted track with a bright mark, like the streak line in the reference. */
-function DotLine({ filled }: { filled: number }) {
+const DAY = 24 * 3600 * 1000;
+
+/** Solved fixes per day over the last week, as small bars (today on the right, in white). */
+function WeekBars({ sessions }: { sessions: FixSession[] }) {
   const { brand } = useTheme();
+  const today = new Date().setHours(0, 0, 0, 0);
+  const counts = Array.from({ length: 7 }, (_, i) => sessions.filter((s) => s.updatedAt >= today - (6 - i) * DAY && s.updatedAt < today - (5 - i) * DAY).length);
+  const max = Math.max(1, ...counts);
   return (
-    <View style={styles.dotLine}>
-      {Array.from({ length: 12 }, (_, i) => (
-        <View key={i} style={[styles.lineDot, { opacity: i < filled ? 1 : 0.3 }]} />
+    <View style={styles.week}>
+      {counts.map((n, i) => (
+        <View key={i} style={[styles.weekBar, { height: 4 + (n / max) * 22, backgroundColor: i === 6 ? "#FFFFFF" : brand.mark, opacity: i === 6 ? 0.95 : 0.35 + (n / max) * 0.5 }]} />
       ))}
-      <View style={[styles.lineMark, { backgroundColor: brand.mark }]} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  week: { flexDirection: "row", alignItems: "flex-end", gap: 5, height: 26 },
+  weekBar: { width: 8, borderRadius: 3 },
   header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: space.s },
-  title: { ...font.semibold, fontSize: 24, letterSpacing: -0.3 },
+  title: { ...font.rounded, fontSize: 24, letterSpacing: -0.2 },
   tiles: { flexDirection: "row", gap: GAP },
   tile: { flex: 1, paddingHorizontal: space.l, paddingVertical: space.m, gap: 2 },
   tileLabel: { color: "#FFFFFFE6", ...font.medium, fontSize: 15, letterSpacing: -0.2 },
-  big: { color: "#FFFFFF", ...font.light, fontSize: 48, lineHeight: 52, letterSpacing: -1 },
-  small: { color: "#FFFFFF", ...font.light, fontSize: 30, lineHeight: 34, letterSpacing: -0.5 },
+  big: { color: "#FFFFFF", ...font.rounded, fontSize: 52, lineHeight: 56, letterSpacing: -1, textShadowColor: "#9C7BFFAA", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 16 },
+  small: { color: "#FFFFFF", ...font.rounded, fontSize: 32, lineHeight: 36, letterSpacing: -0.5, textShadowColor: "#9C7BFFAA", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 12 },
   smallText: { color: "#FFFFFF", ...font.regular, fontSize: 15 },
-  dotLine: { flexDirection: "row", alignItems: "center", gap: 5 },
-  lineDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: "#FFFFFF" },
-  lineMark: { width: 3, height: 14, borderRadius: 1.5 },
   notice: { flexDirection: "row", alignItems: "center", gap: space.m, padding: space.l, borderRadius: 24, borderCurve: "continuous" },
 });

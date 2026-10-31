@@ -1,6 +1,6 @@
-// Color looks for the soft cards (ui/SoftSurface): a vertical gradient, a few color blobs on top, an inner
-// glow rising from the bottom edge, a light rim and an outer glow. Four shades of the blue world (Deep
-// Nebula: #000008, #080523, #010094, #261598, #7548D2): vivid, deep (near black with a hot glow), pale (light), night (quiet).
+// Color looks for the soft cards (ui/SoftSurface): black inside, an inner glow from the edges that pools at
+// the bottom, a thin light rim and an outer glow. Four lights from the blue world (Deep Nebula: #000008,
+// #080523, #010094, #261598, #7548D2): vivid (violet), deep (blue), pale (light lilac), night (quiet blue).
 // Colors are 6-digit hex so blobs and glows can fade to their own transparent version.
 
 /** Blob position and radius are fractions of the card (radius relative to its width). */
@@ -10,39 +10,39 @@ export type SoftPalette = { colors: string[]; positions: number[]; blobs: Blob[]
 
 export type SoftTone = "vivid" | "deep" | "pale" | "night";
 
-// Dark at the top, light rising from the bottom edge, like a lit glass slab.
+// Black inside, the color only as light: glowing in from the edges and pooling at the bottom.
 export const SOFT: Record<SoftTone, SoftPalette> = {
   vivid: {
-    colors: ["#080523", "#140C5E", "#261598"],
-    positions: [0, 0.55, 1],
-    blobs: [{ x: 0.5, y: 1.05, r: 0.75, color: "#3D2BD8" }],
+    colors: ["#000008", "#03020F", "#0A0630"],
+    positions: [0, 0.6, 1],
+    blobs: [{ x: 0.5, y: 1.12, r: 0.7, color: "#7548D2" }],
     rim: "#C9B8FF",
-    glow: "#261598",
-    inner: "#7548D2",
+    glow: "#7548D2",
+    inner: "#9C7BFF",
   },
   deep: {
-    colors: ["#000008", "#080523", "#120A45"],
+    colors: ["#000008", "#02010C", "#080523"],
     positions: [0, 0.6, 1],
-    blobs: [{ x: 0.5, y: 1.1, r: 0.6, color: "#010094" }],
-    rim: "#9C7BFF",
-    glow: "#010094",
+    blobs: [{ x: 0.5, y: 1.12, r: 0.7, color: "#261598" }],
+    rim: "#9C9CFF",
+    glow: "#261598",
     inner: "#3D2BFF",
   },
   pale: {
-    colors: ["#120A45", "#4A2FB0", "#B9A2F0"],
-    positions: [0, 0.55, 1],
-    blobs: [{ x: 0.5, y: 1.05, r: 0.7, color: "#EDE6FF" }],
+    colors: ["#000008", "#05031A", "#120A45"],
+    positions: [0, 0.6, 1],
+    blobs: [{ x: 0.5, y: 1.1, r: 0.75, color: "#B9A2F0" }],
     rim: "#FFFFFF",
-    glow: "#7548D2",
+    glow: "#9C7BFF",
     inner: "#E6DCFF",
   },
   night: {
-    colors: ["#000008", "#080523", "#0E0838"],
-    positions: [0, 0.5, 1],
-    blobs: [{ x: 0.5, y: 1.1, r: 0.6, color: "#261598" }],
-    rim: "#9A96B8",
-    glow: "#261598",
-    inner: "#261598",
+    colors: ["#000008", "#000008", "#04031A"],
+    positions: [0, 0.6, 1],
+    blobs: [{ x: 0.5, y: 1.15, r: 0.55, color: "#010094" }],
+    rim: "#8A86B0",
+    glow: "#010094",
+    inner: "#2B3BFF",
   },
 };
 

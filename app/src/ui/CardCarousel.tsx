@@ -11,11 +11,14 @@ import type { SFSymbol } from "sf-symbols-typescript";
 import { morphOpen } from "../services/morph.ts";
 import { PressScale } from "./motion.tsx";
 import type { IconName } from "./categories.ts";
+import { Detail, type CardDetail } from "./CardDetails.tsx";
 import { SOFT, type SoftTone } from "./soft.ts";
 import { SoftSurface } from "./SoftSurface";
 import { font, space, useTheme } from "./theme.ts";
 
 const GAP = 12;
+/** How far the card glow reaches out; the scroller gets this much room so it is never cut off. */
+const GLOW_ROOM = 70;
 type Measurable = { measureInWindow: (cb: (x: number, y: number, width: number, height: number) => void) => void };
 export const CARD_RADIUS = 52;
 
@@ -47,8 +50,9 @@ export function CardCarousel<T>({ items, keyOf, render }: { items: T[]; keyOf: (
         snapToInterval={step}
         decelerationRate="fast"
         disableIntervalMomentum
-        // Room for the soft edge, which a horizontal scroller would otherwise clip.
-        contentContainerStyle={{ paddingHorizontal: side, gap: GAP, paddingVertical: space.l }}
+        // Room for the glow above and below: a horizontal scroller clips everything outside its frame.
+        contentContainerStyle={{ paddingHorizontal: side, gap: GAP, paddingVertical: GLOW_ROOM }}
+        style={{ marginVertical: space.l - GLOW_ROOM }}
       >
         {items.map((item, i) => (
           <Slide key={keyOf(item)} index={i} x={x} step={step} width={cardW} height={cardH}>
@@ -94,6 +98,7 @@ export function SoftCard({
   accessibilityLabel,
   href,
   menu,
+  detail = "gauge",
 }: {
   tone: SoftTone;
   title: string;
@@ -105,13 +110,15 @@ export function SoftCard({
   accessibilityLabel?: string;
   href?: Href;
   menu?: CardMenuItem[];
+  /** The small instrument drawn inside the card. */
+  detail?: CardDetail;
 }) {
   if (href && Platform.OS === "ios") {
     return (
       <Link href={href} asChild>
         <Link.Trigger withAppleZoom>
           <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel ?? title} style={{ flex: 1 }}>
-            <CardFace tone={tone} title={title} subtitle={subtitle} label={label} icon={icon} />
+            <CardFace tone={tone} title={title} subtitle={subtitle} label={label} icon={icon} detail={detail} />
           </Pressable>
         </Link.Trigger>
         <Link.Preview />
@@ -127,7 +134,7 @@ export function SoftCard({
       </Link>
     );
   }
-  return <MorphCard tone={tone} title={title} subtitle={subtitle} label={label} icon={icon} onPress={onPress} onLongPress={onLongPress} accessibilityLabel={accessibilityLabel} />;
+  return <MorphCard tone={tone} title={title} subtitle={subtitle} label={label} icon={icon} detail={detail} onPress={onPress} onLongPress={onLongPress} accessibilityLabel={accessibilityLabel} />;
 }
 
 /** The card for everything that is not a stack screen (or the web preview): it grows into the next screen itself. */
@@ -137,6 +144,7 @@ function MorphCard({
   subtitle,
   label,
   icon,
+  detail,
   onPress,
   onLongPress,
   accessibilityLabel,
@@ -146,6 +154,7 @@ function MorphCard({
   subtitle?: string;
   label?: string;
   icon?: IconName;
+  detail: CardDetail;
   onPress: () => void;
   onLongPress?: () => void;
   accessibilityLabel?: string;
@@ -167,19 +176,21 @@ function MorphCard({
       style={{ flex: 1 }}
     >
       <View ref={ref as never} collapsable={false} style={{ flex: 1 }}>
-        <CardFace tone={tone} title={title} subtitle={subtitle} label={label} icon={icon} />
+        <CardFace tone={tone} title={title} subtitle={subtitle} label={label} icon={icon} detail={detail} />
       </View>
     </PressScale>
   );
 }
 
-function CardFace({ tone, title, subtitle, label, icon }: { tone: SoftTone; title: string; subtitle?: string; label?: string; icon?: IconName }) {
+/** Label on top in the card's light, the instrument in the middle, the big title glowing at the bottom. */
+function CardFace({ tone, title, subtitle, label, icon, detail }: { tone: SoftTone; title: string; subtitle?: string; label?: string; icon?: IconName; detail: CardDetail }) {
+  const palette = SOFT[tone];
   return (
-    <SoftSurface palette={SOFT[tone]} radius={CARD_RADIUS} style={styles.card}>
-      <Arcs />
+    <SoftSurface palette={palette} radius={CARD_RADIUS} style={styles.card}>
+      <Detail kind={detail} color={palette.rim} />
       {(label || icon) && (
         <View style={styles.top}>
-          <Text style={styles.label} numberOfLines={1}>
+          <Text style={[styles.label, { color: palette.rim }]} numberOfLines={1}>
             {label}
           </Text>
           {icon && (
@@ -189,27 +200,13 @@ function CardFace({ tone, title, subtitle, label, icon }: { tone: SoftTone; titl
           )}
         </View>
       )}
-      <View style={styles.middle}>
-        <Text style={styles.title} numberOfLines={4} adjustsFontSizeToFit minimumFontScale={0.7}>
+      <View style={styles.bottom}>
+        <Text style={[styles.title, { textShadowColor: `${palette.inner}CC` }]} numberOfLines={3} adjustsFontSizeToFit minimumFontScale={0.7}>
           {title}
         </Text>
         {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
       </View>
     </SoftSurface>
-  );
-}
-
-/** Dotted circles near the bottom, a quiet texture like the reference card. */
-function Arcs() {
-  return (
-    <View pointerEvents="none" style={styles.arcs}>
-      {[-0.35, 0, 0.35].map((o, i) => (
-        <View key={i} style={[styles.arc, { left: `${18 + o * 60}%` }]} />
-      ))}
-      <View style={[styles.dot, { left: "30%", top: "8%" }]} />
-      <View style={[styles.dot, { left: "56%", top: "30%" }]} />
-      <View style={[styles.dot, { left: "78%", top: "58%" }]} />
-    </View>
   );
 }
 
@@ -235,14 +232,11 @@ function Dot({ index, x, step }: { index: number; x: SharedValue<number>; step: 
 const styles = StyleSheet.create({
   card: { flex: 1, padding: space.l + 8, overflow: "visible" },
   top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: space.s },
-  label: { flex: 1, color: "#FFFFFFE6", ...font.regular, fontSize: 16, letterSpacing: -0.2 },
+  label: { flex: 1, ...font.roundedMedium, fontSize: 16, letterSpacing: 0.1 },
   icon: { width: 34, height: 34, borderRadius: 17, alignItems: "center", justifyContent: "center", backgroundColor: "#FFFFFF1F", borderWidth: 1, borderColor: "#FFFFFF2A" },
-  middle: { flex: 1, justifyContent: "center", alignItems: "center", gap: space.s, paddingBottom: "20%" },
-  title: { color: "#FFFFFF", ...font.semibold, fontSize: 27, lineHeight: 32, letterSpacing: -0.4, textAlign: "center" },
-  subtitle: { color: "#FFFFFFBF", ...font.regular, fontSize: 15 },
-  arcs: { position: "absolute", left: 14, right: 14, bottom: 4, height: "40%", overflow: "hidden", borderBottomLeftRadius: CARD_RADIUS, borderBottomRightRadius: CARD_RADIUS },
-  arc: { position: "absolute", top: 0, width: "64%", aspectRatio: 1, borderRadius: 999, borderWidth: 1, borderStyle: "dotted", borderColor: "#FFFFFF33" },
-  dot: { position: "absolute", width: 6, height: 6, borderRadius: 3, backgroundColor: "#FFFFFFE6" },
+  bottom: { flex: 1, justifyContent: "flex-end", alignItems: "center", gap: 4 },
+  title: { color: "#FFFFFF", ...font.rounded, fontSize: 34, lineHeight: 38, letterSpacing: -0.6, textAlign: "center", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 18 },
+  subtitle: { color: "#FFFFFFB3", ...font.roundedMedium, fontSize: 15 },
   dots: { flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 6 },
   pageDot: { height: 6, borderRadius: 3 },
 });

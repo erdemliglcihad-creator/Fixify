@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   menu: { position: "absolute", top: 110, right: space.l, width: 260, zIndex: 3 },
   wave: { marginTop: space.xl, alignItems: "center" },
   middle: { flex: 1, alignItems: "center", gap: space.s, paddingTop: space.l, paddingHorizontal: space.xl },
-  time: { ...font.light, fontSize: 40, letterSpacing: 0.5, fontVariant: ["tabular-nums"] },
+  time: { ...font.roundedMedium, fontSize: 44, letterSpacing: 0.5, fontVariant: ["tabular-nums"] },
   context: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, maxWidth: "100%", marginTop: space.s },
   controls: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: space.xl },
   side: { width: 52, height: 52, alignItems: "center", justifyContent: "center" },
