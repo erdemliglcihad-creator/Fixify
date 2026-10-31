@@ -18,9 +18,10 @@ export function CustomBackdrop({ background }: { background: CustomBackground })
       ) : (
         <Image source={{ uri: background.uri }} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={12} />
       )}
-      {background.kind === "video" && <BlurView intensity={22} tint={dark ? "dark" : "light"} style={StyleSheet.absoluteFill} />}
-      {/* The veil that keeps everything on top readable. */}
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: dark ? "rgba(0, 0, 8, 0.5)" : "rgba(236, 236, 238, 0.45)" }]} />
+      {background.kind === "video" && <BlurView intensity={dark ? 22 : 14} tint={dark ? "dark" : "default"} style={StyleSheet.absoluteFill} />}
+      {/* The veil that keeps everything on top readable. In light mode only a breath of white, so your picture
+          keeps its colors instead of looking washed out. */}
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: dark ? "rgba(0, 0, 8, 0.5)" : "rgba(255, 255, 255, 0.1)" }]} />
     </View>
   );
 }

@@ -19,7 +19,7 @@ import { Glass } from "../../ui/Glass.tsx";
 import { PressScale } from "../../ui/motion.tsx";
 import { Reveal } from "../../ui/reveal.tsx";
 import { Screen } from "../../ui/Screen.tsx";
-import { SOFT, type SoftTone } from "../../ui/soft.ts";
+import { useSoft, type SoftTone } from "../../ui/soft.ts";
 import { SoftSurface } from "../../ui/SoftSurface";
 import type { IconName } from "../../ui/categories.ts";
 import { font, space, type, useTheme } from "../../ui/theme.ts";
@@ -28,10 +28,12 @@ type Action = { id: string; tone: SoftTone; label: string; icon: IconName; title
 
 export default function Home() {
   useArea("home");
-  const { c } = useTheme();
+  const { c, dark } = useTheme();
   const sessions = useSessions();
   const settings = useSettings();
   const quota = useQuota();
+  // Tile text: white on the black cards, dark on the bright ones in light mode.
+  const ink = { color: dark ? "#FFFFFF" : c.text };
   const solved = sessions.filter((s) => s.status === "solved");
   const last = [...sessions].sort((a, b) => b.updatedAt - a.updatedAt)[0];
 
@@ -82,16 +84,16 @@ export default function Home() {
         <Reveal kind="slideUp" delay={240} style={styles.tiles}>
           <Tile tone="night" style={{ flex: 1, height: TALL }} onPress={() => router.navigate("/library")} label={t("Solved")}>
             <View style={{ flex: 1, justifyContent: "flex-end", gap: space.m }}>
-              <CountUp value={solved.length} style={styles.big} />
+              <CountUp value={solved.length} style={[styles.big, ink]} />
               <WeekBars sessions={solved} />
             </View>
           </Tile>
           <View style={{ flex: 1, gap: GAP }}>
             <Tile tone="vivid" style={{ height: SHORT }} onPress={() => router.navigate("/library")} label={t("Sessions")}>
-              <CountUp value={sessions.length} style={styles.small} />
+              <CountUp value={sessions.length} style={[styles.small, ink]} />
             </Tile>
             <Tile tone="pale" style={{ height: SHORT }} onPress={() => (last ? openSession(last.id) : startScan())} label={t("Last session")}>
-              <Text style={styles.smallText} numberOfLines={1}>
+              <Text style={[styles.smallText, ink]} numberOfLines={1}>
                 {last ? last.title : t("Nothing yet")}
               </Text>
             </Tile>
@@ -120,10 +122,12 @@ const SHORT = 96;
 const TALL = SHORT * 2 + GAP;
 
 function Tile({ tone, label, onPress, style, children }: { tone: SoftTone; label: string; onPress: () => void; style?: object; children: ReactNode }) {
+  const soft = useSoft();
+  const { dark, c } = useTheme();
   return (
     <PressScale onPress={onPress} accessibilityLabel={label} style={style}>
-      <SoftSurface palette={SOFT[tone]} radius={30} glow={0.6} style={styles.tile}>
-        <Text style={styles.tileLabel} numberOfLines={1}>
+      <SoftSurface palette={soft[tone]} radius={30} glow={0.6} style={styles.tile}>
+        <Text style={[styles.tileLabel, { color: dark ? "#FFFFFFE6" : c.text }]} numberOfLines={1}>
           {label}
         </Text>
         {children}

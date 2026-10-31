@@ -8,12 +8,13 @@ import { scheduleOnRN } from "react-native-worklets";
 import { morphDone, morphStore } from "../services/morph.ts";
 import { useStore } from "../services/store.ts";
 import { Grain } from "./Grain";
-import { SOFT } from "./soft.ts";
+import { useSoft } from "./soft.ts";
 
 const GROW = 420;
 
 export function MorphLayer() {
   const morph = useStore(morphStore);
+  const soft = useSoft();
   const { width: W, height: H } = useWindowDimensions();
   const p = useSharedValue(0);
   const fade = useSharedValue(0);
@@ -44,7 +45,7 @@ export function MorphLayer() {
   });
 
   if (!morph) return null;
-  const palette = SOFT[morph.tone];
+  const palette = soft[morph.tone];
   return (
     <Animated.View pointerEvents="none" style={[styles.layer, style]}>
       <LinearGradient colors={palette.colors as [string, string, ...string[]]} locations={palette.positions as [number, number, ...number[]]} style={StyleSheet.absoluteFill} />

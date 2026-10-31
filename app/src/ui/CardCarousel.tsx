@@ -12,7 +12,7 @@ import { morphOpen } from "../services/morph.ts";
 import { PressScale } from "./motion.tsx";
 import type { IconName } from "./categories.ts";
 import { Detail, type CardDetail } from "./CardDetails.tsx";
-import { SOFT, type SoftTone } from "./soft.ts";
+import { useSoft, type SoftTone } from "./soft.ts";
 import { SoftSurface } from "./SoftSurface";
 import { font, space, useTheme } from "./theme.ts";
 
@@ -184,7 +184,10 @@ function MorphCard({
 
 /** Label on top in the card's light, its detail in the middle, the big title glowing at the bottom. */
 function CardFace({ tone, title, subtitle, label, icon, detail }: { tone: SoftTone; title: string; subtitle?: string; label?: string; icon?: IconName; detail: CardDetail }) {
-  const palette = SOFT[tone];
+  const palette = useSoft()[tone];
+  const { dark, c } = useTheme();
+  // Light cards carry dark text; the glow behind the title stays in the card's color.
+  const ink = dark ? "#FFFFFF" : c.text;
   return (
     <SoftSurface palette={palette} radius={CARD_RADIUS} style={styles.card}>
       <Detail detail={detail} color={palette.rim} />
@@ -194,17 +197,17 @@ function CardFace({ tone, title, subtitle, label, icon, detail }: { tone: SoftTo
             {label}
           </Text>
           {icon && (
-            <View style={styles.icon}>
-              <Ionicons name={icon} size={16} color="#FFFFFFD9" />
+            <View style={[styles.icon, !dark && { backgroundColor: "#0000000D", borderColor: "#0000001A" }]}>
+              <Ionicons name={icon} size={16} color={dark ? "#FFFFFFD9" : c.text} />
             </View>
           )}
         </View>
       )}
       <View style={styles.bottom}>
-        <Text style={[styles.title, { textShadowColor: `${palette.inner}CC` }]} numberOfLines={3} adjustsFontSizeToFit minimumFontScale={0.7}>
+        <Text style={[styles.title, { color: ink, textShadowColor: `${palette.inner}${dark ? "CC" : "55"}` }]} numberOfLines={3} adjustsFontSizeToFit minimumFontScale={0.7}>
           {title}
         </Text>
-        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+        {subtitle ? <Text style={[styles.subtitle, { color: dark ? "#FFFFFFB3" : c.secondary }]}>{subtitle}</Text> : null}
       </View>
     </SoftSurface>
   );
