@@ -36,8 +36,8 @@ export default function Home() {
 
   // The three ways in, one big soft card each (swipe sideways).
   const actions: Action[] = [
-    { id: "scan", tone: "vivid", label: "Live Fix", icon: "scan-outline", title: t("Open camera"), subtitle: t("Show it. Fix it."), detail: "gauge", run: () => startScan() },
-    { id: "voice", tone: "deep", label: "FixVoice", icon: "mic-outline", title: t("Talk to FixVoice"), subtitle: t("Hands-free, by voice"), detail: "curve", run: () => router.navigate("/fixvoice") },
+    { id: "scan", tone: "vivid", label: "Live Fix", icon: "scan-outline", title: t("Open camera"), subtitle: t("Show it. Fix it."), detail: { kind: "viewfinder" }, run: () => startScan() },
+    { id: "voice", tone: "deep", label: "FixVoice", icon: "mic-outline", title: t("Talk to FixVoice"), subtitle: t("Hands-free, by voice"), detail: { kind: "voice" }, run: () => router.navigate("/fixvoice") },
     {
       id: "photo",
       tone: "pale",
@@ -45,15 +45,15 @@ export default function Home() {
       icon: "images-outline",
       title: t("Choose from photos"),
       subtitle: quota.uploadsLeft !== null && quota.uploadsDaily ? t("%lld left today", quota.uploadsLeft) : t("Photo or screenshot"),
-      detail: "bars",
+      detail: quota.uploadsLeft !== null && quota.uploadsDaily ? { kind: "quota", used: quota.uploadsDaily - quota.uploadsLeft, total: quota.uploadsDaily } : { kind: "none" },
       run: () => startScan({ library: true }),
     },
   ];
 
   return (
     <View style={{ flex: 1 }}>
-      {/* A quiet raster of small dots behind the home screen. */}
-      <DotGrid />
+      {/* A quiet raster of small dots behind the home screen (not over your own background). */}
+      {!settings.background && <DotGrid />}
       <Screen contentStyle={{ gap: space.xl }}>
         {/* Header like the reference: round buttons left and right, the name in the middle. */}
         <Reveal kind="fade" style={styles.header}>

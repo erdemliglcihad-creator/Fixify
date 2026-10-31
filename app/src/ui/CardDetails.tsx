@@ -1,124 +1,59 @@
-// Small instrument details inside the soft cards, like the references: a tick gauge, a curve with points,
-// and bars. Plain views (no canvas), sized to the card through onLayout.
-import { useState, type ReactNode } from "react";
-import { StyleSheet, View, type LayoutChangeEvent } from "react-native";
+// Small details inside the soft cards. Each one says something about its card, nothing is decoration:
+// viewfinder corners for the camera, a voice waveform for FixVoice, today's photo uploads as dots.
+import { StyleSheet, View } from "react-native";
 
-export type CardDetail = "gauge" | "curve" | "bars";
+export type CardDetail = { kind: "viewfinder" } | { kind: "voice" } | { kind: "quota"; used: number; total: number } | { kind: "none" };
 
-function Sized({ children }: { children: (w: number, h: number) => ReactNode }) {
-  const [size, setSize] = useState({ w: 0, h: 0 });
-  const onLayout = (e: LayoutChangeEvent) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height });
+/** Four corner brackets around the middle of the card, like a camera viewfinder. */
+function Viewfinder({ color }: { color: string }) {
+  const corner = (pos: object, borders: object) => <View style={[styles.corner, pos, borders, { borderColor: color }]} />;
   return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill} onLayout={onLayout}>
-      {size.w > 0 ? children(size.w, size.h) : null}
+    <View pointerEvents="none" style={styles.finder}>
+      {corner({ top: 0, left: 0 }, { borderTopWidth: 2, borderLeftWidth: 2, borderTopLeftRadius: 10 })}
+      {corner({ top: 0, right: 0 }, { borderTopWidth: 2, borderRightWidth: 2, borderTopRightRadius: 10 })}
+      {corner({ bottom: 0, left: 0 }, { borderBottomWidth: 2, borderLeftWidth: 2, borderBottomLeftRadius: 10 })}
+      {corner({ bottom: 0, right: 0 }, { borderBottomWidth: 2, borderRightWidth: 2, borderBottomRightRadius: 10 })}
     </View>
   );
 }
 
-/** An arc of fine ticks over the top half with one bright needle in the middle. */
-function Gauge({ color }: { color: string }) {
+const WAVE = [0.25, 0.45, 0.7, 0.4, 0.9, 0.6, 1, 0.55, 0.8, 0.35, 0.6, 0.3, 0.2];
+
+/** A short voice waveform in the middle of the card. */
+function Voice({ color }: { color: string }) {
   return (
-    <Sized>
-      {(w, h) => {
-        // The arc stays inside the card: radius and sweep keep the outer ticks clear of the rounded edge.
-        const R = w * 0.5;
-        const cx = w / 2;
-        const cy = h * 0.3 + R;
-        const ticks = 41;
-        return Array.from({ length: ticks }, (_, i) => {
-          const a = ((i / (ticks - 1)) * 2 - 1) * 0.85;
-          const needle = i === (ticks - 1) / 2;
-          const len = needle ? 28 : i % 5 === 0 ? 10 : 6;
-          const x = cx + R * Math.sin(a);
-          const y = cy - R * Math.cos(a);
-          return (
-            <View
-              key={i}
-              style={{
-                position: "absolute",
-                left: x - 0.75,
-                top: y - (needle ? len : 0),
-                width: needle ? 1.5 : 1,
-                height: len,
-                borderRadius: 1,
-                backgroundColor: needle ? "#FFFFFF" : color,
-                opacity: needle ? 0.9 : 0.35 + 0.35 * (1 - Math.abs(a)),
-                transform: [{ rotate: `${a}rad` }],
-              }}
-            />
-          );
-        });
-      }}
-    </Sized>
+    <View pointerEvents="none" style={styles.wave}>
+      {WAVE.map((v, i) => (
+        <View key={i} style={[styles.waveBar, { height: 8 + v * 44, backgroundColor: i === 6 ? "#FFFFFF" : color, opacity: 0.45 + v * 0.5 }]} />
+      ))}
+    </View>
   );
 }
 
-const CURVE = [0.62, 0.42, 0.5, 0.28, 0.36, 0.12];
-
-/** A smooth-looking line through a few points, each with a glowing dot and a thin drop line. */
-function Curve({ color }: { color: string }) {
+/** Today's photo uploads: filled dots are still free, faint ones are used. */
+function Quota({ color, used, total }: { color: string; used: number; total: number }) {
   return (
-    <Sized>
-      {(w, h) => {
-        const pts = CURVE.map((v, i) => ({ x: w * (0.08 + (i / (CURVE.length - 1)) * 0.84), y: h * (0.18 + v * 0.5) }));
-        return (
-          <>
-            {pts.slice(1).map((p, i) => {
-              const q = pts[i];
-              const len = Math.hypot(p.x - q.x, p.y - q.y);
-              const ang = Math.atan2(p.y - q.y, p.x - q.x);
-              return (
-                <View
-                  key={`l${i}`}
-                  style={{ position: "absolute", left: (q.x + p.x) / 2 - len / 2, top: (q.y + p.y) / 2 - 0.75, width: len, height: 1.5, borderRadius: 1, backgroundColor: color, opacity: 0.85, transform: [{ rotate: `${ang}rad` }] }}
-                />
-              );
-            })}
-            {pts.map((p, i) => (
-              <View key={`d${i}`}>
-                <View style={{ position: "absolute", left: p.x - 0.5, top: p.y, width: 1, height: h * 0.72 - p.y, backgroundColor: color, opacity: 0.18 }} />
-                {i % 2 === 1 && <View style={{ position: "absolute", left: p.x - 4, top: p.y - 4, width: 8, height: 8, borderRadius: 4, backgroundColor: "#FFFFFF", boxShadow: `0 0 10px ${color}` }} />}
-              </View>
-            ))}
-          </>
-        );
-      }}
-    </Sized>
+    <View pointerEvents="none" style={styles.quota}>
+      {Array.from({ length: total }, (_, i) => {
+        const free = i >= used;
+        return <View key={i} style={[styles.quotaDot, { backgroundColor: free ? "#FFFFFF" : color, opacity: free ? 0.9 : 0.25, boxShadow: free ? `0 0 8px ${color}` : undefined }]} />;
+      })}
+    </View>
   );
 }
 
-const BARS = [0.35, 0.22, 0.5, 0.62, 0.48, 0.7, 0.3, 0.14, 0.55, 0.72, 0.6, 0.4];
-
-/** A row of soft bars, brighter toward the middle. */
-function Bars({ color, values = BARS }: { color: string; values?: number[] }) {
-  return (
-    <Sized>
-      {(w, h) => {
-        const gap = 5;
-        const bw = (w * 0.84 - gap * (values.length - 1)) / values.length;
-        const base = h * 0.66;
-        return values.map((v, i) => (
-          <View
-            key={i}
-            style={{
-              position: "absolute",
-              left: w * 0.08 + i * (bw + gap),
-              top: base - Math.max(4, v * h * 0.42),
-              width: bw,
-              height: Math.max(4, v * h * 0.42),
-              borderRadius: 3,
-              backgroundColor: i === values.length - 1 ? "#FFFFFF" : color,
-              opacity: i === values.length - 1 ? 0.9 : 0.25 + v * 0.5,
-            }}
-          />
-        ));
-      }}
-    </Sized>
-  );
+export function Detail({ detail, color }: { detail: CardDetail; color: string }) {
+  if (detail.kind === "viewfinder") return <Viewfinder color={color} />;
+  if (detail.kind === "voice") return <Voice color={color} />;
+  if (detail.kind === "quota") return <Quota color={color} used={detail.used} total={detail.total} />;
+  return null;
 }
 
-export function Detail({ kind, color, values }: { kind: CardDetail; color: string; values?: number[] }) {
-  if (kind === "gauge") return <Gauge color={color} />;
-  if (kind === "curve") return <Curve color={color} />;
-  return <Bars color={color} values={values} />;
-}
+const styles = StyleSheet.create({
+  finder: { position: "absolute", left: "26%", right: "26%", top: "24%", height: "34%" },
+  corner: { position: "absolute", width: 22, height: 22, opacity: 0.85 },
+  wave: { position: "absolute", left: 0, right: 0, top: "26%", height: 56, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 5 },
+  waveBar: { width: 4, borderRadius: 2 },
+  quota: { position: "absolute", left: "18%", right: "18%", top: "30%", flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 10 },
+  quotaDot: { width: 12, height: 12, borderRadius: 6 },
+});

@@ -98,7 +98,7 @@ export function SoftCard({
   accessibilityLabel,
   href,
   menu,
-  detail = "gauge",
+  detail = { kind: "none" },
 }: {
   tone: SoftTone;
   title: string;
@@ -110,7 +110,7 @@ export function SoftCard({
   accessibilityLabel?: string;
   href?: Href;
   menu?: CardMenuItem[];
-  /** The small instrument drawn inside the card. */
+  /** A small detail inside the card that says something about it (or none). */
   detail?: CardDetail;
 }) {
   if (href && Platform.OS === "ios") {
@@ -182,12 +182,12 @@ function MorphCard({
   );
 }
 
-/** Label on top in the card's light, the instrument in the middle, the big title glowing at the bottom. */
+/** Label on top in the card's light, its detail in the middle, the big title glowing at the bottom. */
 function CardFace({ tone, title, subtitle, label, icon, detail }: { tone: SoftTone; title: string; subtitle?: string; label?: string; icon?: IconName; detail: CardDetail }) {
   const palette = SOFT[tone];
   return (
     <SoftSurface palette={palette} radius={CARD_RADIUS} style={styles.card}>
-      <Detail kind={detail} color={palette.rim} />
+      <Detail detail={detail} color={palette.rim} />
       {(label || icon) && (
         <View style={styles.top}>
           <Text style={[styles.label, { color: palette.rim }]} numberOfLines={1}>

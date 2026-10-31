@@ -1,9 +1,18 @@
 // Web preview version of the backdrop: two radial lights in the theme colors (static) and grain.
 import { StyleSheet, View } from "react-native";
 import { Grain } from "./Grain";
+import { useSettings } from "../services/settings.ts";
+import { CustomBackdrop } from "./CustomBackdrop.tsx";
 import { useTheme } from "./theme.ts";
 
 export function Ambient() {
+  // Your own picture or video replaces the lights and grain (Settings > Background).
+  const { background } = useSettings();
+  if (background) return <CustomBackdrop background={background} />;
+  return <Lights />;
+}
+
+function Lights() {
   const { dark, brand } = useTheme();
   const s = dark ? "66" : "2E";
   const light = {

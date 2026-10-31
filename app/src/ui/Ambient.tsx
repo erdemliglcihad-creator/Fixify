@@ -4,9 +4,18 @@ import { Canvas, Circle, RadialGradient, vec } from "@shopify/react-native-skia"
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import { useDerivedValue, useFrameCallback, useReducedMotion, useSharedValue } from "react-native-reanimated";
 import { Grain } from "./Grain";
+import { useSettings } from "../services/settings.ts";
+import { CustomBackdrop } from "./CustomBackdrop.tsx";
 import { useTheme } from "./theme.ts";
 
 export function Ambient() {
+  // Your own picture or video replaces the lights and grain (Settings > Background).
+  const { background } = useSettings();
+  if (background) return <CustomBackdrop background={background} />;
+  return <Lights />;
+}
+
+function Lights() {
   const { width: W, height: H } = useWindowDimensions();
   const { dark, brand } = useTheme();
   const reduceMotion = useReducedMotion();

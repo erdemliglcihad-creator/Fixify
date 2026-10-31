@@ -7,11 +7,14 @@ import type { Profile } from "../core/profile.ts";
 import { createStore, useStore } from "./store.ts";
 
 export type Appearance = "system" | "light" | "dark";
+/** Your own picture or video behind every screen (kept in the app's documents). */
+export type CustomBackground = { uri: string; kind: "image" | "video" };
 /** cloud = Fixify Cloud (free, works for everyone), proxy = your own server (server/), off = no AI. */
 export type Provider = "cloud" | "proxy" | "off";
 
 export type Settings = {
   appearance: Appearance;
+  background: CustomBackground | null;
   provider: Provider;
   serverURL: string;
   appToken: string;
@@ -37,6 +40,7 @@ export type VoiceGender = "female" | "male";
 const DEFAULTS: Settings = {
   // Dark-first: the gradients are designed for a dark base. Light stays available in Settings.
   appearance: "dark",
+  background: null,
   provider: "cloud",
   serverURL: "",
   appToken: "",

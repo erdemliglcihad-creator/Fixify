@@ -13,6 +13,8 @@ import { emptyProfile, type Profile } from "../../core/profile.ts";
 import { DEVICE_OPTIONS, HELP_OPTIONS, TOPIC_OPTIONS } from "../../ui/OnboardingFlow.tsx";
 import { isOpen } from "../../core/session.ts";
 import { Caption, Divider, GlassCard, IconCircle, Segmented } from "../../ui/components.tsx";
+import { Image } from "expo-image";
+import { pickBackground, removeBackground } from "../../services/background.ts";
 import { confirmDestructive } from "../../ui/confirm.ts";
 import type { IconName } from "../../ui/categories.ts";
 import { radius, space, type, useTheme, font } from "../../ui/theme.ts";
@@ -126,6 +128,41 @@ function ChipGroup({ title, options, isOn, onToggle }: { title: string; options:
   );
 }
 
+/** Your own background: a small preview, choose a picture or video, or go back to the default. */
+function BackgroundPicker() {
+  const { c } = useTheme();
+  const { background } = useSettings();
+  return (
+    <>
+      <Row>
+        <View style={[styles.bgPreview, { borderColor: c.hairline, backgroundColor: c.raised }]}>
+          {background?.kind === "image" ? (
+            <Image source={{ uri: background.uri }} style={StyleSheet.absoluteFill} contentFit="cover" />
+          ) : (
+            <Ionicons name={background ? "videocam" : "sparkles-outline"} size={20} color={c.secondary} />
+          )}
+        </View>
+        <Label>{background ? (background.kind === "video" ? t("Your video") : t("Your picture")) : t("Default")}</Label>
+      </Row>
+      <Divider />
+      <Link icon="images-outline" title={t("Choose picture or video")} onPress={() => pickBackground().then((ok) => ok && tick())} />
+      {background && (
+        <>
+          <Divider />
+          <Link
+            icon="refresh"
+            title={t("Remove background")}
+            onPress={() => {
+              tick();
+              removeBackground();
+            }}
+          />
+        </>
+      )}
+    </>
+  );
+}
+
 /** One settings group. Builds up as it scrolls into view: title word by word, then the card, then the note. */
 function Section({ title, footer, children }: { title: string; footer?: string; children: ReactNode }) {
   const { c } = useTheme();
@@ -164,6 +201,10 @@ export default function Settings() {
           options={[["system", t("System")], ["light", t("Light")], ["dark", t("Dark")]]}
           onChange={(appearance) => updateSettings({ appearance })}
         />
+      </Section>
+
+      <Section title={t("Background")} footer={t("Your own picture or video behind every screen, darkened so everything stays readable. Videos play without sound.")}>
+        <BackgroundPicker />
       </Section>
 
       <Section title={t("About you")} footer={t("Your answers stay on this iPhone. FixVoice only gets a short summary so it can help you better.")}>
@@ -263,6 +304,7 @@ export default function Settings() {
 }
 
 const styles = StyleSheet.create({
+  bgPreview: { width: 44, height: 64, borderRadius: 10, overflow: "hidden", alignItems: "center", justifyContent: "center", borderWidth: StyleSheet.hairlineWidth },
   nameInput: { flex: 1, textAlign: "right", paddingVertical: 4 },
   chipGroup: { gap: space.s, paddingVertical: space.m },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: space.s },
