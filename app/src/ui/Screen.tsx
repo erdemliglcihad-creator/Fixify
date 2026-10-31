@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from "re
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollEdge } from "./Glass.tsx";
 import { RevealWords } from "./reveal.tsx";
+import { TabBackdrop } from "./TabBackdrop.tsx";
 import { space, textGlow, type, useTheme } from "./theme.ts";
 
 /** Room for the floating glass tab bar, so the last content can scroll above it. */
@@ -14,17 +15,21 @@ export function Screen({
   accessory,
   children,
   contentStyle,
+  backdrop = true,
 }: {
   title?: string;
   accessory?: ReactNode;
   children: ReactNode;
   contentStyle?: StyleProp<ViewStyle>;
+  /** Draw the backdrop behind the content (off when the screen draws its own layers under it). */
+  backdrop?: boolean;
 }) {
   const { c, dark } = useTheme();
   const insets = useSafeAreaInsets();
   const bottom = useTabBarSpace();
   return (
     <View style={styles.root}>
+      {backdrop && <TabBackdrop />}
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={[{ paddingTop: insets.top + space.l, paddingBottom: bottom, paddingHorizontal: space.l, gap: space.xl }, contentStyle]}

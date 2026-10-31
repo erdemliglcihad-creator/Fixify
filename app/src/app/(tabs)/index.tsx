@@ -14,6 +14,7 @@ import { CountUp } from "../../ui/CountUp.tsx";
 import type { CardDetail } from "../../ui/CardDetails.tsx";
 import type { FixSession } from "../../core/types.ts";
 import { DotGrid } from "../../ui/DotGrid";
+import { TabBackdrop } from "../../ui/TabBackdrop.tsx";
 import { Glass } from "../../ui/Glass.tsx";
 import { PressScale } from "../../ui/motion.tsx";
 import { Reveal } from "../../ui/reveal.tsx";
@@ -52,9 +53,10 @@ export default function Home() {
 
   return (
     <View style={{ flex: 1 }}>
+      <TabBackdrop />
       {/* A quiet raster of small dots behind the home screen (not over your own background). */}
       {!activeBackground(settings) && <DotGrid />}
-      <Screen contentStyle={{ gap: space.xl }}>
+      <Screen contentStyle={{ gap: space.xl }} backdrop={false}>
         {/* Header like the reference: round buttons left and right, the name in the middle. */}
         <Reveal kind="fade" style={styles.header}>
           <PressScale onPress={() => router.navigate("/library")} accessibilityLabel={t("Library")}>

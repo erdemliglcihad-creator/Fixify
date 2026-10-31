@@ -21,6 +21,7 @@ import { useTabBarSpace } from "../../ui/Screen.tsx";
 import { font, space, type, useTheme } from "../../ui/theme.ts";
 import { follow } from "../../ui/smooth.ts";
 import { VoiceWave } from "../../ui/VoiceWave";
+import { TabBackdrop } from "../../ui/TabBackdrop.tsx";
 
 const STATUS: Record<CallPhase, () => string> = {
   idle: () => t("Tap to talk…"),
@@ -71,6 +72,7 @@ export default function FixVoice() {
 
   return (
     <View style={{ flex: 1, paddingTop: insets.top + space.s }}>
+      <TabBackdrop />
       {/* Light in the theme color rising from the bottom, breathing with the voices. */}
       <VoiceGlow level={call.level} active={call.inCall} />
 
