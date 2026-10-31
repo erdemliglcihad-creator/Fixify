@@ -81,6 +81,7 @@ export default function RootLayout() {
         <Stack.Screen name="review" options={{ presentation: "modal", title: t("Review") }} />
         <Stack.Screen name="welcome" options={{ presentation: "fullScreenModal", headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="privacy" options={{ title: t("What Fixify processes") }} />
+        <Stack.Screen name="background" options={{ title: t("Background") }} />
         <Stack.Screen name="help" options={{ title: t("How Fixify works") }} />
         <Stack.Screen name="server-help" options={{ title: t("Server setup") }} />
       </Stack>

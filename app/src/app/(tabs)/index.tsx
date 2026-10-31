@@ -6,7 +6,7 @@ import { t } from "../../i18n/index.ts";
 import { useArea } from "../../services/area.ts";
 import { openSession, startScan } from "../../services/nav.ts";
 import { useSessions } from "../../services/sessions.ts";
-import { isServerConfigured, useSettings } from "../../services/settings.ts";
+import { activeBackground, isServerConfigured, useSettings } from "../../services/settings.ts";
 import { useQuota } from "../../services/usage.ts";
 import { CardCarousel, SoftCard } from "../../ui/CardCarousel.tsx";
 import { Caption, IconCircle } from "../../ui/components.tsx";
@@ -53,7 +53,7 @@ export default function Home() {
   return (
     <View style={{ flex: 1 }}>
       {/* A quiet raster of small dots behind the home screen (not over your own background). */}
-      {!settings.background && <DotGrid />}
+      {!activeBackground(settings) && <DotGrid />}
       <Screen contentStyle={{ gap: space.xl }}>
         {/* Header like the reference: round buttons left and right, the name in the middle. */}
         <Reveal kind="fade" style={styles.header}>

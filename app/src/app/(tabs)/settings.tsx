@@ -8,13 +8,12 @@ import { t } from "../../i18n/index.ts";
 import { storageBytes } from "../../services/images.ts";
 import { cancelAllReminders } from "../../services/reminders.ts";
 import { deleteEverything, deletePhotos, useSessions } from "../../services/sessions.ts";
-import { settingsStore, updateSettings, useSettings, type Appearance, type VoiceGender } from "../../services/settings.ts";
+import { activeBackground, settingsStore, updateSettings, useSettings, type Appearance, type VoiceGender } from "../../services/settings.ts";
 import { emptyProfile, type Profile } from "../../core/profile.ts";
 import { DEVICE_OPTIONS, HELP_OPTIONS, TOPIC_OPTIONS } from "../../ui/OnboardingFlow.tsx";
 import { isOpen } from "../../core/session.ts";
 import { Caption, Divider, GlassCard, IconCircle, Segmented } from "../../ui/components.tsx";
 import { Image } from "expo-image";
-import { pickBackground, removeBackground } from "../../services/background.ts";
 import { confirmDestructive } from "../../ui/confirm.ts";
 import type { IconName } from "../../ui/categories.ts";
 import { radius, space, type, useTheme, font } from "../../ui/theme.ts";
@@ -128,38 +127,23 @@ function ChipGroup({ title, options, isOn, onToggle }: { title: string; options:
   );
 }
 
-/** Your own background: a small preview, choose a picture or video, or go back to the default. */
-function BackgroundPicker() {
+/** The background row: what is in use, with a small preview; opens the full background page. */
+function BackgroundRow() {
   const { c } = useTheme();
-  const { background } = useSettings();
+  const settings = useSettings();
+  const bg = activeBackground(settings);
+  const preview = bg ? (bg.kind === "image" ? bg.uri : bg.thumb) : null;
   return (
-    <>
-      <Row>
-        <View style={[styles.bgPreview, { borderColor: c.hairline, backgroundColor: c.raised }]}>
-          {background?.kind === "image" ? (
-            <Image source={{ uri: background.uri }} style={StyleSheet.absoluteFill} contentFit="cover" />
-          ) : (
-            <Ionicons name={background ? "videocam" : "sparkles-outline"} size={20} color={c.secondary} />
-          )}
-        </View>
-        <Label>{background ? (background.kind === "video" ? t("Your video") : t("Your picture")) : t("Default")}</Label>
-      </Row>
-      <Divider />
-      <Link icon="images-outline" title={t("Choose picture or video")} onPress={() => pickBackground().then((ok) => ok && tick())} />
-      {background && (
-        <>
-          <Divider />
-          <Link
-            icon="refresh"
-            title={t("Remove background")}
-            onPress={() => {
-              tick();
-              removeBackground();
-            }}
-          />
-        </>
-      )}
-    </>
+    <Pressable onPress={() => router.push("/background")} style={({ pressed }) => [styles.row, { opacity: pressed ? 0.6 : 1 }]} accessibilityRole="button">
+      <View style={[styles.bgPreview, { borderColor: c.hairline, backgroundColor: c.raised }]}>
+        {preview ? <Image source={{ uri: preview }} style={StyleSheet.absoluteFill} contentFit="cover" /> : <Ionicons name={bg ? "videocam" : "sparkles-outline"} size={18} color={c.secondary} />}
+      </View>
+      <View style={{ flex: 1, gap: 2 }}>
+        <Text style={[type.body, { color: c.text }]}>{t("Background")}</Text>
+        <Caption>{bg ? (bg.kind === "video" ? t("Your video") : t("Your picture")) : t("Default")}</Caption>
+      </View>
+      <Ionicons name="chevron-forward" size={16} color={c.secondary} />
+    </Pressable>
   );
 }
 
@@ -203,8 +187,8 @@ export default function Settings() {
         />
       </Section>
 
-      <Section title={t("Background")} footer={t("Your own picture or video behind every screen, darkened so everything stays readable. Videos play without sound.")}>
-        <BackgroundPicker />
+      <Section title={t("Background")}>
+        <BackgroundRow />
       </Section>
 
       <Section title={t("About you")} footer={t("Your answers stay on this iPhone. FixVoice only gets a short summary so it can help you better.")}>
@@ -304,7 +288,7 @@ export default function Settings() {
 }
 
 const styles = StyleSheet.create({
-  bgPreview: { width: 44, height: 64, borderRadius: 10, overflow: "hidden", alignItems: "center", justifyContent: "center", borderWidth: StyleSheet.hairlineWidth },
+  bgPreview: { width: 36, height: 54, borderRadius: 9, overflow: "hidden", alignItems: "center", justifyContent: "center", borderWidth: StyleSheet.hairlineWidth },
   nameInput: { flex: 1, textAlign: "right", paddingVertical: 4 },
   chipGroup: { gap: space.s, paddingVertical: space.m },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: space.s },

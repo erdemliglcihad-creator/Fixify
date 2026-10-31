@@ -7,14 +7,16 @@ import type { Profile } from "../core/profile.ts";
 import { createStore, useStore } from "./store.ts";
 
 export type Appearance = "system" | "light" | "dark";
-/** Your own picture or video behind every screen (kept in the app's documents). */
-export type CustomBackground = { uri: string; kind: "image" | "video" };
+/** One of your own pictures or videos for behind every screen (kept in the app's documents). `thumb` is a still for videos. */
+export type CustomBackground = { id: string; uri: string; kind: "image" | "video"; thumb: string | null };
 /** cloud = Fixify Cloud (free, works for everyone), proxy = your own server (server/), off = no AI. */
 export type Provider = "cloud" | "proxy" | "off";
 
 export type Settings = {
   appearance: Appearance;
-  background: CustomBackground | null;
+  /** Your uploaded backgrounds, newest first, and the one in use (null = the default look). */
+  backgrounds: CustomBackground[];
+  backgroundId: string | null;
   provider: Provider;
   serverURL: string;
   appToken: string;
@@ -37,10 +39,14 @@ export type Settings = {
 
 export type VoiceGender = "female" | "male";
 
+/** The background in use, or null for the default look. */
+export const activeBackground = (s: Pick<Settings, "backgrounds" | "backgroundId">) => s.backgrounds?.find((b) => b.id === s.backgroundId) ?? null;
+
 const DEFAULTS: Settings = {
   // Dark-first: the gradients are designed for a dark base. Light stays available in Settings.
   appearance: "dark",
-  background: null,
+  backgrounds: [],
+  backgroundId: null,
   provider: "cloud",
   serverURL: "",
   appToken: "",
