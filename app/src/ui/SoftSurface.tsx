@@ -1,5 +1,5 @@
 // A lit glass slab (Skia): black inside, colored light glowing in from the edges and pooling at the bottom,
-// a thin light rim, a round glow spilling out underneath, fine grain, and a smooth round outline.
+// a round glow all around that flows into the inner glow (no dark gap, no outline), fine grain, round edges.
 // Children sit above it.
 import { BlurMask, Canvas, Circle, Group, LinearGradient, RadialGradient, Rect, RoundedRect, Shader, Skia, rect, rrect, vec } from "@shopify/react-native-skia";
 import { useState, type ReactNode } from "react";
@@ -67,10 +67,13 @@ export function SoftSurface({
     <View style={style} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
       {w > 0 && (
         <Canvas pointerEvents="none" style={{ position: "absolute", left: -pad, top: -pad, width: w + pad * 2, height: h + pad * 2 }}>
-          {/* Outer glow: a soft halo of the card's color, strongest below where the inner light spills out. */}
-          <Group transform={[{ translateY: 12 }]}>
-            <RoundedRect rect={shape} color={palette.glow} opacity={0.6 * glow}>
-              <BlurMask blur={26} style="outer" />
+          {/* Outer glow: a soft halo all around (no offset, no gap at the edge), a little stronger below. */}
+          <RoundedRect rect={shape} color={palette.glow} opacity={0.5 * glow}>
+            <BlurMask blur={26} style="normal" />
+          </RoundedRect>
+          <Group transform={[{ translateY: 14 }]}>
+            <RoundedRect rect={shape} color={palette.glow} opacity={0.3 * glow}>
+              <BlurMask blur={34} style="normal" />
             </RoundedRect>
           </Group>
 
@@ -85,18 +88,11 @@ export function SoftSurface({
                 <RadialGradient c={vec(pad + b.x * w, pad + b.y * h)} r={b.r * w} colors={[b.color, `${b.color}00`]} />
               </Circle>
             ))}
-            {/* Inner glow along every edge: faint at the top, strong and bright at the bottom. */}
-            <RoundedRect rect={shape} style="stroke" strokeWidth={34}>
-              <LinearGradient start={vec(0, pad)} end={vec(0, pad + h)} colors={[`${palette.inner}18`, `${palette.inner}55`, palette.inner]} positions={[0, 0.5, 1]} />
+            {/* Inner glow along every edge: soft at the top and sides (so the edge never reads as a black frame
+                against the outer glow), strong at the bottom. No outline, no white line. */}
+            <RoundedRect rect={shape} style="stroke" strokeWidth={36}>
+              <LinearGradient start={vec(0, pad)} end={vec(0, pad + h)} colors={[`${palette.inner}55`, `${palette.inner}77`, palette.inner]} positions={[0, 0.5, 1]} />
               <BlurMask blur={18} style="normal" />
-            </RoundedRect>
-            <RoundedRect rect={shape} style="stroke" strokeWidth={12}>
-              <LinearGradient start={vec(0, pad + h * 0.55)} end={vec(0, pad + h)} colors={[`${palette.inner}00`, "#FFFFFF"]} />
-              <BlurMask blur={6} style="normal" />
-            </RoundedRect>
-            {/* Thin light rim: a hairline catching the light, brightest where the glow is. */}
-            <RoundedRect rect={rrect(rect(pad + 0.75, pad + 0.75, w - 1.5, h - 1.5), radius - 0.75, radius - 0.75)} style="stroke" strokeWidth={1.5}>
-              <LinearGradient start={vec(0, pad)} end={vec(0, pad + h)} colors={[`${palette.rim}66`, `${palette.rim}26`, `${palette.rim}DD`]} positions={[0, 0.5, 1]} />
             </RoundedRect>
             {/* Crisp, even grain over the whole card, the same texture as the backdrop. */}
             <Rect rect={over} opacity={grain} blendMode="overlay">

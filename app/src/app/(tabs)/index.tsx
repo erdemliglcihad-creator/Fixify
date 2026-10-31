@@ -45,7 +45,7 @@ export default function Home() {
       icon: "images-outline",
       title: t("Choose from photos"),
       subtitle: quota.uploadsLeft !== null && quota.uploadsDaily ? t("%lld left today", quota.uploadsLeft) : t("Photo or screenshot"),
-      detail: quota.uploadsLeft !== null && quota.uploadsDaily ? { kind: "quota", used: quota.uploadsDaily - quota.uploadsLeft, total: quota.uploadsDaily } : { kind: "none" },
+      detail: { kind: "photos" },
       run: () => startScan({ library: true }),
     },
   ];

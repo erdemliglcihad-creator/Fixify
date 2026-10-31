@@ -26,8 +26,8 @@ export function SoftSurface({
     borderRadius: radius,
     overflow: "hidden",
     backgroundImage: [...blobs, `linear-gradient(180deg, ${stops})`].join(", "),
-    // Outer glow spilling out below, light glowing in from the edges and pooling at the bottom, thin rim.
-    boxShadow: `0 14px 50px ${palette.glow}${alpha}, inset 0 -26px 34px -8px ${palette.inner}, inset 0 0 22px ${palette.inner}40, inset 0 0 0 1.5px ${palette.rim}55`,
+    // Glow all around flowing into the inner glow, light pooling at the bottom; no outline.
+    boxShadow: `0 0 40px ${palette.glow}${alpha}, 0 14px 50px ${palette.glow}55, inset 0 -26px 34px -8px ${palette.inner}, inset 0 0 24px ${palette.inner}66`,
   };
   return (
     <View style={style}>
