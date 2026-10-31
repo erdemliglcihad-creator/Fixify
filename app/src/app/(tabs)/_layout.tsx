@@ -8,7 +8,10 @@ import { useTheme } from "../../ui/theme.ts";
  * merging surfaces on iOS 26. Scan uses the system's separate round button (the "search" slot).
  * Screens place their own safe-area and tab-bar spacing, so the automatic content insets are off
  * (otherwise everything moved down by the status bar height a second time).
+ * Every tab is see-through: iOS otherwise paints its own opaque background per tab, which hid the shared
+ * backdrop (lights or your own picture or video, drawn once in the root layout) everywhere but stack pages.
  */
+const CLEAR = { backgroundColor: "transparent" };
 export default function TabsLayout() {
   const { c } = useTheme();
   const pathname = usePathname();
@@ -20,23 +23,23 @@ export default function TabsLayout() {
       // The scan tab is the camera itself: full screen, no tab bar.
       hidden={pathname === "/scan"}
     >
-      <NativeTabs.Trigger name="index" disableAutomaticContentInsets>
+      <NativeTabs.Trigger name="index" disableAutomaticContentInsets contentStyle={CLEAR}>
         <NativeTabs.Trigger.Icon sf={{ default: "house", selected: "house.fill" }} />
         <NativeTabs.Trigger.Label>{t("Home")}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="fixvoice" disableAutomaticContentInsets>
+      <NativeTabs.Trigger name="fixvoice" disableAutomaticContentInsets contentStyle={CLEAR}>
         <NativeTabs.Trigger.Icon sf="waveform" />
         <NativeTabs.Trigger.Label>FixVoice</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="library" disableAutomaticContentInsets>
+      <NativeTabs.Trigger name="library" disableAutomaticContentInsets contentStyle={CLEAR}>
         <NativeTabs.Trigger.Icon sf={{ default: "books.vertical", selected: "books.vertical.fill" }} />
         <NativeTabs.Trigger.Label>{t("Library")}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="settings" disableAutomaticContentInsets>
+      <NativeTabs.Trigger name="settings" disableAutomaticContentInsets contentStyle={CLEAR}>
         <NativeTabs.Trigger.Icon sf={{ default: "gearshape", selected: "gearshape.fill" }} />
         <NativeTabs.Trigger.Label>{t("Settings")}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="scan" role="search" disableAutomaticContentInsets>
+      <NativeTabs.Trigger name="scan" role="search" disableAutomaticContentInsets contentStyle={CLEAR}>
         <NativeTabs.Trigger.Icon sf="viewfinder" />
         <NativeTabs.Trigger.Label>{t("Scan")}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
